@@ -1,6 +1,7 @@
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
+//reusable component
 const SectionTitle = ({ children, centered }) => (
   <h3 className={`text-white text-lg font-semibold mb-4 inline-block relative
     after:content-[''] after:block after:w-1/2 after:h-0.5 
@@ -20,8 +21,15 @@ SectionTitle.defaultProps = {
   centered: false
 };
 
+// main footer component which contains all sections like quick links, contact info etc.
 export default function Footer() {
+
+// modify links, contact details, and social media links here
+
   const footerData = {
+
+// quick Links section - contains links to nitk related pages
+
     quickLinks: {
       title: "Quick Links",
       links: [
@@ -31,6 +39,9 @@ export default function Footer() {
       ]
     },
     paceLinks: {
+
+  // pace specific links for easy navigation within pace website
+
       title: "PACE Links",
       links: [
         { name: "Events", url: "/events" },
@@ -39,6 +50,9 @@ export default function Footer() {
       ]
     },
     moreLinks: {
+
+// additional useful links related to Civil Engineering department
+
       title: "More Links",
       links: [
         { name: "CE Courses", url: "https://civil.nitk.ac.in/courses" },
@@ -46,7 +60,11 @@ export default function Footer() {
         { name: "CE Achievements", url: "https://civil.nitk.ac.in/achievements" }
       ]
     },
+
     socialLinks: [
+
+// social media links with their respective icons
+
       { icon: FaFacebook, link: '#', name: 'Facebook' },
       { icon: FaTwitter, link: '#', name: 'Twitter' },
       { icon: FaInstagram, link: '#', name: 'Instagram' },
@@ -54,10 +72,11 @@ export default function Footer() {
       { icon: FaYoutube, link: '#', name: 'YouTube' },
     ],
     contactInfo: {
+// contact information with icons for better visual representation
       title: "Contact Us",
       details: [
         { icon: FaMapMarkerAlt, text: "Department of Civil Engineering, NITK Surathkal, Mangalore - 575025" },
-        { icon: FaPhone, text: "+91 1234567890" },
+        { icon: FaPhone, text: "+91-0824-2473041" },
         { icon: FaEnvelope, text: "pace@nitk.edu.in" }
       ]
     }
@@ -91,12 +110,16 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-purple-900 via-blue-900 to-black text-gray-300">
+{/* main container with responsive padding */}
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+{/* grid layout that adjusts columns based on screen size */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+{/* link sections */}
           <LinkSection title={footerData.quickLinks.title} links={footerData.quickLinks.links} />
           <LinkSection title={footerData.paceLinks.title} links={footerData.paceLinks.links} />
           <LinkSection title={footerData.moreLinks.title} links={footerData.moreLinks.links} />
 
+{/* contact information section*/}
           <div>
             <SectionTitle>{footerData.contactInfo.title}</SectionTitle>
             <div className="space-y-4">
@@ -112,6 +135,7 @@ export default function Footer() {
           </div>
         </div>
 
+{/* social media section with hover effects */}
         <div className="mt-8 pt-8 border-t border-gray-800">
           <div className="flex flex-col items-center">
             <SectionTitle centered>Our Social Media Platforms</SectionTitle>
@@ -130,7 +154,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        
+{/* copyright section with dynamic year */}
         <div className="mt-8 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} Designed by <span className="font-bold">Web Team</span> | <span className="font-bold">PACE</span> | <span className="font-bold">NITK Surathkal</span></p>
           <p> All rights reserved. </p>

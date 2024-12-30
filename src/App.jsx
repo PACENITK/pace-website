@@ -1,19 +1,22 @@
 import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-blue-50">
+      <Navbar />
       <main className="flex-grow mt-16">
-        {/*  main content */}
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <h1 className="text-4xl font-bold text-center">Welcome to PACE</h1>
-          <p className="text-center mt-4">Professional Association of Civil Engineers</p>
+        {/* hero section */}
+        <div className="flex flex-col items-center justify-center h-[70vh] max-w-7xl mx-auto px-4">
+          <h1 className="text-5xl font-extrabold text-center text-gray-800">
+            Welcome to PACE
+          </h1>
+          <p className="text-center mt-6 text-lg text-gray-600">
+            Professional Association of Civil Engineers
+          </p>
         </div>
       </main>
       <Footer />
     </div>
   );
 }
-
-export default App;
