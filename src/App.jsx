@@ -1,12 +1,12 @@
 import React from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import ActivityLog from './components/ActivityLog';
+import ActivityLog from './components/ActivityLog/ActivityLog';
 import Footer from './components/Footer';
 
-export default function App() {
+function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-blue-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <main className="flex-grow">
         <Hero />
@@ -16,3 +16,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
