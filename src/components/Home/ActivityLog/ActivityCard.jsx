@@ -7,7 +7,7 @@ const ActivityCard = ({ activity, currentPage, totalPages, onPageChange }) => {
   
   return (
     <div className="flex flex-col h-full">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-4"> {/* Changed bg-light-blue-100 to bg-white */}
         <div className="h-[200px] lg:h-[300px] rounded-lg overflow-hidden">
           <img 
             src={activity.image} 

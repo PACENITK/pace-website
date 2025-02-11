@@ -17,22 +17,13 @@ const AnnouncementToolbox = () => {
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 space-y-4">
-      <h3 className="text-lg font-bold text-gray-800 border-b pb-2">
-        Announcements
-      </h3>
+      <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Announcements</h3>
       {announcements.map((announcement, index) => (
-        <div 
-          key={index} 
-          className="border-b pb-3 last:border-b-0 hover:bg-gray-50 transition-colors"
-        >
+        <div key={index} className="border-b pb-3 last:border-b-0 hover:bg-gray-50 transition-colors">
           <div className="flex justify-between items-start">
             <div className="pr-2">
-              <h4 className="text-sm font-semibold text-gray-700">
-                {announcement.title}
-              </h4>
-              <p className="text-xs text-gray-500 mt-1">
-                {announcement.description}
-              </p>
+              <h4 className="text-sm font-semibold text-gray-700">{announcement.title}</h4>
+              <p className="text-xs text-gray-500 mt-1">{announcement.description}</p>
             </div>
             <a 
               href={announcement.link} 

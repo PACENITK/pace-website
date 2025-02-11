@@ -21,7 +21,6 @@ SectionTitle.defaultProps = {
   centered: false
 };
 
-// Main Footer Component
 const Footer = forwardRef((_, ref) => {
   const footerData = {
     quickLinks: {
@@ -98,7 +97,7 @@ const Footer = forwardRef((_, ref) => {
           <LinkSection title={footerData.quickLinks.title} links={footerData.quickLinks.links} />
           <LinkSection title={footerData.paceLinks.title} links={footerData.paceLinks.links} />
           <LinkSection title={footerData.moreLinks.title} links={footerData.moreLinks.links} />
-          <div>
+          <div id="contact-us-section">
             <SectionTitle>{footerData.contactInfo.title}</SectionTitle>
             <div className="space-y-4">
               {footerData.contactInfo.details.map((item, index) => (
@@ -139,5 +138,5 @@ const Footer = forwardRef((_, ref) => {
   );
 });
 
-Footer.displayName = 'Footer'; // Set display name for better debugging
+Footer.displayName = 'Footer';
 export default Footer;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 
-const Hero = ({ scrollToAboutUs }) => {
+const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   
   const images = [
     'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80',
@@ -10,7 +10,11 @@ const Hero = ({ scrollToAboutUs }) => {
     'https://images.unsplash.com/photo-1512187849-463fdb898f21?q=80'
   ];
 
+  // Split title into words for animation
+  const titleWords = "Professional Association of Civil Engineers".split(" ");
+
   useEffect(() => {
+    setIsVisible(true);
     const timer = setInterval(() => {
       setCurrentImageIndex((prevIndex) => 
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
@@ -20,53 +24,109 @@ const Hero = ({ scrollToAboutUs }) => {
     return () => clearInterval(timer);
   }, []);
 
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about-us');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  const handlePrev = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
   return (
-    <div className="relative h-screen w-full flex flex-col items-center justify-center mb-16">
-      {/* Background images with staggered transition */}
+    <div className="relative h-screen w-full flex flex-col items-center justify-center mb-0 bg-blue-50/70">
       <div className="absolute inset-0 overflow-hidden">
         {images.map((image, index) => (
-          <motion.div
+          <div
             key={image}
-            className="absolute inset-0 bg-cover bg-center"
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+              currentImageIndex === index ? 'opacity-100' : 'opacity-0'
+            }`}
             style={{ backgroundImage: `url(${image})` }}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: currentImageIndex === index ? 1 : 0, scale: currentImageIndex === index ? 1 : 1.1 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
           >
             <div className="absolute inset-0 bg-black/40" />
-          </motion.div>
+          </div>
         ))}
       </div>
 
       <div className="relative text-center space-y-6 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-        <motion.h1 
-          className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Professional Association of Civil Engineers
-        </motion.h1>
-        <motion.p 
-          className="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
+          <div className="overflow-hidden">
+            <div className="flex flex-wrap justify-center gap-x-3">
+              {titleWords.map((word, index) => (
+                <span
+                  key={index}
+                  className={`
+                    inline-block transform transition-all duration-700 ease-out
+                    ${isVisible 
+                      ? 'translate-y-0 opacity-100 scale-100'
+                      : 'translate-y-full opacity-0 scale-95'
+                    }
+                  `}
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
+                  {word}
+                </span>
+              ))}
+            </div>
+          </div>
+        </h1>
+        
+        <p 
+          className={`
+            text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto
+            transform transition-all duration-700 delay-500 ease-out
+            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+          `}
         >
           Building the future through excellence in civil engineering
-        </motion.p>
-        <motion.button 
-          className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold 
-            hover:bg-blue-700 transition-colors duration-300 shadow-lg"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={scrollToAboutUs} // Call the scroll function
+        </p>
+        <button 
+          onClick={scrollToAbout}
+          className={`
+            bg-[#EAF3FF] text-black px-5 sm:px-6 py-2.5 rounded-md font-medium text-base sm:text-lg 
+            transition-all duration-200 ease-in-out shadow-lg transform
+            hover:bg-[#d4e7ff] hover:shadow-xl hover:scale-105 
+            focus:ring-2 focus:ring-blue-300 active:scale-95
+          `}
         >
           About Us
-        </motion.button>
+        </button>
+      </div>
+
+      {/* Manual Controls */}
+      <div className="absolute bottom-6 flex gap-3 z-10">
+        <button 
+          onClick={handlePrev} 
+          className="bg-white/80 hover:bg-white text-black px-4 py-2 rounded-lg shadow-md transition-all"
+        >
+          ◀
+        </button>
+        <button 
+          onClick={handleNext} 
+          className="bg-white/80 hover:bg-white text-black px-4 py-2 rounded-lg shadow-md transition-all"
+        >
+          ▶
+        </button>
+      </div>
+
+      {/* Scroll to Explore Indicator */}
+      <div className="absolute bottom-5 right-1/4 flex flex-col items-center text-white animate-bounce">
+        <span className="text-sm font-medium">Scroll to Explore</span>
+        <span className="text-2xl">↓</span>
       </div>
     </div>
   );
