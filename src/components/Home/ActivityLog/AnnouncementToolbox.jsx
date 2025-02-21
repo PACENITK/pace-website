@@ -6,12 +6,12 @@ const AnnouncementToolbox = () => {
     {
       title: "Upcoming Workshop",
       description: "Join our advanced concrete testing seminar",
-      link: "https://example.com/workshop"
+      link: "./events"
     },
     {
       title: "New Research Publication",
       description: "Latest findings in structural engineering",
-      link: "https://example.com/research"
+      link: "./events"
     }
   ];
 

@@ -1,47 +1,32 @@
+// Update your data.js file to include unique IDs if not already present
 export const eventsData = [
-    {
-      id: '1',
-      title: 'Demystifying Memory Management',
-      date: '10 Jan 2025',
-      time: '06:00 pm',
-      venue: 'ISTE Seminar Hall, Main Building',
-      image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
-      description: 'Join us for an in-depth session on memory management concepts and implementation details. Perfect for those looking to understand system-level programming.',
-      mode: 'In-Person',
-      category: 'Technical',
-      resources: [
-        { title: 'Presentation Slides', url: '#' },
-        { title: 'Code Repository', url: '#' }
-      ]
-    },
-    {
-      id: '2',
-      title: 'CP League - Greedy Algorithms',
-      date: '29 Oct 2024',
-      time: '07:00 pm',
-      venue: 'LHC A Seminar Hall',
-      image: 'https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
-      description: 'Ready to get greedy... about learning? Join us for a session where we\'ll dive into greedy algorithms and how they get the best solution by being optimal at every step of the way!',
-      mode: 'In-Person',
-      category: 'Competitive Programming',
-      resources: [
-        { title: 'Practice Problems', url: '#' },
-        { title: 'Solutions', url: '#' }
-      ]
-    },
-    {
-      id: '3',
-      title: 'CP League - Binary Search and 2 Pointers',
-      date: '26 Sept 2024',
-      time: '05:30 pm',
-      venue: 'ISTE Seminar Hall',
-      image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
-      description: 'Master the art of efficient searching and problem-solving with Binary Search and Two Pointers techniques.',
-      mode: 'In-Person',
-      category: 'Competitive Programming',
-      resources: [
-        { title: 'Practice Problems', url: '#' },
-        { title: 'Solutions', url: '#' }
-      ]
-    }
-  ];
+  {
+    id: "1",
+    title: "PACE Workshop on AI",
+    date: "March 15, 2025",
+    time: "2:00 PM - 4:00 PM",
+    description: "Join us for an interactive workshop on the latest AI technologies and their practical applications.",
+    image: "/images/events/ai-workshop.jpg",
+    venue: "Tech Building, Room 305",
+    mode: "In-person + Live Stream",
+    resources: [
+      { title: "Workshop Slides", url: "#" },
+      { title: "Code Repository", url: "#" }
+    ]
+  },
+  {
+    id: "2",
+    title: "Hackathon 2025",
+    date: "April 10-12, 2025",
+    time: "Starts at 9:00 AM",
+    description: "A 48-hour coding marathon where teams compete to build innovative solutions to real-world problems.",
+    image: "/images/events/hackathon.jpg",
+    venue: "Virtual Event",
+    mode: "Online Only",
+    resources: [
+      { title: "Registration Link", url: "#" },
+      { title: "Rules & Guidelines", url: "#" }
+    ]
+  },
+  // Add more events as needed...
+];
