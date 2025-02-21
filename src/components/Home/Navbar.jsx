@@ -25,7 +25,7 @@ const Navbar = ({ scrollToFooter }) => {
     { name: "EVENTS", path: "/events" },
     { name: "PROJECTS", path: "/projects" },
     { name: "TEAM", path: "/team" },
-    { name: "GALLERY", path: "/gallery" },
+    { name: "NIRMAN", path: "/nirman" },
     { name: "CONTACT US", path: "#", action: scrollToFooter },
   ];
 

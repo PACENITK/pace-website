@@ -1,0 +1,77 @@
+import React from 'react';
+import { Calendar, Clock, MapPin, Users, Link as LinkIcon } from 'lucide-react';
+
+const EventDetail = ({ event }) => {
+  return (
+    <div className="bg-gray-800 rounded-xl overflow-hidden">
+      <div className="relative h-[400px]">
+        <img
+          src={event.image}
+          alt={event.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 p-8">
+          <div className="flex items-center space-x-4 text-blue-400 mb-4">
+            <div className="flex items-center">
+              <Calendar className="w-5 h-5 mr-2" />
+              <span>{event.date}</span>
+            </div>
+            <div className="flex items-center">
+              <Clock className="w-5 h-5 mr-2" />
+              <span>{event.time}</span>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-white">{event.title}</h1>
+        </div>
+      </div>
+
+      <div className="p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="md:col-span-2">
+            <div className="bg-gray-700/50 rounded-lg p-6 mb-6">
+              <h2 className="text-xl font-semibold text-white mb-4">About the Event</h2>
+              <p className="text-gray-300">{event.description}</p>
+            </div>
+
+            {event.resources && event.resources.length > 0 && (
+              <div className="bg-gray-700/50 rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-white mb-4">Resources</h2>
+                <div className="space-y-3">
+                  {event.resources.map((resource, index) => (
+                    <a
+                      key={index}
+                      href={resource.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      <LinkIcon className="w-5 h-5 mr-2" />
+                      {resource.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-gray-700/50 rounded-lg p-6 h-fit">
+            <h2 className="text-xl font-semibold text-white mb-4">Event Details</h2>
+            <div className="space-y-4">
+              <div className="flex items-center text-gray-300">
+                <MapPin className="w-5 h-5 mr-3 text-blue-400" />
+                <span>{event.venue}</span>
+              </div>
+              <div className="flex items-center text-gray-300">
+                <Users className="w-5 h-5 mr-3 text-blue-400" />
+                <span>{event.mode}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EventDetail;
