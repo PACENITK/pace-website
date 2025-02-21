@@ -13,20 +13,20 @@ export const projectsData = [
   //     { title: 'Research Paper', url: '#' }
   //   ]
   // },
-  // {
-  //   id: '2',
-  //   title: 'Sustainable Urban Planning Model',
-  //   date: '2024-2025',
-  //   status: 'Completed',
-  //   image: 'https://images.unsplash.com/photo-1518005068251-37900150dfca?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
-  //   description: 'Creating a comprehensive urban planning model that incorporates sustainable practices, green infrastructure, and smart city concepts.',
-  //   category: 'Urban Planning',
-  //   team: 'Urban Development Team',
-  //   resources: [
-  //     { title: 'Project Report', url: '#' },
-  //     { title: 'Case Study', url: '#' }
-  //   ]
-  // },
+  {
+    id: '2',
+    title: 'Sustainable Urban Planning Model',
+    date: '2024-2025',
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1518005068251-37900150dfca?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
+    description: 'Creating a comprehensive urban planning model that incorporates sustainable practices, green infrastructure, and smart city concepts.',
+    category: 'Urban Planning',
+    team: 'Urban Development Team',
+    resources: [
+      { title: 'Project Report', url: '#' },
+      { title: 'Case Study', url: '#' }
+    ]
+  },
   // {
   //   id: '3',
   //   title: 'Earthquake Resistant Building Design',
