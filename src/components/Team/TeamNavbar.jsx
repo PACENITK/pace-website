@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from 'react-router-dom';
-import logo from '../assets/logoo.png';
+import logo from '../../assets/logoo.png';
 
 const TeamNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);

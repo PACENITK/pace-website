@@ -4,15 +4,15 @@ import { ExternalLink } from 'lucide-react';
 const AnnouncementToolbox = () => {
   const announcements = [
     {
-      title: "Upcoming Workshop",
-      description: "Join our advanced concrete testing seminar",
+      title: "Site Visit to Varahi Dam",
+      description: "Witness real-world civil engineering in action and marvel at breathtaking structures",
       link: "./events"
     },
-    {
-      title: "New Research Publication",
-      description: "Latest findings in structural engineering",
-      link: "./events"
-    }
+    // {
+    //   title: "New Research Publication",
+    //   description: "Latest findings in structural engineering",
+    //   link: "./events"
+    // }
   ];
 
   return (

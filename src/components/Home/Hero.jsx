@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
+// Import images correctly
+import a1 from '../../assets/AboutUs/a1.jpg';
+import a2 from '../../assets/AboutUs/a2.jpg';
+import a3 from '../../assets/AboutUs/a3.jpg';
+
 const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
-  const images = [
-    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80',
-    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80',
-    'https://images.unsplash.com/photo-1512187849-463fdb898f21?q=80'
-  ];
+  // Store images in an array
+  const images = [a1, a2, a3];
 
-  // Split title into words for animation
   const titleWords = "Professional Association of Civil Engineers".split(" ");
 
   useEffect(() => {
@@ -51,7 +52,7 @@ const Hero = () => {
       <div className="absolute inset-0 overflow-hidden">
         {images.map((image, index) => (
           <div
-            key={image}
+            key={index} // Use index instead of image name as key
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
               currentImageIndex === index ? 'opacity-100' : 'opacity-0'
             }`}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import logo from '../assets/logoo.png';
+import logo from '../../assets/logoo.png';
 
 const Navbar = ({ scrollToFooter }) => {
   const [isOpen, setIsOpen] = useState(false);

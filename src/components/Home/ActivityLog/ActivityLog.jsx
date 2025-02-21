@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DiscoverPACE from './DiscoverPACE';
 import ActivityCard from './ActivityCard';
 import AnnouncementToolbox from './AnnouncementToolbox';
+import a3 from '../../../assets/AboutUs/a3.jpg';
 
 const ActivityLog = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,11 +23,11 @@ const ActivityLog = () => {
   const activities = [
     {
       id: 1,
-      title: "Concrete Testing Workshop",
-      date: "15 March 2024",
+      title: "Project: AI-Integrated Advanced Surveying & GIS for Disaster Management",
+      date: "4th Febraury 2025",
       description: "An innovative event for civil engineers to learn about concrete testing!",
-      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=800",
-      instagramLink: "https://www.instagram.com/your-profile"
+      image: a3,
+      instagramLink: "http://localhost:5173/events"
     },
   ];
 
