@@ -29,7 +29,7 @@ const AboutUs = () => {
           About Us
         </h2>
         <p className="text-xl text-gray-700 font-semibold text-center mb-12 py-4 font-sans">
-          Welcome to Professional Association of Civil Engineers Of NITK SURATHKAL
+          Welcome to Professional Association For Civil Engineering Of NITK SURATHKAL
         </p>
 
         {/* Slideshow Container */}
@@ -79,7 +79,7 @@ const AboutUs = () => {
 
           <div className="space-y-5 self-start">
             <h3 className="text-3xl font-bold text-gray-800">
-              Professional Association of Civil Engineers
+            Professional Association For Civil Engineering
             </h3>
             <p className="text-gray-600 text-base leading-relaxed">
               We are a dedicated association committed to advancing civil engineering through innovation, education, and professional development.

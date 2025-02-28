@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logoo.png';
 
 const TeamNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [projectsDropdownOpen, setProjectsDropdownOpen] = useState(false);
+  const [mobileProjectsDropdownOpen, setMobileProjectsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -14,59 +23,124 @@ const TeamNavbar = () => {
     }
   }, [isOpen]);
 
+  const handleClickOutside = (e) => {
+    // Prevent this from triggering when clicking the dropdown toggle itself
+    if (!e.target.closest('.projects-dropdown-toggle')) {
+      setProjectsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (projectsDropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [projectsDropdownOpen]);
+
+  // Close mobile dropdown when main menu is closed
+  useEffect(() => {
+    if (!isOpen) {
+      setMobileProjectsDropdownOpen(false);
+    }
+  }, [isOpen]);
+
   const navItems = [
     { name: "HOME", path: "/" },
-    { name: "PROJECTS", path: "/projects" },
+    { 
+      name: "PROJECTS", 
+      path: "/projects",
+      hasDropdown: true,
+      dropdownItems: [
+        { name: "PROJECT EXPO", path: "/projects/expo" },
+        { name: "HOSTED PROJECTS", path: "/projects/hosted-projects" }
+      ]
+    },
     { name: "EVENTS", path: "/events" },
     { name: "NIRMAN", path: "/nirman" },
   ];
 
   return (
-    <nav className="fixed w-full z-50 bg-white shadow-lg">
+    <nav 
+      className={`fixed w-full z-50 transition-all duration-200 ease-in-out bg-white
+        ${scrolled ? 'shadow-md' : ''}
+        ${isOpen ? 'bg-white' : ''}`}
+    >
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center px-6 py-3">
+        <div className="flex justify-between items-center px-4 py-2">
           {/* Logo and title section */}
-          <div className="flex items-center space-x-4">
-            <div className="w-32 h-16 flex items-center justify-center overflow-hidden">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <div className="w-16 h-12 md:w-32 md:h-16 flex items-center justify-center overflow-hidden">
               <img
                 src={logo}
                 alt="PACE Logo"
-                className="w-full h-full object-contain transform transition-transform duration-300 hover:scale-110 cursor-pointer"
+                className="w-full h-full object-contain transform transition-transform duration-150 hover:scale-110 cursor-pointer"
                 onClick={() => window.location.href = '/'}
               />
             </div>
             <div className="flex flex-col">
-              <p className="text-lg font-bold text-gray-800">
-                Professional Association of Civil Engineers
+              <p className="text-sm md:text-lg font-semibold text-black">
+              Professional Association For Civil Engineering
               </p>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-xs md:text-sm text-black">
                 National Institute of Technology Karnataka Surathkal
               </p>
             </div>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden lg:flex items-center space-x-6">
             {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className="text-base font-semibold px-5 py-2 mx-1 rounded-md
-                  text-gray-700 hover:text-blue-600 hover:bg-blue-50
-                  transition-all duration-300 ease-in-out transform hover:scale-105
-                  border-b-2 border-transparent hover:border-blue-600"
-              >
-                {item.name}
-              </Link>
+              <div key={item.name} className="relative">
+                {item.hasDropdown ? (
+                  <div>
+                    <button
+                      className="projects-dropdown-toggle flex items-center text-base font-medium px-3 py-2 rounded transition-colors duration-150
+                        text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setProjectsDropdownOpen(!projectsDropdownOpen);
+                      }}
+                    >
+                      {item.name}
+                      <ChevronDown size={16} className="ml-1" />
+                    </button>
+                    {projectsDropdownOpen && (
+                      <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 overflow-hidden">
+                        <div className="py-1">
+                          {item.dropdownItems.map((dropdownItem) => (
+                            <Link
+                              key={dropdownItem.name}
+                              to={dropdownItem.path}
+                              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 
+                                       transition-colors duration-150 border-l-4 border-transparent hover:border-blue-500"
+                            >
+                              {dropdownItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className="text-base font-medium px-3 py-2 rounded transition-all duration-150 ease-in-out
+                      text-gray-700 hover:text-blue-600 hover:bg-gray-100
+                      hover:scale-105"
+                  >
+                    {item.name}
+                  </Link>
+                )}
+              </div>
             ))}
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-md transition-all duration-300
-              text-gray-700 hover:text-blue-600 hover:bg-blue-50
-              focus:outline-none"
+            className="lg:hidden p-2 rounded-md transition-all duration-300 text-gray-700 hover:text-blue-600 hover:bg-blue-50 focus:outline-none"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >
@@ -76,22 +150,52 @@ const TeamNavbar = () => {
 
         {/* Mobile Navigation Menu */}
         <div 
-          className={`lg:hidden border-t border-gray-100 bg-white
-            transition-all duration-300 ease-in-out
-            ${isOpen ? 'block opacity-100' : 'hidden opacity-0'}`}
+          className={`lg:hidden border-t border-gray-200 bg-white transition-all duration-200 ease-in-out
+            ${isOpen ? 'block opacity-100 max-h-screen' : 'hidden opacity-0 max-h-0'}`}
         >
           {navItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className="block px-6 py-3 text-base font-medium text-gray-700
-                hover:bg-blue-50 hover:text-blue-600
-                transition-all duration-300 ease-in-out
-                border-l-4 border-transparent hover:border-blue-600"
-            >
-              {item.name}
-            </Link>
+            <div key={item.name}>
+              {item.hasDropdown ? (
+                <>
+                  <button
+                    onClick={() => setMobileProjectsDropdownOpen(!mobileProjectsDropdownOpen)}
+                    className="w-full text-left px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600 
+                            transition-colors duration-150 flex items-center justify-between border-l-4 border-transparent hover:border-blue-600"
+                  >
+                    {item.name}
+                    <ChevronDown 
+                      size={16} 
+                      className={`transition-transform duration-200 ${mobileProjectsDropdownOpen ? 'transform rotate-180' : ''}`} 
+                    />
+                  </button>
+                  <div 
+                    className={`bg-gray-50 overflow-hidden transition-all duration-200
+                      ${mobileProjectsDropdownOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
+                  >
+                    {item.dropdownItems.map((dropdownItem) => (
+                      <Link
+                        key={dropdownItem.name}
+                        to={dropdownItem.path}
+                        onClick={() => setIsOpen(false)}
+                        className="block px-10 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 
+                                transition-colors duration-150 border-l-4 border-transparent hover:border-blue-600"
+                      >
+                        {dropdownItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <Link
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-6 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 
+                          transition-all duration-300 ease-in-out border-l-4 border-transparent hover:border-blue-600"
+                >
+                  {item.name}
+                </Link>
+              )}
+            </div>
           ))}
         </div>
       </div>

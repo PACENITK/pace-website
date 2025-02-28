@@ -54,7 +54,7 @@ const Navbar = ({ scrollToFooter }) => {
       hasDropdown: true,
       dropdownItems: [
         { name: "PROJECT EXPO", path: "/projects/expo" },
-        { name: "HOSTED EXPO", path: "/projects/hosted-expo" }
+        { name: "HOSTED PROJECTS", path: "/projects/hosted-projects" }
       ]
     },
     { name: "TEAM", path: "/team" },
@@ -82,7 +82,7 @@ const Navbar = ({ scrollToFooter }) => {
             </div>
             <div className="flex flex-col">
               <p className={`text-sm md:text-lg font-semibold transition-colors duration-150 ${scrolled || isOpen ? 'text-black' : 'text-white'}`}>
-                Professional Association of Civil Engineers
+              Professional Association For Civil Engineering
               </p>
               <p className={`text-xs md:text-sm transition-colors duration-150 ${scrolled || isOpen ? 'text-black' : 'text-white'}`}>
                 National Institute of Technology Karnataka Surathkal
