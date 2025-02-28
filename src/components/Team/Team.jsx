@@ -87,7 +87,7 @@ const SectionTitle = ({ title }) => (
 const TeamPage = () => {
   const leadership = [
     {
-      name: "Dr. John Doe",
+      name: "Dr.B Manu",
       role: "Head of Department",
       socialLinks: {
         linkedin: "https://linkedin.com",
@@ -95,7 +95,7 @@ const TeamPage = () => {
       }
     },
     {
-      name: "Prof. Jane Smith",
+      name: "Dr. Vinoth Srivinivasan",
       role: "Faculty Advisor",
       socialLinks: {
         linkedin: "https://linkedin.com",
