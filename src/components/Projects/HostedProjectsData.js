@@ -1,10 +1,13 @@
+import logo from '../../assets/AboutUs/a1.jpg'
+
+
 export const hostedProjectsData = [
     {
       id: 'hosted-1',
       title: 'Green Concrete Development',
       date: '2024-2025',
       status: 'Ongoing',
-      image: 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
+      image: logo,
       description: 'Research and development of eco-friendly concrete alternatives using recycled materials and industrial by-products to reduce carbon emissions and environmental impact. This project explores multiple formulations to achieve optimal strength while minimizing ecological footprint.',
       category: 'Materials Science',
       team: 'Sustainable Materials Lab',

@@ -4,7 +4,7 @@ export const expoProjectsData = [
       title: 'Smart Bridge Monitoring System',
       date: '2024-2025',
       status: 'Ongoing',
-      image: 'https://images.unsplash.com/photo-1545119743-324b409f833b?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
+      image: '../assets/logoo.png',
       description: 'Development of an IoT-based system for real-time monitoring of bridge structural health using advanced sensors and machine learning algorithms. This system aims to predict potential structural failures before they occur, improving safety and maintenance efficiency.',
       category: 'Infrastructure',
       team: 'Civil Engineering Department',
