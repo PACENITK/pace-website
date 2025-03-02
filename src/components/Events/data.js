@@ -1,4 +1,5 @@
-// Update your data.js file to include unique IDs if not already present
+
+
 export const eventsData = [
   {
     id: "1",

@@ -1,10 +1,12 @@
 import { FaLinkedin, FaTwitter, FaInstagram, FaUserCircle } from 'react-icons/fa';
+import { SiGooglescholar } from 'react-icons/si'; // Import Google Scholar icon
 import { useState } from 'react';
 import TeamNavbar from './TeamNavbar';
 import Footer from '../Home/Footer';
 import './Team.css';
+import teamData from './teamData';
 
-const ProfileCard = ({ name, role, socialLinks }) => {
+const ProfileCard = ({ name, role, socialLinks, imageSrc }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -22,11 +24,19 @@ const ProfileCard = ({ name, role, socialLinks }) => {
           shadow-[0_0_20px_rgba(79,70,229,0.2)]
           border-4 border-white relative overflow-hidden`}>
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/30 via-transparent to-purple-100/30 animate-pulse"></div>
-          <FaUserCircle 
-            className={`transition-all duration-500 transform text-indigo-300
-              ${isHovered ? 'scale-110' : ''}`} 
-            size={120} 
-          />
+          {imageSrc ? (
+            <img 
+              src={imageSrc} 
+              alt={`${name}`}
+              className={`w-full h-full object-cover rounded-full transition-all duration-500 transform ${isHovered ? 'scale-110' : ''}`}
+            />
+          ) : (
+            <FaUserCircle 
+              className={`transition-all duration-500 transform text-indigo-300
+                ${isHovered ? 'scale-110' : ''}`} 
+              size={120} 
+            />
+          )}
         </div>
       </div>
 
@@ -68,6 +78,16 @@ const ProfileCard = ({ name, role, socialLinks }) => {
               <FaInstagram size={22} />
             </a>
           )}
+          {socialLinks.googleScholar && (
+            <a 
+              href={socialLinks.googleScholar} 
+              className="text-[#4285F4] transform transition-all duration-300 hover:scale-125 hover:-translate-y-1" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <SiGooglescholar size={22} />
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -85,53 +105,7 @@ const SectionTitle = ({ title }) => (
 );
 
 const TeamPage = () => {
-  const leadership = [
-    {
-      name: "Dr.B Manu",
-      role: "Head of Department",
-      socialLinks: {
-        linkedin: "https://linkedin.com",
-        twitter: "https://twitter.com",
-      }
-    },
-    {
-      name: "Dr. Vinoth Srivinivasan",
-      role: "Faculty Advisor",
-      socialLinks: {
-        linkedin: "https://linkedin.com",
-        instagram: "https://instagram.com",
-      }
-    }
-  ];
-
-  const convenor = {
-    name: "Alex Johnson",
-    role: "Convenor",
-    socialLinks: {
-      linkedin: "https://linkedin.com",
-      twitter: "https://twitter.com",
-      instagram: "https://instagram.com",
-    }
-  };
-
-  const coreTeam = [
-    {
-      name: "Sarah Wilson",
-      role: "Core Member",
-      socialLinks: {
-        linkedin: "https://linkedin.com",
-        instagram: "https://instagram.com",
-      }
-    },
-    {
-      name: "Mike Brown",
-      role: "Core Member",
-      socialLinks: {
-        linkedin: "https://linkedin.com",
-        twitter: "https://twitter.com",
-      }
-    }
-  ];
+  const { leadership, convenor, coreTeam } = teamData;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -167,14 +141,14 @@ const TeamPage = () => {
               </div>
             </div>
 
-            <div className="mt-32">
+            {/* <div className="mt-32">
               <SectionTitle title="Core Team" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-items-center mb-32">
                 {coreTeam.map((member, index) => (
                   <ProfileCard key={index} {...member} />
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
