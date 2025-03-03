@@ -1,5 +1,5 @@
 import { FaLinkedin, FaTwitter, FaInstagram, FaUserCircle } from 'react-icons/fa';
-import { SiGooglescholar } from 'react-icons/si'; // Import Google Scholar icon
+import { SiGooglescholar } from 'react-icons/si'; 
 import { useState } from 'react';
 import TeamNavbar from './TeamNavbar';
 import Footer from '../Home/Footer';

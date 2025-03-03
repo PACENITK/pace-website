@@ -24,7 +24,6 @@ const TeamNavbar = () => {
   }, [isOpen]);
 
   const handleClickOutside = (e) => {
-    // Prevent this from triggering when clicking the dropdown toggle itself
     if (!e.target.closest('.projects-dropdown-toggle')) {
       setProjectsDropdownOpen(false);
     }

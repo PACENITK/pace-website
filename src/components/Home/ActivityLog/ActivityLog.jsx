@@ -23,9 +23,9 @@ const ActivityLog = () => {
   const activities = [
     {
       id: 1,
-      title: "Project: AI-Integrated Advanced Surveying & GIS for Disaster Management",
+      title: "Workshop : AI-Integrated Advanced Surveying & GIS for Disaster Management",
       date: "4th Febraury 2025",
-      description: "An innovative event for civil engineers to learn about concrete testing!",
+      description: "An innovative workshop for civil engineers to learn AI-Integrated advanced Surveying & GIS for Disaster management",
       image: a3,
       instagramLink: "http://localhost:5173/events"
     },

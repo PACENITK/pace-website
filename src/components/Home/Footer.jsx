@@ -43,16 +43,16 @@ const Footer = forwardRef((_, ref) => {
       title: "More Links",
       links: [
         { name: "CE Courses", url: "https://civil.nitk.ac.in/courses" },
-        { name: "CE Faculties", url: "https://civil.nitk.ac.in/people" },
+        { name: "IRINS", url: "https://nitk.irins.org/faculty/index/Civil+Engineering" },
         { name: "CE Achievements", url: "https://civil.nitk.ac.in/achievements" }
       ]
     },
     socialLinks: [
       { icon: FaFacebook, link: '#', name: 'Facebook' },
-      { icon: FaTwitter, link: '#', name: 'Twitter' },
-      { icon: FaInstagram, link: '#', name: 'Instagram' },
-      { icon: FaLinkedin, link: '#', name: 'LinkedIn' },
-      { icon: FaYoutube, link: '#', name: 'YouTube' },
+      // { icon: FaTwitter, link: '#', name: 'Twitter' },
+      { icon: FaInstagram, link: 'https://www.instagram.com/pacenitk/', name: 'Instagram' },
+      { icon: FaLinkedin, link: 'https://www.linkedin.com/company/pace-nitk/', name: 'LinkedIn' },
+      // { icon: FaYoutube, link: '#', name: 'YouTube' },
     ],
     contactInfo: {
       title: "Contact Us",
