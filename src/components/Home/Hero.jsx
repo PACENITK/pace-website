@@ -2,17 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 // Import images correctly
 import a1 from '../../assets/AboutUs/a1.jpg';
-// import a2 from '../../assets/AboutUs/a2.jpg';
-import h2 from '../../assets/Home/h2.jpg';
 import h3 from '../../assets/Home/h3.jpg';
-import h4 from '../../assets/Home/h4.jpg';
 
 const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
   // Store images in an array
-  const images = [a1, h2, h3, h4];
+  const images = [a1, h3,];
 
   const titleWords = "Professional Association For Civil Engineering".split(" ");
 

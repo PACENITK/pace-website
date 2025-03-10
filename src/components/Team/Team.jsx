@@ -1,4 +1,4 @@
-import { FaLinkedin, FaTwitter, FaInstagram, FaUserCircle } from 'react-icons/fa';
+import { FaLinkedin, FaTwitter, FaEnvelope, FaUserCircle } from 'react-icons/fa';
 import { SiGooglescholar } from 'react-icons/si'; 
 import { useState } from 'react';
 import TeamNavbar from './TeamNavbar';
@@ -68,14 +68,14 @@ const ProfileCard = ({ name, role, socialLinks, imageSrc }) => {
               <FaTwitter size={22} />
             </a>
           )}
-          {socialLinks.instagram && (
+          {socialLinks.email && (
             <a 
-              href={socialLinks.instagram} 
-              className="text-[#E4405F] transform transition-all duration-300 hover:scale-125 hover:-translate-y-1" 
+              href={`mailto:${socialLinks.email}`} 
+              className="text-[#EA4335] transform transition-all duration-300 hover:scale-125 hover:-translate-y-1" 
               target="_blank" 
               rel="noopener noreferrer"
             >
-              <FaInstagram size={22} />
+              <FaEnvelope size={22} />
             </a>
           )}
           {socialLinks.googleScholar && (
@@ -105,7 +105,7 @@ const SectionTitle = ({ title }) => (
 );
 
 const TeamPage = () => {
-  const { leadership, convenor, coreTeam } = teamData;
+  const { leadership, adminCore, coreTeam, eventCoordinators, mediaHeads, sigHeads } = teamData;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -135,20 +135,49 @@ const TeamPage = () => {
             </div>
 
             <div className="mt-32">
-              <SectionTitle title="Convenor" />
-              <div className="flex justify-center mb-32">
-                <ProfileCard {...convenor} />
+              <SectionTitle title="Admin Core" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
+                {adminCore.map((member, index) => (
+                  <ProfileCard key={index} {...member} />
+                ))}
               </div>
             </div>
 
-            {/* <div className="mt-32">
+            <div className="mt-32">
               <SectionTitle title="Core Team" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-items-center mb-32">
                 {coreTeam.map((member, index) => (
                   <ProfileCard key={index} {...member} />
                 ))}
               </div>
-            </div> */}
+            </div>
+
+            <div className="mt-32">
+              <SectionTitle title="Events Coordinators" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-24 justify-items-center mb-32">
+                {eventCoordinators.map((member, index) => (
+                  <ProfileCard key={index} {...member} />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-32">
+              <SectionTitle title="Media Heads" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
+                {mediaHeads.map((member, index) => (
+                  <ProfileCard key={index} {...member} />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-32">
+              <SectionTitle title="SIG Heads" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 justify-items-center mb-32">
+                {sigHeads.map((member, index) => (
+                  <ProfileCard key={index} {...member} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

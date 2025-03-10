@@ -3,12 +3,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react"; // Import icons
 
 import h2 from '../../../assets/Home/h2.jpg';
 import a2 from '../../../assets/AboutUs/a2.jpg';
-import a5 from '../../../assets/AboutUs/a5.jpg';
 
 const AboutUs = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const images = [h2, a2, a5];
+  const images = [h2, a2];
 
   // Auto-slide effect
   useEffect(() => {
