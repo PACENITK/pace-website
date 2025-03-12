@@ -22,11 +22,6 @@ const Projects = () => {
           >
             <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02]">
               <div className="relative">
-                <img
-                  src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3"
-                  alt="Project Expo"
-                  className="w-full h-64 object-cover"
-                />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h2 className="text-3xl font-bold text-white mb-2">Project Expo</h2>

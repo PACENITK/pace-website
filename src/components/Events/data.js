@@ -1,4 +1,5 @@
 import varahi from '../../assets/Events/varahi.jpg';
+import prestressing from '../../assets/Events/prestressing.jpg';
 
 export const eventsData = [
   {
@@ -18,22 +19,12 @@ export const eventsData = [
     A special thanks to the Varahi Project team for their hospitality and expertise, making this a valuable real-world learning experience.`,
 
     image: varahi,
-    venue: "Varahi Dam",
+    venue: "VUPH",
     Sites: "Varahi Dam",
     mode: "Offline",
   },
   {
     id: "2",
-    title: "LHC D Site Visit",
-    date: "April 10-12, 2025",
-    time: "Starts at 9:00 AM",
-    description: ``,
-    image: "",
-    venue: "LHC D",
-    mode: "Offline",
-  },
-  {
-    id: "3",
     title: "Prestressing Yard Site Visit",
     date: "April 10-12, 2025",
     time: "9:00 AM",
@@ -52,8 +43,29 @@ export const eventsData = [
     image: "",
     venue: "BC Road",
     mode: "Offline",
-    image: "",
+    image: prestressing,
     venue: "BC Road",
     mode: "Offline",
   },
+  {
+      id: "3",
+      title: "LHC D Site Visit",
+      date: "April 10-12, 2025",
+      time: "9:00 AM",
+      description: ``,
+      image: "",
+      venue: "LHC D",
+      mode: "Offline",
+    },
+    {
+        id: "4",
+        title: "Inaugural Meet",
+        date: "April 10-12, 2025",
+        time: "10:00 AM",
+        description: `We recently held our first full-club meet, where 100+ students came together to kickstart this initiative! The event featured exciting discussions, team introductions, and goal-setting for the semester. 
+        Our team shared the vision for the club, and our new members got a glimpse of the ambitious projects ahead.`,
+        image: "",
+        // venue: ,
+        mode: "Offline",
+      }
 ];

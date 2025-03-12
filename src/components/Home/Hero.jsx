@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 // Import images correctly
-import a1 from '../../assets/AboutUs/a1.jpg';
+
+import h1 from '../../assets/Home/h1.jpg';
+import h2 from '../../assets/Home/h2.jpg';
 import h3 from '../../assets/Home/h3.jpg';
 
 const Hero = () => {
@@ -9,7 +11,7 @@ const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
   
   // Store images in an array
-  const images = [a1, h3,];
+  const images = [ h1, h2, h3 ];
 
   const titleWords = "Professional Association For Civil Engineering".split(" ");
 

@@ -1,49 +1,64 @@
-import logo from '../../assets/AboutUs/a1.jpg'
-
+import GIS from '../../assets/Projects/Hosted/GIS.jpg';
+import GeoInnovate from '../../assets/Projects/Hosted/GeoInnovate.jpg';
+import Stability from '../../assets/Projects/Hosted/Stability/Stability.jpg';
 
 export const hostedProjectsData = [
-    {
-      id: 'hosted-1',
-      title: 'Green Concrete Development',
-      date: '2024-2025',
-      status: 'Ongoing',
-      image: logo,
-      description: 'Research and development of eco-friendly concrete alternatives using recycled materials and industrial by-products to reduce carbon emissions and environmental impact. This project explores multiple formulations to achieve optimal strength while minimizing ecological footprint.',
-      category: 'Materials Science',
-      team: 'Sustainable Materials Lab',
-      resources: [
-        { title: 'Research Findings', url: '#' },
-        { title: 'Material Testing Reports', url: '#' }
-      ]
+  {
+    id: 'hosted-1',
+    title: 'GeoInnovate: Pioneering Sustainable Geotextile Solutions',
+    date: '14th March 2025',
+    status: 'Upcoming',
+    image: GeoInnovate,
+    description: `An insightful workshop led by Prof. Sreevalsa K. covering the fundamentals of geotextiles and their role in sustainable construction. 
+    Participants will learn about soil stabilization techniques using eco-friendly materials, explore real-world case studies on geotextile applications in infrastructure projects, gain insights into advanced testing methods and performance evaluation, and engage in an interactive Q&A session with the professor.`,
+    category: 'Workshop',
+    team: 'Prof. Sreevalsa K.',
+    venue: 'ISTE Seminar Hall (MB)',
+    time: '5:15 PM'
+    // resources: [
+    //   { title: 'Research Findings', url: '#' },
+    //   { title: 'Material Testing Reports', url: '#' }
+    // ]
     },
     {
       id: 'hosted-2',
-      title: 'Water Resource Management System',
-      date: '2023-2024',
+      title: 'Workshop on Stability of Industrial Racks by Vijay Sir',
+      date: '5th March 2025 ',
       status: 'Completed',
-      image: 'https://images.unsplash.com/photo-1468421870903-4df1664ac249?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
-      description: 'Development of an integrated system for efficient water resource management in urban areas, including rainwater harvesting, greywater recycling, and smart distribution networks. This project addresses water scarcity issues while promoting sustainable water usage practices.',
-      category: 'Environmental Engineering',
-      team: 'Water Resources Division',
-      resources: [
-        { title: 'System Design', url: '#' },
-        { title: 'Implementation Guide', url: '#' }
-      ]
+      image: Stability,
+      description:`Learn the fundamentals of industrial rack stability and failure modes, understand design considerations for safe and efficient storage systems, explore real-world case studies and best practices, get insights into GBTUL and CUFSM tools, and engage in an interactive Q&A session with Vijay Sir.`,
+      category: 'Workshop',
+      team: 'Prof. Vijay ',
+      venue: 'ISTE Seminar Hall',
+      // resources: [
+      //   { title: 'Research Findings', url: '#' },
+      //   { title: 'Material Testing Reports', url: '#' }
+      // ]
     },
     {
       id: 'hosted-3',
-      title: 'Traffic Flow Optimization Model',
-      date: '2022-2023',
+      title: 'AI-Integrated Advanced Surveying and GIS Applications for Disaster Management',
+      date: '4th Febraury 2025',
       status: 'Completed',
-      image: 'https://images.unsplash.com/photo-1597733336794-12d05021d510?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3',
-      description: 'Creating a computational model for optimizing traffic flow in congested urban areas using real-time data analytics and predictive algorithms. This system helps reduce congestion, lower emissions, and improve overall transportation efficiency in smart cities.',
-      category: 'Transportation Engineering',
-      team: 'Urban Mobility Group',
-      resources: [
-        { title: 'Algorithm Documentation', url: '#' },
-        { title: 'Simulation Results', url: '#' }
-      ]
-    }
+      image: GIS,
+      description:`An innovative project on AI-Integrated Advanced Surveying and GIS Applications for Disaster Management – A Case Study of NITK Surathkal is set to begin under the guidance of Prithviraj Sir, with support from M.Tech and Ph.D. students. \n
+
+      - Participants will receive a certificate signed by the Dean of Planning and Development. \n
+      - Upon successful completion, the project will be approved by the Dean of Research & Consultancy and the Director. \n
+      - With strict deadlines and expert mentorship, this project is an incredible chance to gain real-world skills beyond routine academics. \n
+      Join us in making an impact through cutting-edge geospatial technology! 🌍📡`,
+      category: 'Workshop',
+      team: 'Prof. Prithviraj',
+      venue: 'WROE Seminar Hall',
+      // resources: [
+      //   { title: 'Research Findings', url: '#' },
+      //   { title: 'Material Testing Reports', url: '#' }
+      // ]
+    },
+  
   ];
   
   export default hostedProjectsData;
+
+  // Learn the fundamentals of industrial rack stability and failure modes, understand design considerations for safe and efficient storage systems, explore real-world case studies and best 
+  //     practices, get insights into GBTUL and CUFSM tools, and engage in an interactive Q&A session with Vijay Sir.

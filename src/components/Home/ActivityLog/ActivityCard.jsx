@@ -8,11 +8,11 @@ const ActivityCard = ({ activity, currentPage, totalPages, onPageChange }) => {
   return (
     <div className="flex flex-col h-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-4">
-        <div className="h-[200px] lg:h-[300px] rounded-lg overflow-hidden">
+        <div className="h-[300px] lg:h-[400px] rounded-lg overflow-hidden">
           <img 
             src={activity.image} 
             alt={activity.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         </div>
         <div className="flex flex-col space-y-4">

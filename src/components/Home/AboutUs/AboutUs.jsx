@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react"; // Import icons
 
-import h2 from '../../../assets/Home/h2.jpg';
+import a1 from '../../../assets/AboutUs/a1.jpg';
 import a2 from '../../../assets/AboutUs/a2.jpg';
 
 const AboutUs = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const images = [h2, a2];
+  const images = [a1,a2];
 
   // Auto-slide effect
   useEffect(() => {
@@ -82,13 +82,15 @@ const AboutUs = () => {
             Professional Association For Civil Engineering
             </h3>
             <p className="text-gray-700 text-base leading-relaxed">
-            PACE NITK is a student-driven club bridging academia and industry incivil engineering. We offer hands-onlearning, industry exposure, 
-            and expert mentorship to equipstudents with real-world skills and innovation opportunities.
-            </p>
-            <h1 className="text-xl font-bold  text-gray-900"> Our Vision</h1>
-            <p className="text-gray-700 text-base leading-relaxed"> 
-              To empower the next generation ofcivil engineers by bridging the gap between academia and industry, fostering innovation, and 
-              creating a collaborative platform for hands-on learning, research, and sustainable development. </p>
+  PACE NITK is a student-driven club bridging academia and industry in civil engineering. We offer hands-on learning, industry exposure, 
+  and expert mentorship to equip students with real-world skills and innovation opportunities.
+</p>
+<h1 className="text-xl font-bold text-gray-900">Our Vision</h1>
+<p className="text-gray-700 text-base leading-relaxed">
+  To empower the next generation of civil engineers by bridging the gap between academia and industry, fostering innovation, and 
+  creating a collaborative platform for hands-on learning, research, and sustainable development.
+</p>
+
           </div>
         </div>
       </div>

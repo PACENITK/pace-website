@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import DiscoverPACE from './DiscoverPACE';
 import ActivityCard from './ActivityCard';
 import AnnouncementToolbox from './AnnouncementToolbox';
-import a3 from '../../../assets/AboutUs/a3.jpg';
+import a3 from '../../../assets/AboutUs/a3.jpg'; //image as well in component
+import GeoInnovate1 from '../../../assets/Projects/Hosted/GeoInnovate1.jpg';
+import Stability1 from '../../../assets/Projects/Hosted/Stability/Stability1.jpg';
+
 
 const ActivityLog = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,12 +26,30 @@ const ActivityLog = () => {
   const activities = [
     {
       id: 1,
+      title: "GeoInnovate: Pioneering Sustainable Geotextile Solutions",
+      date: "14th March 2025",
+      description: `Gain insights into geotextiles' role in sustainable construction, soil stabilization with eco-friendly materials, real-world applications, advanced testing methods, and 
+      performance evaluation in this workshop by Prof. Sreevalsa K.`,
+      image: GeoInnovate1,
+      instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-1"
+    },
+    {
+      id: 2,
+      title: "Workshop on Stability of Industrial Racks",
+      date: "5th March 2025",
+      description: `Learn the fundamentals of industrial rack stability and failure modes, understand design considerations for safe and efficient storage systems, explore real-world case studies and best 
+      practices, get insights into GBTUL and CUFSM tools, and engage in an interactive Q&A session with Vijay Sir.`,
+      image: Stability1,
+      instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-2"
+},
+    {
+      id: 3,
       title: "Workshop : AI-Integrated Advanced Surveying & GIS for Disaster Management",
       date: "4th Febraury 2025",
       description: "An innovative workshop for civil engineers to learn AI-Integrated advanced Surveying & GIS for Disaster management",
       image: a3,
-      instagramLink: "http://localhost:5173/events"
-    },
+      instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-2"
+    }
   ];
 
   const currentActivity = activities[currentPage - 1];

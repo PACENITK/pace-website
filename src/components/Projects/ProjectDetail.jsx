@@ -2,6 +2,32 @@ import React from 'react';
 import { Calendar, Activity, Users, Building, Link as LinkIcon } from 'lucide-react';
 
 const ProjectDetail = ({ project }) => {
+  // Function to properly display text with line breaks
+  const formatDescription = (text) => {
+    if (!text) return null;
+    
+    // Split the text by newline characters and create paragraph elements
+    return text.split('\n').map((paragraph, index) => {
+      // Skip empty paragraphs (consecutive newlines)
+      if (!paragraph.trim()) return null;
+      
+      // Check if paragraph is a bullet point
+      if (paragraph.trim().startsWith('-')) {
+        return (
+          <li key={index} className="ml-5 text-gray-300 my-2">
+            {paragraph.trim().substring(1)}
+          </li>
+        );
+      }
+      
+      return (
+        <p key={index} className="text-gray-300 mb-4">
+          {paragraph.trim()}
+        </p>
+      );
+    });
+  };
+
   return (
     <div className="bg-gray-800 rounded-xl overflow-hidden">
       <div className="relative h-[400px]">
@@ -31,7 +57,9 @@ const ProjectDetail = ({ project }) => {
           <div className="md:col-span-2">
             <div className="bg-gray-700/50 rounded-lg p-6 mb-6">
               <h2 className="text-xl font-semibold text-white mb-4">About the Project</h2>
-              <p className="text-gray-300">{project.description}</p>
+              <div className="text-gray-300">
+                {formatDescription(project.description)}
+              </div>
             </div>
 
             {project.resources && project.resources.length > 0 && (
