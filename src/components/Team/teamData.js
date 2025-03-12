@@ -38,7 +38,7 @@ const teamData = {
     },
     {
       name: "Subhodeep",
-      role: "ChairPerson",
+      role: "Chair Person",
       socialLinks: {
         linkedin: "https://www.linkedin.com/in/likithm29/",
         email: "subhodeep@nitk.ac.in"
@@ -52,7 +52,7 @@ const teamData = {
         // linkedin: "https://www.linkedin.com/in/likithm29/",
         // email: "subodh@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Alok Kumar Sahoo",
@@ -61,7 +61,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/likithm29/",
         email: "alok@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Anushka Mishra",
@@ -70,7 +70,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/anushka-mishra-b7ab19319/",
         email: "anushka@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Nihal Jaydeep",
@@ -79,7 +79,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/nihal-jayadeep/",
         email: "nihal@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Pratheek BS",
@@ -88,7 +88,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/pratheek-bs-043778245/",
         email: "pratheek@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Chethan P",
@@ -97,7 +97,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/chethan-p-194b75245/",
         email: "chethan@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Ayush Seenum",
@@ -106,7 +106,7 @@ const teamData = {
         // linkedin: "https://www.linkedin.com/in/likithm29/",
         email: "ayush@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     }
   ],
   
@@ -118,7 +118,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/riya-aji-965780256/",
         email: "riya@nitk.ac.in"
       },
-      imageSrc: "/images/team/sarah.jpg"
+      imageSrc: ""
     },
     {
       name: "Swapnil Tripati",
@@ -127,7 +127,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/swapnil-tripathi-4b635b256/",
         email: "swapnil@nitk.ac.in"
       },
-      imageSrc: "/images/team/mike.jpg"
+      imageSrc: ""
     }
   ],
 
@@ -139,7 +139,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/arjunsingh",
         email: "arjun@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Adarsh Kumar",
@@ -148,7 +148,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/preetisharma",
         email: "preeti@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
   ],
 
@@ -160,7 +160,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/anjalisharma",
         email: "anjali@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Nutalu Ringa",
@@ -169,7 +169,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/rohanmehta",
         email: "rohan@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
   ],
 
@@ -181,7 +181,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/aaravpatel",
         email: "aarav@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Aman Raj",
@@ -189,7 +189,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/meerareddy",
         email: "meera@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Pavithra P",
@@ -198,7 +198,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/vivekkumar",
         email: "vivek@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     },
     {
       name: "Aamardeep Meena",
@@ -207,7 +207,7 @@ const teamData = {
         linkedin: "https://linkedin.com/in/nishagupta",
         email: "nisha@nitk.ac.in"
       },
-      imageSrc: Convenor
+      imageSrc: ""
     }
   ]
 };
