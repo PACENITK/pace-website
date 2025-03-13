@@ -5,7 +5,7 @@ import Stability from '../../assets/Projects/Hosted/Stability/Stability.jpg';
 export const hostedProjectsData = [
   {
     id: 'hosted-1',
-    title: 'GeoInnovate: Pioneering Sustainable Geotextile Solutions',
+    title: 'Workshop on GeoInnovate: Pioneering Sustainable Geotextile Solutions',
     date: '14th March 2025',
     status: 'Upcoming',
     image: GeoInnovate,

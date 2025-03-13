@@ -26,7 +26,7 @@ const ActivityLog = () => {
   const activities = [
     {
       id: 1,
-      title: "GeoInnovate: Pioneering Sustainable Geotextile Solutions",
+      title: "Workshop - GeoInnovate: Pioneering Sustainable Geotextile Solutions",
       date: "14th March 2025",
       description: `Gain insights into geotextiles' role in sustainable construction, soil stabilization with eco-friendly materials, real-world applications, advanced testing methods, and 
       performance evaluation in this workshop by Prof. Sreevalsa K.`,

@@ -42,7 +42,7 @@ const Footer = forwardRef((_, ref) => {
     moreLinks: {
       title: "More Links",
       links: [
-        { name: "CE Courses", url: "https://civil.nitk.ac.in/courses" },
+        { name: "CE Courses", url: "https://civil.nitk.ac.in/" },
         { name: "IRINS", url: "https://nitk.irins.org/faculty/index/Civil+Engineering" },
         { name: "CE Achievements", url: "https://civil.nitk.ac.in/achievements" }
       ]
@@ -58,7 +58,7 @@ const Footer = forwardRef((_, ref) => {
       title: "Contact Us",
       details: [
         { icon: FaMapMarkerAlt, text: "Department of Civil Engineering, NITK Surathkal, Mangalore - 575025" },
-        { icon: FaPhone, text: "+91-0824-2473041" },
+        // { icon: FaPhone, text: "+91-0824-2473041" },
         { icon: FaEnvelope, text: "pace@nitk.edu.in" }
       ]
     }
