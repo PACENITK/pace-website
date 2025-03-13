@@ -117,11 +117,11 @@ const Expo = () => {
           </div>
         )}
         
-        {/* Enhanced Pagination */}
+        {/* Enhanced Pagination with background to make it stand out */}
         {expoProjectsData.length > projectsPerPage && (
           <div className="mt-16">
             <div className="flex justify-center items-center">
-              <nav className="flex items-center justify-center space-x-2">
+              <nav className="flex items-center justify-center space-x-2 bg-white px-4 py-3 rounded-lg shadow">
                 {/* Previous button */}
                 <button
                   onClick={() => paginate(currentPage - 1)}

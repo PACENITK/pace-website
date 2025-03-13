@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
-const SectionTitle = ({ children, centered }) => (
+const SectionTitle = ({ children, centered = false }) => (
   <h3 className={`text-white text-lg font-semibold mb-4 inline-block relative
     after:content-[''] after:block after:w-1/2 after:h-0.5 
     after:bg-gradient-to-r after:from-blue-400 after:to-transparent 
@@ -15,10 +15,6 @@ const SectionTitle = ({ children, centered }) => (
 SectionTitle.propTypes = {
   children: PropTypes.node.isRequired,
   centered: PropTypes.bool
-};
-
-SectionTitle.defaultProps = {
-  centered: false
 };
 
 const Footer = forwardRef((_, ref) => {
@@ -49,16 +45,13 @@ const Footer = forwardRef((_, ref) => {
     },
     socialLinks: [
       { icon: FaFacebook, link: '#', name: 'Facebook' },
-      // { icon: FaTwitter, link: '#', name: 'Twitter' },
       { icon: FaInstagram, link: 'https://www.instagram.com/pacenitk/', name: 'Instagram' },
       { icon: FaLinkedin, link: 'https://www.linkedin.com/company/pace-nitk/', name: 'LinkedIn' },
-      // { icon: FaYoutube, link: '#', name: 'YouTube' },
     ],
     contactInfo: {
       title: "Contact Us",
       details: [
         { icon: FaMapMarkerAlt, text: "Department of Civil Engineering, NITK Surathkal, Mangalore - 575025" },
-        // { icon: FaPhone, text: "+91-0824-2473041" },
         { icon: FaEnvelope, text: "pace@nitk.edu.in" }
       ]
     }

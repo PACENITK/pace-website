@@ -14,14 +14,19 @@ const Projects = () => {
             Explore our various projects and initiatives in civil engineering.
           </p>
         </div>
-
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Link 
-            to="/projects/expo" 
+            to="/projects/expo"
             className="group"
           >
-            <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02]">
-              <div className="relative">
+            <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02] border border-gray-100">
+              <div className="relative h-64">
+                <img
+                  src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3"
+                  alt="Project Expo"
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h2 className="text-3xl font-bold text-white mb-2">Project Expo</h2>
@@ -32,13 +37,13 @@ const Projects = () => {
               </div>
             </div>
           </Link>
-
+          
           <Link 
-            to="/projects/hosted-projects" 
+            to="/projects/hosted-projects"
             className="group"
           >
-            <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02]">
-              <div className="relative">
+            <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02] border border-gray-100">
+              <div className="relative h-64">
                 <img
                   src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&q=80&w=2728&ixlib=rb-4.0.3"
                   alt="Hosted Projects"
