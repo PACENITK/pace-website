@@ -107,13 +107,13 @@ const HostedProjects = () => {
         {/* Empty state for no projects on current page */}
         {currentProjects.length === 0 && (
           <div className="text-center py-16">
-            <h2 className="text-2xl font-medium text-gray-700">No projects found on this page.</h2>
-            <button 
+            <h2 className="text-2xl font-medium text-gray-700">Coming Soon.</h2>
+            {/* <button 
               onClick={() => paginate(1)} 
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
             >
               Back to first page
-            </button>
+            </button> */}
           </div>
         )}
         

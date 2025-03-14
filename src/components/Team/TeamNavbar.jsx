@@ -83,7 +83,7 @@ const TeamNavbar = () => {
               Professional Association For Civil Engineering
               </p>
               <p className="text-xs md:text-sm text-black">
-                National Institute of Technology Karnataka Surathkal
+                National Institute of Technology Karnataka, Surathkal
               </p>
             </div>
           </div>
