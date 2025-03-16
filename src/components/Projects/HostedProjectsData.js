@@ -1,25 +1,24 @@
-import GIS from '../../assets/Projects/Hosted/GIS.jpg';
-import GeoInnovate from '../../assets/Projects/Hosted/GeoInnovate.jpg';
-import Stability from '../../assets/Projects/Hosted/Stability/Stability.jpg';
+// import GIS from '../../assets/Projects/Hosted/GIS.jpg';
+// import GeoInnovate from '../../assets/Projects/Hosted/GeoInnovate.jpg';
+// import Stability from '../../assets/Projects/Hosted/Stability/Stability.jpg';
 
 export const hostedProjectsData = [
-  // {
-  //   id: 'hosted-1',
-  //   title: 'Workshop on GeoInnovate: Pioneering Sustainable Geotextile Solutions',
-  //   date: '14th March 2025',
-  //   status: 'Upcoming',
-  //   image: GeoInnovate,
-  //   description: `An insightful workshop led by Prof. Sreevalsa K. covering the fundamentals of geotextiles and their role in sustainable construction. 
-  //   Participants will learn about soil stabilization techniques using eco-friendly materials, explore real-world case studies on geotextile applications in infrastructure projects, gain insights into advanced testing methods and performance evaluation, and engage in an interactive Q&A session with the professor.`,
-  //   category: 'Workshop',
-  //   team: 'Prof. Sreevalsa K.',
-  //   venue: 'ISTE Seminar Hall (MB)',
-  //   time: '5:15 PM'
-  //   // resources: [
-  //   //   { title: 'Research Findings', url: '#' },
-  //   //   { title: 'Material Testing Reports', url: '#' }
-  //   // ]
-  //   },
+//   {
+//     id: '',
+//     title: '',
+//     date: '',
+//     status: '',
+//     image: '',
+//     description: ``,
+//     category: '',
+//     team: '',
+//     venue: '',
+//     time: ''
+    // resources: [
+    //   { title: 'Research Findings', url: '#' },
+    //   { title: 'Material Testing Reports', url: '#' }
+    // ]
+    // },
   //   {
   //     id: 'hosted-2',
   //     title: 'Workshop on Stability of Industrial Racks by Vijay Sir',

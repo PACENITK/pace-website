@@ -5,13 +5,16 @@ import React, { useState, useEffect } from 'react';
 import h1 from '../../assets/Home/h1.jpg';
 import h2 from '../../assets/Home/h2.jpg';
 import h3 from '../../assets/Home/h3.jpg';
+import prestressing from '../../assets/Events/prestressing.jpg';
+import h4 from '../../assets/Home/h4.jpg';
+import a2 from '../../assets/AboutUs/a2.jpg';
 
 const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
   // Store images in an array
-  const images = [ h1, h2, h3 ];
+  const images = [ prestressing, h1, h4, h2, h3, a2];
 
   const titleWords = "Professional Association For Civil Engineering".split(" ");
 

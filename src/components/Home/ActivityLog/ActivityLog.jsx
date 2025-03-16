@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import DiscoverPACE from './DiscoverPACE';
 import ActivityCard from './ActivityCard';
 import AnnouncementToolbox from './AnnouncementToolbox';
-import a3 from '../../../assets/AboutUs/a3.jpg'; //image as well in component
-import GeoInnovate1 from '../../../assets/Projects/Hosted/GeoInnovate1.jpg';
-import Stability1 from '../../../assets/Projects/Hosted/Stability/Stability1.jpg';
-
+import stability from '../../../assets/Annoucements/stability.jpg';
+import geoinnovate from '../../../assets/Annoucements/geoinnovate.jpg';
+import catapult from '../../../assets/Annoucements/catapult.jpg';
 
 const ActivityLog = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,31 +24,31 @@ const ActivityLog = () => {
 
   const activities = [
     {
-      id: 1,
+      id: 1, 
+      title: "THE ULTIMATE CATAPULT CHALLENGE",
+      date: "17th March, 2025",
+      description: `Unleash your inner engineer and build the ultimate catapult! Test your precision, strategy, and creativity in this high-stakes showdown. Are you ready to dominate?`,
+      image: catapult,
+      instagramLink: "http://localhost:5173/events/1"
+    },
+    {
+      id: 2,
       title: "Workshop - GeoInnovate: Pioneering Sustainable Geotextile Solutions",
       date: "14th March 2025",
       description: `Gain insights into geotextiles' role in sustainable construction, soil stabilization with eco-friendly materials, real-world applications, advanced testing methods, and 
       performance evaluation in this workshop by Prof. Sreevalsa K.`,
-      image: GeoInnovate1,
+      image: geoinnovate,
       instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-1"
     },
     {
-      id: 2,
+      id: 3,
       title: "Workshop on Stability of Industrial Racks",
       date: "5th March 2025",
       description: `Learn the fundamentals of industrial rack stability and failure modes, understand design considerations for safe and efficient storage systems, explore real-world case studies and best 
       practices, get insights into GBTUL and CUFSM tools, and engage in an interactive Q&A session with Vijay Sir.`,
-      image: Stability1,
+      image: stability,
       instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-2"
 },
-    {
-      id: 3,
-      title: "Workshop : AI-Integrated Advanced Surveying & GIS for Disaster Management",
-      date: "4th Febraury 2025",
-      description: "An innovative workshop for civil engineers to learn AI-Integrated advanced Surveying & GIS for Disaster management",
-      image: a3,
-      instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-2"
-    }
   ];
 
   const currentActivity = activities[currentPage - 1];
