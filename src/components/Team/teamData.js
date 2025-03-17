@@ -103,7 +103,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/chethan-p-194b75245/",
         email:"chethanprakash.211cv215@nitk.edu.in",
       },
-      imageSrc: chethan
+      // imageSrc: chethan
     },
     {
       name: "Ayush Seenam",
