@@ -3,11 +3,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react"; // Import icons
 
 import a1 from '../../../assets/AboutUs/a1.jpg';
 import a2 from '../../../assets/AboutUs/a2.jpg';
+import h3 from '../../../assets/Home/h3.jpg';
+import h11 from '../../../assets/Home/h11.jpeg';
+import varahi from '../../../assets/Events/varahi.jpg';
+import a3 from '../../../assets/AboutUs/a3.jpeg';
 
 const AboutUs = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const images = [a1,a2];
+  const images = [a2,  h11, a1, h3, varahi, a3];
 
   // Auto-slide effect
   useEffect(() => {
