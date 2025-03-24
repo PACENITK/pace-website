@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, MapPin, Users } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Link as LinkIcon } from 'lucide-react';
 
 const EventDetail = ({ event }) => {
   // Function to render description with proper paragraph breaks
@@ -53,31 +53,11 @@ const EventDetail = ({ event }) => {
               <h2 className="text-xl font-semibold text-white mb-4">About the Event</h2>
               {renderDescription()}
             </div>
-
-            {event.resources && event.resources.length > 0 && (
-              <div className="bg-gray-700/50 rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Resources</h2>
-                <div className="space-y-3">
-                  {event.resources.map((resource, index) => (
-                    <a
-                      key={index}
-                      href={resource.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                      <LinkIcon className="w-5 h-5 mr-2" />
-                      {resource.title}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          <div className="bg-gray-700/50 rounded-lg p-6 h-fit">
+          <div className="bg-gray-700/50 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-white mb-4">Event Details</h2>
-            <div className="space-y-4">
+            <div className="space-y-4 mb-6">
               <div className="flex items-center text-gray-300">
                 <MapPin className="w-5 h-5 mr-3 text-blue-400" />
                 <span>{event.venue}</span>
@@ -87,6 +67,18 @@ const EventDetail = ({ event }) => {
                 <span>{event.mode}</span>
               </div>
             </div>
+
+            {/* LinkedIn Post Button */}
+            {event.resources && event.resources.length > 0 && (
+              <a
+                href={event.resources[0].url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              >
+                LinkedIn Post
+              </a>
+            )}
           </div>
         </div>
       </div>

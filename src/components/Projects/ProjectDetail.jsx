@@ -47,10 +47,10 @@ const ProjectDetail = ({ project }) => {
                   <span>{project.date}</span>
                 </div>
               )}
-              {project.location && (
+              {project.venue && (
                 <div className="flex items-center text-gray-300">
                   <MapPin className="w-5 h-5 mr-3 text-blue-400" />
-                  <span>{project.location}</span>
+                  <span>{project.venue}</span>
                 </div>
               )}
               {project.team && (
@@ -60,6 +60,23 @@ const ProjectDetail = ({ project }) => {
                 </div>
               )}
             </div>
+
+            {/* LinkedIn Post as a Button (No Extra Title) */}
+            {project.resources && project.resources.length > 0 && (
+              <div className="mt-6">
+                {project.resources.map((resource, index) => (
+                  <a
+                    key={index}
+                    href={resource.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
+                  >
+                    LinkedIn Post
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

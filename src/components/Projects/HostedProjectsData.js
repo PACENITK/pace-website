@@ -1,24 +1,22 @@
-// import GIS from '../../assets/Projects/Hosted/GIS.jpg';
-// import GeoInnovate from '../../assets/Projects/Hosted/GeoInnovate.jpg';
-// import Stability from '../../assets/Projects/Hosted/Stability/Stability.jpg';
+import GIS from '../../assets/Projects/hosted/aigis/GIS.jpg';
 
 export const hostedProjectsData = [
-//   {
-//     id: '',
-//     title: '',
-//     date: '',
-//     status: '',
-//     image: '',
-//     description: ``,
-//     category: '',
-//     team: '',
-//     venue: '',
-//     time: ''
+  {
+    id: '1',
+    title: 'AI-Integrated Advanced Surveying and GIS Applications for Disaster Management',
+    date: '2nd Febraury, 2025',
+    status: 'Ongoing',
+    image: GIS,
+    description: `An innovative project on AI-Integrated Advanced Surveying and GIS Applications for Disaster Management is set to begin under the guidance of Prithviraj Sir, with support from M.Tech and Ph.D. students. With strict deadlines and expert mentorship, this project is an incredible chance to gain real-world skills beyond routine academics. Join us in making an impact through cutting-edge geospatial technology! 🌍📡`,
+    category: 'AI-GIS',
+    team: 'Guided by Prithviraj Sir, supported by M.Tech and Ph.D. students',
+    venue: 'WROE Seminar Hall',
+    // time: '',
     // resources: [
-    //   { title: 'Research Findings', url: '#' },
-    //   { title: 'Material Testing Reports', url: '#' }
+    //   { title: 'LinkedIn Post', url: '' },
+    //   // { title: 'Material Testing Reports', url: '#' }
     // ]
-    // },
+    },
   //   {
   //     id: 'hosted-2',
   //     title: 'Workshop on Stability of Industrial Racks by Vijay Sir',

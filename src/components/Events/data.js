@@ -3,7 +3,6 @@ import prestressing from '../../assets/Events/prestressing.jpg';
 import catapult from '../../assets/Annoucements/catapult.jpg';
 import geoinnovate from '../../assets/Events/geoinnovate/geoinnovate.jpg';
 import stability from '../../assets/Events/stability/stability.jpg';
-import aigis from '../../assets/Events/aigis/aigis.jpg';
 import lhcd from '../../assets/Events/LHCD/LHCD.jpg';
 import inaugural from '../../assets/Events/inaugural/inaugural.jpg';
 
@@ -29,7 +28,13 @@ export const eventsData = [
   🔗 Register here: https://forms.gle/vwkKQBiKxct4V1W99`, 
      image: catapult, 
     venue: "Pavillion",
-    mode: "Offline"
+    mode: "Offline",
+    resources: [
+      { 
+        title: 'LinkedIn Post', 
+        url: 'https://www.linkedin.com/posts/pace-nitk_ready-aim-fire-%F0%9D%97%A7%F0%9D%97%B5%F0%9D%97%B2-%F0%9D%97%A3%F0%9D%97%94%F0%9D%97%96%F0%9D%97%98-%F0%9D%97%96%F0%9D%97%AE%F0%9D%98%81%F0%9D%97%AE%F0%9D%97%BD%F0%9D%98%82%F0%9D%97%B9%F0%9D%98%81-activity-7308815771386753024-Usls?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+      }
+    ]
   },
   {
     id: "2",
@@ -39,7 +44,13 @@ export const eventsData = [
     description: "An insightful workshop led by Prof. Sreevalsa K. covering the fundamentals of geotextiles and their role in sustainable construction. Participants will learn about soil stabilization techniques using eco-friendly materials, explore real-world case studies on geotextile applications in infrastructure projects, gain insights into advanced testing methods and performance evaluation, and engage in an interactive Q&A session with the professor.",
     image: geoinnovate,
     venue: "ISTE Seminar Hall (MB)",
-    mode: "Offline"
+    mode: "Offline",
+    resources: [
+      { 
+        title: 'LinkedIn Post', 
+        url: 'https://www.linkedin.com/posts/pace-nitk_%F0%9D%97%98%F0%9D%97%BB%F0%9D%97%B4%F0%9D%97%B6%F0%9D%97%BB%F0%9D%97%B2%F0%9D%97%B2%F0%9D%97%BF%F0%9D%97%B6%F0%9D%97%BB%F0%9D%97%B4-%F0%9D%97%A6%F0%9D%98%82%F0%9D%98%80%F0%9D%98%81%F0%9D%97%AE%F0%9D%97%B6%F0%9D%97%BB%F0%9D%97%AE%F0%9D%97%AF-activity-7306289755606945794-wxUW?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+      }
+    ]
   },
   {
       id: "3",
@@ -49,7 +60,13 @@ export const eventsData = [
       description: "Learn the fundamentals of industrial rack stability and failure modes, understand design considerations for safe and efficient storage systems, explore real-world case studies and best practices, get insights into GBTUL and CUFSM tools, and engage in an interactive Q&A session with Vijay Sir.",
       image: stability,
       venue: "ISTE Seminar Hall",
-      mode: "Offline"
+      mode: "Offline",
+      resources: [
+        { 
+          title: 'LinkedIn Post', 
+          url: 'https://www.linkedin.com/posts/pace-nitk_%F0%9D%97%A8%F0%9D%97%BB%F0%9D%97%B9%F0%9D%97%BC%F0%9D%97%B0%F0%9D%97%B8%F0%9D%97%B6%F0%9D%97%BB%F0%9D%97%B4-%F0%9D%98%81%F0%9D%97%B5%F0%9D%97%B2-%F0%9D%97%A3%F0%9D%97%BC%F0%9D%98%81%F0%9D%97%B2%F0%9D%97%BB%F0%9D%98%81%F0%9D%97%B6%F0%9D%97%AE%F0%9D%97%B9-activity-7305603675689779201-yCFw?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+        }
+      ]
     },
     {
     id: "4",
@@ -71,6 +88,13 @@ export const eventsData = [
     venue: "VUPH",
     Sites: "Varahi Dam",
     mode: "Offline",
+    resources: [
+      { 
+        title: 'LinkedIn Post', 
+        url: 'https://www.linkedin.com/posts/pace-nitk_pace-nitk-civilengineering-activity-7303001973719539713-5rYr?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+      }
+    ]
+  
   },
   {
     id: "5",
@@ -95,21 +119,17 @@ export const eventsData = [
     image: prestressing,
     venue: "BC Road",
     mode: "Offline",
+    resources: [
+      { 
+        title: 'LinkedIn Post', 
+        url: 'https://www.linkedin.com/posts/pace-nitk_civilengineering-infrastructure-construction-activity-7302352916474994689-vZg8?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+      }
+    ]
   },
   {
-    id: "6",
-    title: "Workshop - AI-Integrated Advanced Surveying and GIS Applications for Disaster Management",
-    date: "4th February 2025",
-    time: "Completed",
-    description: "An innovative project on AI-Integrated Advanced Surveying and GIS Applications for Disaster Management – A Case Study of NITK Surathkal is set to begin under the guidance of Prithviraj Sir, with support from M.Tech and Ph.D. students.\n\n- Participants will receive a certificate signed by the Dean of Planning and Development.\n- Upon successful completion, the project will be approved by the Dean of Research & Consultancy and the Director.\n- With strict deadlines and expert mentorship, this project is an incredible chance to gain real-world skills beyond routine academics.\n\nJoin us in making an impact through cutting-edge geospatial technology! 🌍📡",
-    image: aigis,
-    venue: "WROE Seminar Hall",
-    mode: "Offline"
-  },
-  {
-      id: "7",
+      id: "6",
       title: "LHC D Site Visit",
-      date: "April 10-12, 2025",
+      // date: "April 10-12, 2025",
       time: "Completed",
       description: ``,
       image: lhcd,
@@ -117,15 +137,23 @@ export const eventsData = [
       mode: "Offline",
     },
     {
-        id: "8",
+        id: "7",
         title: "Inaugural Meet",
-        date: "April 10-12, 2025",
+        // date: "April 10-12, 2025",
         time: "Completed",
         description: `We recently held our first full-club meet, where 100+ students came together to kickstart this initiative! The event featured exciting discussions, team introductions, and goal-setting for the semester. 
         Our team shared the vision for the club, and our new members got a glimpse of the ambitious projects ahead.`,
         image: inaugural,
         // venue: ,
         mode: "Offline",
+        resources: [
+          { 
+            title: 'LinkedIn Post', 
+            url: 'https://www.linkedin.com/posts/pace-nitk_civilengineering-engineeringinnovation-handsonlearning-activity-7296950328929787905--pNz?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+          }
+        ]
+
+        
       },
       
 ];

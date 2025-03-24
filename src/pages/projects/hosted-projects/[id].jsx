@@ -33,7 +33,7 @@ const HostedProjectDetail = () => {
               onClick={handleBackClick}
               className="mb-8 inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold bg-blue-100 px-4 py-2 rounded-lg transition-colors"
             >
-              {/* <span>← Back to Hosted Projects</span> */}
+              <span>← Return to Hosted Projects</span>
             </button>
             <ProjectDetail project={project} />
           </div>

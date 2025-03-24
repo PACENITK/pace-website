@@ -11,6 +11,7 @@ import jeevotham from '../../assets/Team/AdminCore/jeevotham.jpeg';
 import nihal from '../../assets/Team/AdminCore/nihal.jpeg';
 import alokh from '../../assets/Team/AdminCore/alok.jpeg';
 import subhodh from '../../assets/Team/AdminCore/subhodh.jpeg';
+import pratheek from '../../assets/Team/AdminCore/pratheekk.jpg';
 
 const teamData = {
   leadership: [
@@ -81,6 +82,33 @@ const teamData = {
       imageSrc: ""
     },
     {
+      name: "Pratheek BS",
+      role: "Technical Coordinator & Web Head",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/pratheek-bs-043778245/",
+        // No email available in the provided data
+      },
+      imageSrc: pratheek,
+    },
+    {
+      name: "Chethan P",
+      role: "Web Head & Designer",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/chethan-p-194b75245/",
+        email:"chethanprakash.211cv215@nitk.edu.in",
+      },
+      imageSrc: chethan
+    },
+    {
+      name: "Ayush Seenam",
+      role: "Technical Coordinator",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/ayush-seenam-813bb7314",
+        email: "ayushseenam.221cv112@nitk.edu.in"
+      },
+      imageSrc: ayush
+    },
+    {
     
       name: "Jeevottham Shenoy",
       role: "Advisor",
@@ -97,33 +125,6 @@ const teamData = {
         linkedin: " https://www.linkedin.com/in/nihal-jayadeep/"
       },
       imageSrc: nihal
-    },
-    {
-      name: "Pratheek BS",
-      role: "Technical & Web Head",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/pratheek-bs-043778245/",
-        // No email available in the provided data
-      },
-      imageSrc: ""
-    },
-    {
-      name: "Chethan P",
-      role: "Web Head & Designer",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/chethan-p-194b75245/",
-        email:"chethanprakash.211cv215@nitk.edu.in",
-      },
-      // imageSrc: chethan
-    },
-    {
-      name: "Ayush Seenam",
-      role: "Technical Head",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/ayush-seenam-813bb7314",
-        email: "ayushseenam.221cv112@nitk.edu.in"
-      },
-      imageSrc: ayush
     },
 
   ],
@@ -158,13 +159,6 @@ const teamData = {
       imageSrc: chandana
     },
     {
-      name: "Aman Raj",
-      socialLinks: {
-        // No additional information available
-      },
-      imageSrc: ""
-    },
-    {
       name: "Pavithra P",
       // role: "SIG Head",
       socialLinks: {
@@ -172,6 +166,13 @@ const teamData = {
         email: "pavithrap.221cv236@nitk.edu.in"
       },
       imageSrc: pavithra
+    },
+    {
+      name: "Aman Raj",
+      socialLinks: {
+        // No additional information available
+      },
+      imageSrc: ""
     },
     {
       name: "Amardeep Meena",
