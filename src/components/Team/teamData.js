@@ -7,8 +7,10 @@ import subhodeep from '../../assets/Team/AdminCore/subhodeep.jpeg';
 import riya from '../../assets/Team/Core/riya.jpeg';
 import chandana from '../../assets/Team/Sigheads/chandana.jpeg';
 import pavithra from '../../assets/Team/Sigheads/pavithra.jpeg';
-
-
+import jeevotham from '../../assets/Team/AdminCore/jeevotham.jpeg';
+import nihal from '../../assets/Team/AdminCore/nihal.jpeg';
+import alokh from '../../assets/Team/AdminCore/alok.jpeg';
+import subhodh from '../../assets/Team/AdminCore/subhodh.jpeg';
 
 const teamData = {
   leadership: [
@@ -54,20 +56,20 @@ const teamData = {
       imageSrc:subhodeep
     },
     {
-      name: "Subodh",
+      name: "Subodh Kumar",
       role: "Joint Convenor",
       socialLinks: {
-        // No additional information available
+        linkedin: "https://www.linkedin.com/in/subodh0907/"
       },
-      imageSrc: ""
+      imageSrc: subhodh
     },
     {
       name: "Alok Kumar Sahoo",
       role: "Chief Coordinator",
       socialLinks: {
-        // No additional information available
+        linkedin: "https://www.linkedin.com/in/alok-kumar-sahoo-80472a24a/"
       },
-      imageSrc: ""
+      imageSrc: alokh
     },
     {
       name: "Anushka Mishra",
@@ -79,13 +81,22 @@ const teamData = {
       imageSrc: ""
     },
     {
+    
+      name: "Jeevottham Shenoy",
+      role: "Advisor",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/jeevottham-shenoy/?originalSubdomain=in",
+        // email: "anushkamishra.221mn009@nitk.edu.in"
+      },
+      imageSrc:jeevotham
+    },
+    {
       name: "Nihal Jaydeep",
       role: "Treasurer",
       socialLinks: {
-        linkedin: "",
-        // No email available in the provided data
+        linkedin: " https://www.linkedin.com/in/nihal-jayadeep/"
       },
-      imageSrc: ""
+      imageSrc: nihal
     },
     {
       name: "Pratheek BS",
@@ -113,7 +124,8 @@ const teamData = {
         email: "ayushseenam.221cv112@nitk.edu.in"
       },
       imageSrc: ayush
-    }
+    },
+
   ],
   
   coreTeam: [
@@ -135,45 +147,6 @@ const teamData = {
       imageSrc: ""
     }
   ],
-
-  eventCoordinators: [
-    {
-      name: "Aditya Maru",
-      role: "Events Head",
-      socialLinks: {
-        // No additional information available
-      },
-      imageSrc: ""
-    },
-    {
-      name: "Adarsh Kumar",
-      role: "Events Head",
-      socialLinks: {
-        // No additional information available
-      },
-      imageSrc: ""
-    },
-  ],
-
-  mediaHeads: [
-    {
-      name: "Sarthak",
-      // role: "Media Head",
-      socialLinks: {
-        // No additional information available
-      },
-      imageSrc: ""
-    },
-    {
-      name: "Nutalu Ringa",
-      // role: "Media Head",
-      socialLinks: {
-        // No additional information available
-      },
-      imageSrc: ""
-    },
-  ],
-
   sigHeads: [
     {
       name: "Sree Chandana Malyala",
@@ -209,7 +182,45 @@ const teamData = {
       },
       imageSrc: ""
     }
-  ]
+  ],
+
+  eventCoordinators: [
+    {
+      name: "Aditya Maru",
+      role: "Events Head",
+      socialLinks: {
+        email: "adityamaru.221cv204@nitk.edu.in"
+      },
+      imageSrc: ""
+    },
+    {
+      name: "Adarsh Kumar",
+      role: "Events Head",
+      socialLinks: {
+        // No additional information available
+      },
+      imageSrc: ""
+    },
+  ],
+
+  mediaHeads: [
+    {
+      name: "Sarthak",
+      // role: "Media Head",
+      socialLinks: {
+        // No additional information available
+      },
+      imageSrc: ""
+    },
+    {
+      name: "Nutalu Ringa",
+      // role: "Media Head",
+      socialLinks: {
+        // No additional information available
+      },
+      imageSrc: ""
+    },
+  ],
 };
 
 export default teamData;

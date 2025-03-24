@@ -128,54 +128,67 @@ const TeamPage = () => {
 
           <div className="max-w-7xl mx-auto px-4 py-16">
             <SectionTitle title="Leadership" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-24 justify-items-center max-w-4xl mx-auto mb-32">
-              {leadership.map((member, index) => (
-                <ProfileCard key={index} {...member} />
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-24 justify-items-center mx-auto mb-32">
+              <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                {leadership.map((member, index) => (
+                  <ProfileCard key={index} {...member} />
+                ))}
+              </div>
             </div>
 
             <div className="mt-32">
               <SectionTitle title="Admin Core" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
-                {adminCore.map((member, index) => (
-                  <ProfileCard key={index} {...member} />
-                ))}
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {adminCore.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
               </div>
             </div>
 
             <div className="mt-32">
               <SectionTitle title="Core Team" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-items-center mb-32">
-                {coreTeam.map((member, index) => (
-                  <ProfileCard key={index} {...member} />
-                ))}
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {coreTeam.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* SIG Heads section moved to appear right after Core Team */}
+            <div className="mt-32">
+              <SectionTitle title="SIG Heads" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 justify-items-center mb-32">
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {sigHeads.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
               </div>
             </div>
 
             <div className="mt-32">
               <SectionTitle title="Events Coordinators" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-24 justify-items-center mb-32">
-                {eventCoordinators.map((member, index) => (
-                  <ProfileCard key={index} {...member} />
-                ))}
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {eventCoordinators.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
               </div>
             </div>
 
             <div className="mt-32">
               <SectionTitle title="Media Heads" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
-                {mediaHeads.map((member, index) => (
-                  <ProfileCard key={index} {...member} />
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-32">
-              <SectionTitle title="SIG Heads" />
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 justify-items-center mb-32">
-                {sigHeads.map((member, index) => (
-                  <ProfileCard key={index} {...member} />
-                ))}
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {mediaHeads.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
