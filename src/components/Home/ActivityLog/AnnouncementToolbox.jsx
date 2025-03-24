@@ -6,7 +6,7 @@ const AnnouncementToolbox = () => {
     {
       title: "Varahi Underground Power House (VUPH) Site Visit",
       description: "Witness real-world civil engineering in action and marvel at breathtaking structures",
-      link: "http://localhost:5173/events/1"
+      link: "/events/4"
     },
     // {
     //   // title: "New Research Publication",

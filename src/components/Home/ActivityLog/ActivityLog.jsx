@@ -29,7 +29,7 @@ const ActivityLog = () => {
       date: "17th March, 2025",
       description: `Unleash your inner engineer and build the ultimate catapult! Test your precision, strategy, and creativity in this high-stakes showdown. Are you ready to dominate?`,
       image: catapult,
-      instagramLink: "http://localhost:5173/events/1"
+      instagramLink: "/events/1"
     },
     {
       id: 2,
@@ -38,7 +38,7 @@ const ActivityLog = () => {
       description: `Gain insights into geotextiles' role in sustainable construction, soil stabilization with eco-friendly materials, real-world applications, advanced testing methods, and 
       performance evaluation in this workshop by Prof. Sreevalsa K.`,
       image: geoinnovate,
-      instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-1"
+      instagramLink: "/events/2"
     },
     {
       id: 3,
@@ -47,7 +47,7 @@ const ActivityLog = () => {
       description: `Learn the fundamentals of industrial rack stability and failure modes, understand design considerations for safe and efficient storage systems, explore real-world case studies and best 
       practices, get insights into GBTUL and CUFSM tools, and engage in an interactive Q&A session with Vijay Sir.`,
       image: stability,
-      instagramLink: "http://localhost:5173/projects/hosted-projects/hosted-2"
+      instagramLink: "/events/3"
 },
   ];
 
