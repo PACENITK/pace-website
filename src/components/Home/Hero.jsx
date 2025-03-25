@@ -25,7 +25,7 @@ const Hero = () => {
   // Store images in an array
   const images = [ prestressing, h1, h4, h2, h3, a2, h5, h6, h7, h8, h9, h10];
 
-  const titleWords = "Professional Association For Civil Engineering".split(" ");
+  const titleWords = "Professional Association for Civil Engineering".split(" ");
 
   useEffect(() => {
     setIsVisible(true);
