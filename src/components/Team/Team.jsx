@@ -105,7 +105,7 @@ const SectionTitle = ({ title }) => (
 );
 
 const TeamPage = () => {
-  const { leadership, adminCore, coreTeam, eventCoordinators, mediaHeads, sigHeads } = teamData;
+  const { leadership, adminCore, coreTeam } = teamData;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -158,7 +158,7 @@ const TeamPage = () => {
               </div>
             </div>
 
-            {/* SIG Heads section moved to appear right after Core Team */}
+            {/* SIG Heads section moved to appear right after Core Team
             <div className="mt-32">
               <SectionTitle title="SIG Heads" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 justify-items-center mb-32">
@@ -168,9 +168,9 @@ const TeamPage = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="mt-32">
+            {/* <div className="mt-32">
               <SectionTitle title="Events Coordinators" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-24 justify-items-center mb-32">
                 <div className="col-span-full flex justify-center gap-24 flex-wrap">
@@ -179,9 +179,9 @@ const TeamPage = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="mt-32">
+            {/* <div className="mt-32">
               <SectionTitle title="Media Heads" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
                 <div className="col-span-full flex justify-center gap-24 flex-wrap">
@@ -190,7 +190,7 @@ const TeamPage = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

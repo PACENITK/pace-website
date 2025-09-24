@@ -4,9 +4,9 @@ import { ExternalLink } from 'lucide-react';
 const AnnouncementToolbox = () => {
   const announcements = [
     {
-      title: "Varahi Underground Power House (VUPH) Site Visit",
-      description: "Witness real-world civil engineering in action and marvel at breathtaking structures",
-      link: "/events/4"
+      title: "the civil saga",
+      description: "Form a team and tackle exciting challenges! Register here",
+      link: "https://forms.gle/wLU7EChgouqNEET58"
     },
     // {
     //   // title: "New Research Publication",

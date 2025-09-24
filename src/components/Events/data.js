@@ -1,31 +1,82 @@
 import varahi from '../../assets/Events/varahi.jpg';
 import prestressing from '../../assets/Events/prestressing.jpg';
-import catapult from '../../assets/Annoucements/catapult.jpg';
 import geoinnovate from '../../assets/Events/geoinnovate/geoinnovate.jpg';
 import stability from '../../assets/Events/stability/stability.jpg';
 import lhcd from '../../assets/Events/LHCD/LHCD.jpg';
 import inaugural from '../../assets/Events/inaugural/inaugural.jpg';
+import riskitright from '../../assets/Events/riskitright/riskitright.jpeg';
+import catapult from '../../assets/Events/catapult/catapult.jpeg';
+import techsite from '../../assets/Events/tech-sitevisit/tech-sitevisit.jpeg';
 
 export const eventsData = [
   {
-    id: "1",
+    id: "10",
+    title: "the civil saga",
+    date: "27th September, 2025",
+    time: "2-5 PM",
+    description: `CIVIL SAGA 2025 is an exciting civil engineering challenge for 1st and 2nd year students! 
+Form teams of 3–5, complete fun challenges, and compete in the Grand Build Finale to see whose structure stands tall. 
+
+📌 Register: https://forms.gle/wLU7EChgouqNEET58`,   
+
+    image: "", 
+    venue: "Pavillion",
+    mode: "Offline",
+    resources: [
+      // { 
+      //   title: 'LinkedIn Post', 
+      //   url: '' // add URL if available
+      // }
+    ]
+},
+{
+    id: "9",
+    title: "Risk It Right!",
+    date: "12th August, 2025",
+    time: "Completed",
+    description: ` PACE hosted its first promotional event of the year, Risk It Right, an exciting quiz that brought together 30+ enthusiastic participants from across branches at NITK.
+
+In teams of three, students competed through multiple rounds that tested not only their civil engineering knowledge, but also their grasp on current affairs, fun riddles, and quick-thinking challenges.
+
+After an engaging evening filled with strategy, teamwork, and laughter, one team emerged as the winners, taking home the prize and the title of the very first Risk It Right Champions! 🏆 
+
+`,
+    image: riskitright, 
+    venue: "ATB Seminar Hall",
+    mode: "Team",
+    resources: [
+      { 
+        title: 'LinkedIn Post', 
+        url: 'https://www.linkedin.com/feed/update/urn:li:activity:7365675231824240640/'
+      }
+    ]
+},
+{
+  id: "8",
+  title: "Green Sanctuary Site Visit",
+  date: "March 2025",
+  time: "Completed",
+  description: "Civil Engineering students had the unique opportunity to visit the 10-acre green sanctuary of NITK alumnus Mr. Chandrakantha Rao Inna (1983 batch). The visit showcased sustainable land management, integration of engineering principles in farming, and the importance of giving back to society. Students explored thriving ecosystems, structural innovations in wooden architecture, and gained inspiring insights on combining knowledge with purpose.",
+  image: techsite, 
+  venue: "",
+  mode: "Offline",
+  resources: [
+    { 
+      title: 'LinkedIn Post', 
+      url: 'https://www.linkedin.com/posts/pace-nitk_why-nitk-has-such-a-strong-alumni-foundation-activity-7325774275682979840-Rf5M?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzc7cABUoy-XnZTFvCFrik_hcfItG4Eej8' 
+    }
+  ]
+}
+,
+  {
+    id: "7",
     title: "THE ULTIMATE CATAPULT CHALLENGE",
     date: "17th March, 2025",
-    time: "7 PM", 
-    description: `Think you're the next Da Vinci or a master strategist? It’s time to put your creativity and engineering skills to the test! 
-  Build a powerful and accurate catapult using the materials provided. Design it, launch it, and dominate the challenge.
+    time: "Completed",
+    description: `Teams of future civil engineers competed in the PACE Catapult Challenge, designing and building miniature catapults using sticks and rubber bands. 
+The event tested creativity, structural stability, and launch accuracy. The winning team, 'Geolala', achieved the best throw! 
 
-  📅 Date: 17th March, 2025
-  ⏰ Time: 7:00 PM
-  📍 Venue: Pavilion
-
-  This isn’t just a competition—it’s a battle of design, precision, and strategy. Gather your team, get creative, and take your best shot!
-
-  ⚡ Limited slots available, allocated on a first-come, first-served basis.
-  Team size: 3-5 members.
-  Exclusively for Civil Engineering students.
-
-  🔗 Register here: https://forms.gle/vwkKQBiKxct4V1W99`, 
+It was a fun, hands-on experience in problem-solving, teamwork, and engineering innovation.`, 
      image: catapult, 
     venue: "Pavillion",
     mode: "Offline",
@@ -37,7 +88,7 @@ export const eventsData = [
     ]
   },
   {
-    id: "2",
+    id: "6",
     title: "Workshop - GeoInnovate: Pioneering Sustainable Geotextile Solutions",
     date: "14th March, 2025",
     time: "Completed",
@@ -53,7 +104,7 @@ export const eventsData = [
     ]
   },
   {
-      id: "3",
+      id: "5",
       title: "Workshop - Stability of Industrial Racks by Vijay Sir",
       date: "5th March, 2025",
       time: "Completed",
@@ -97,7 +148,7 @@ export const eventsData = [
   
   },
   {
-    id: "5",
+    id: "3",
     title: "Prestressing Yard Site Visit",
     date: "February 5th, 2025",
     time: "Completed",
@@ -127,7 +178,7 @@ export const eventsData = [
     ]
   },
   {
-      id: "6",
+      id: "2",
       title: "LHC D Site Visit",
       // date: "April 10-12, 2025",
       time: "Completed",
@@ -137,7 +188,7 @@ export const eventsData = [
       mode: "Offline",
     },
     {
-        id: "7",
+        id: "1",
         title: "Inaugural Meet",
         // date: "April 10-12, 2025",
         time: "Completed",
