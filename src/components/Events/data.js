@@ -7,19 +7,16 @@ import inaugural from '../../assets/Events/inaugural/inaugural.jpg';
 import riskitright from '../../assets/Events/riskitright/riskitright.jpeg';
 import catapult from '../../assets/Events/catapult/catapult.jpeg';
 import techsite from '../../assets/Events/tech-sitevisit/tech-sitevisit.jpeg';
+import civilsaga from '../../assets/Events/civilsaga/civilsaga.png';
 
 export const eventsData = [
   {
     id: "10",
     title: "the civil saga",
     date: "27th September, 2025",
-    time: "2-5 PM",
-    description: `CIVIL SAGA 2025 is an exciting civil engineering challenge for 1st and 2nd year students! 
-Form teams of 3–5, complete fun challenges, and compete in the Grand Build Finale to see whose structure stands tall. 
-
-📌 Register: https://forms.gle/wLU7EChgouqNEET58`,   
-
-    image: "", 
+    time: "Completed",
+    description: `Civil Saga 2025 wrapped up with an action-packed showdown where teams battled through smart planning, speed, and creativity! Top teams proved their engineering excellence and were crowned the champions. A big shout-out to all participants for making the event a thrilling success!`,
+    image: civilsaga, 
     venue: "Pavillion",
     mode: "Offline",
     resources: [
@@ -53,7 +50,7 @@ After an engaging evening filled with strategy, teamwork, and laughter, one team
 },
 {
   id: "8",
-  title: "Green Sanctuary Site Visit",
+  title: "Agro-Engineering Innovation Site Visit",
   date: "March 2025",
   time: "Completed",
   description: "Civil Engineering students had the unique opportunity to visit the 10-acre green sanctuary of NITK alumnus Mr. Chandrakantha Rao Inna (1983 batch). The visit showcased sustainable land management, integration of engineering principles in farming, and the importance of giving back to society. Students explored thriving ecosystems, structural innovations in wooden architecture, and gained inspiring insights on combining knowledge with purpose.",

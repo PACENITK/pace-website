@@ -9,6 +9,8 @@ import pratheek from '../../assets/Team/AdminCore/pratheekk.jpg';
 import ayush from "../../assets/Team/AdminCore/ayush.jpeg";
 import subhodh from "../../assets/Team/AdminCore/subhodh.jpeg";
 import shubham from "../../assets/Team/Core/shubham.png";
+import charan from "../../assets/Team/Core/charan.jpeg";
+import abhiram from '../../assets/Team/Core/abhiram.jpg';
 
 const teamData = {
   leadership: [
@@ -119,37 +121,13 @@ const teamData = {
   ],
   
   coreTeam: [
-     {
-      name: "Aditya Maru",
-      role: "Chief Coordinator",
-      socialLinks: {
-        email: "adityamaru.221cv204@nitk.edu.in"
-      },
-      imageSrc: ""
-    },
-     {
-      name: "T G Abhinandhan",
-      role: "Cheif Coordinator",
-      socialLinks: {
-        email: "abhinitk.221cv151@nitk.edu.in"
-      },
-      imageSrc: ""
-    },
-    {
-      name: "Shambavi Jha",
-      role: "Secretary",
-      socialLinks: {
-        email: "shambavijha.221cv244@nitk.edu.in"
-      },
-      imageSrc: ""
-    },
     {
       name: "Sai Krishna Charan",
       role: "Secretary",
       socialLinks: {
         email: "saikrishnacharan.221cv116@nitk.edu.in"
       },
-      imageSrc: ""
+      imageSrc: charan
     },
     {
       name: "Abhiram Roddannavar",
@@ -157,13 +135,13 @@ const teamData = {
       socialLinks: {
         email: "abhiramroddannavar.221cv102@nitk.edu.in"
       },
-      imageSrc: ""
+      imageSrc: abhiram
     },
     {
-      name: "Aakash",
-      role: "Treasurer",
+      name: "Shambavi Jha",
+      role: "Secretary",
       socialLinks: {
-        email: "aakash.221cv101@nitk.edu.in"
+        email: "shambavijha.221cv244@nitk.edu.in"
       },
       imageSrc: ""
     },
@@ -184,6 +162,30 @@ const teamData = {
         email: "skyarch.221cv246@nitk.edu.in"
       },
       imageSrc: shubham
+    },
+     {
+      name: "Aditya Maru",
+      role: "Chief Coordinator",
+      socialLinks: {
+        email: "adityamaru.221cv204@nitk.edu.in"
+      },
+      imageSrc: ""
+    },
+     {
+      name: "T G Abhinandhan",
+      role: "Cheif Coordinator",
+      socialLinks: {
+        email: "abhinitk.221cv151@nitk.edu.in"
+      },
+      imageSrc: ""
+    },
+    {
+      name: "Aakash",
+      role: "Treasurer",
+      socialLinks: {
+        email: "aakash.221cv101@nitk.edu.in"
+      },
+      imageSrc: ""
     },
     {
       name: "Nutalu Ringa",

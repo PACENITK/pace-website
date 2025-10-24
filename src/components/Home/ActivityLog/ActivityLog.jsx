@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import DiscoverPACE from './DiscoverPACE';
 import ActivityCard from './ActivityCard';
 import AnnouncementToolbox from './AnnouncementToolbox';
-import geoinnovate from '../../../assets/Annoucements/geoinnovate.jpg';
 import catapult from '../../../assets/Annoucements/catapult.jpg';
 import civilsaga from '../../../assets/Annoucements/civilsaga.jpeg';
+import revit from '../../../assets/Annoucements/revit-athon.jpeg';
+
 const ActivityLog = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -22,9 +23,18 @@ const ActivityLog = () => {
   }, []);
 
   const activities = [
-    {
-      
-  id: 1,
+
+{
+  id: 1, 
+  title: "Revit-athon: Model. Innovate. Build.",
+  date: "26th October | 2 PM – 5 PM",
+  description: `Turn your ideas into 3D reality and win exciting prizes worth ₹10,000!`,
+  image:  revit ,
+  instagramLink: "https://www.instagram.com/p/DQJosWXkopM/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+},
+
+{     
+  id: 2,
   title: "the civil saga",
   date: "27th September, 2025",
   description: `Join the ultimate civil engineering challenge! Form a team, tackle exciting tasks, and compete to build the best structure. Who will rise as the Master Builders?`,
@@ -32,23 +42,14 @@ const ActivityLog = () => {
   instagramLink: "/events/10"
 }
 ,
-    {
-      id: 2, 
+{
+      id: 3, 
       title: "THE ULTIMATE CATAPULT CHALLENGE",
       date: "17th March, 2025",
       description: `Unleash your inner engineer and build the ultimate catapult! Test your precision, strategy, and creativity in this high-stakes showdown. Are you ready to dominate?`,
       image: catapult,
       instagramLink: "/events/7"
-    },
-    {
-      id: 3,
-      title: "Workshop - GeoInnovate: Pioneering Sustainable Geotextile Solutions",
-      date: "14th March 2025",
-      description: `Gain insights into geotextiles' role in sustainable construction, soil stabilization with eco-friendly materials, real-world applications, advanced testing methods, and 
-      performance evaluation in this workshop by Prof. Sreevalsa K.`,
-      image: geoinnovate,
-      instagramLink: "/events/6"
-    },
+}
   ];
 
   const currentActivity = activities[currentPage - 1];
