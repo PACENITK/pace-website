@@ -33,7 +33,7 @@ const AboutUs = () => {
           About Us
         </h2>
         <p className="text-xl text-gray-700 font-semibold text-center mb-12 py-4 font-sans">
-          Welcome to Professional Association For Civil Engineering Of NITK SURATHKAL
+          Welcome to Professional Association for Civil Engineering Of NITK SURATHKAL
         </p>
 
         {/* Slideshow Container */}
@@ -83,7 +83,7 @@ const AboutUs = () => {
 
           <div className="space-y-5 self-start">
             <h3 className="text-2xl font-bold text-gray-900">
-            Professional Association For Civil Engineering
+            Professional Association dor Civil Engineering
             </h3>
             <p className="text-gray-700 text-base leading-relaxed">
   PACE NITK is a student-driven club bridging academia and industry in civil engineering. We offer hands-on learning, industry exposure, 
