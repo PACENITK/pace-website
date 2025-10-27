@@ -82,7 +82,7 @@ const Navbar = ({ scrollToFooter }) => {
             </div>
             <div className="flex flex-col">
               <p className={`text-sm md:text-lg font-medium transition-colors duration-150 ${scrolled || isOpen ? 'text-black' : 'text-white'}`}>
-              Professional Association For Civil Engineering
+              Professional Association for Civil Engineering
               </p>
               <p className={`text-xs md:text-sm transition-colors duration-150 ${scrolled || isOpen ? 'text-black' : 'text-white'}`}>
                 National Institute of Technology Karnataka, Surathkal
