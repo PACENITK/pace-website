@@ -50,12 +50,12 @@ After an engaging evening filled with strategy, teamwork, and laughter, one team
 },
 {
   id: "8",
-  title: "Agro-Engineering Innovation Site Visit",
-  date: "March 2025",
+  title: "Sukanthai Cottage Visit - Praakruti Fruit Farm",
+  date: "12th May, 2025",
   time: "Completed",
   description: "Civil Engineering students had the unique opportunity to visit the 10-acre green sanctuary of NITK alumnus Mr. Chandrakantha Rao Inna (1983 batch). The visit showcased sustainable land management, integration of engineering principles in farming, and the importance of giving back to society. Students explored thriving ecosystems, structural innovations in wooden architecture, and gained inspiring insights on combining knowledge with purpose.",
   image: techsite, 
-  venue: "",
+  venue: "Inna, Udupi",
   mode: "Offline",
   resources: [
     { 

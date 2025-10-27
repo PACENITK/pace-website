@@ -25,7 +25,7 @@ const teamData = {
       imageSrc: HOD
     },
     {
-      name: "Dr. Vinoth Srivinivasan",
+      name: "Dr. Vinoth Srinivasan",
       role: "Faculty Advisor",
       socialLinks: {
         linkedin: "https://www.linkedin.com/in/dr-svinoth/?originalSubdomain=in",
@@ -74,6 +74,53 @@ const teamData = {
       imageSrc: likith
     },
     {
+      name: "Sai Krishna Charan",
+      role: "Secretary",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/bolikrishnacharan/",
+        email: "saikrishnacharan.221cv116@nitk.edu.in"
+      },
+      imageSrc: charan
+    },
+    {
+      name: "Abhiram Roddannavar",
+      role: "Secretary",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/abhiramsr2309/",
+        email: "abhiramroddannavar.221cv102@nitk.edu.in"
+      },
+      imageSrc: abhiram
+    },
+    {
+      name: "Shambavi Jha",
+      role: "Secretary",
+      socialLinks: {
+        email: "shambavijha.221cv244@nitk.edu.in"
+      },
+      imageSrc: ""
+    },
+    {
+      name: "Pratheek BS",
+      role: "Web Head",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/pratheek-bs-043778245/",
+        email: "" // default empty
+      },
+      imageSrc: pratheek
+    },
+    {
+      name: "Chethan P",
+      role: "Web Head",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/chethan-p-194b75245/",
+        email:"chethanprakash.211cv215@nitk.edu.in"
+      },
+      imageSrc: chethan
+    }
+  ],
+  
+  coreTeam: [
+    {
       name: "Subodh Kumar",
       role: "Advisor",
       socialLinks: {
@@ -101,51 +148,6 @@ const teamData = {
       imageSrc: ayush
     },
     {
-      name: "Pratheek BS",
-      role: "Web Head",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/pratheek-bs-043778245/",
-        email: "" // default empty
-      },
-      imageSrc: pratheek
-    },
-    {
-      name: "Chethan P",
-      role: "Web Head",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/chethan-p-194b75245/",
-        email:"chethanprakash.211cv215@nitk.edu.in"
-      },
-      imageSrc: chethan
-    }
-  ],
-  
-  coreTeam: [
-    {
-      name: "Sai Krishna Charan",
-      role: "Secretary",
-      socialLinks: {
-        email: "saikrishnacharan.221cv116@nitk.edu.in"
-      },
-      imageSrc: charan
-    },
-    {
-      name: "Abhiram Roddannavar",
-      role: "Secretary",
-      socialLinks: {
-        email: "abhiramroddannavar.221cv102@nitk.edu.in"
-      },
-      imageSrc: abhiram
-    },
-    {
-      name: "Shambavi Jha",
-      role: "Secretary",
-      socialLinks: {
-        email: "shambavijha.221cv244@nitk.edu.in"
-      },
-      imageSrc: ""
-    },
-    {
       name: "Sree Chandana Malyala",
       role: "Technical Coordinator",
       socialLinks: {
@@ -158,7 +160,7 @@ const teamData = {
       name: "Shubham Prakash",
       role: "Technical Coordinator",
       socialLinks: {
-        linkedin: "",
+        linkedin: "https://www.linkedin.com/in/skyarch00/",
         email: "skyarch.221cv246@nitk.edu.in"
       },
       imageSrc: shubham
@@ -180,14 +182,6 @@ const teamData = {
       imageSrc: ""
     },
     {
-      name: "Aakash",
-      role: "Treasurer",
-      socialLinks: {
-        email: "aakash.221cv101@nitk.edu.in"
-      },
-      imageSrc: ""
-    },
-    {
       name: "Nutalu Ringa",
       role: "Media Head",
       socialLinks: {
@@ -202,6 +196,14 @@ const teamData = {
       socialLinks: {
         linkedin: "",
         email: "sarthakrameshhedage.221cv142@nitk.edu.in"
+      },
+      imageSrc: ""
+    },
+    {
+      name: "Aakash",
+      role: "Treasurer",
+      socialLinks: {
+        email: "aakash.221cv101@nitk.edu.in"
       },
       imageSrc: ""
     }

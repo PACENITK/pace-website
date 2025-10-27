@@ -63,39 +63,40 @@ const Hero = () => {
   return (
     <div className="relative h-screen w-full flex flex-col items-center justify-center mb-0 bg-blue-50/70">
       <div className="absolute inset-0 overflow-hidden">
-        {images.map((image, index) => (
-          <div
-            key={index} // Use index instead of image name as key
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
-              currentImageIndex === index ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{ backgroundImage: `url(${image})` }}
-          >
-            <div className="absolute inset-0 bg-black/40" />
-          </div>
-        ))}
+        <div 
+          className="flex h-full transition-transform duration-1000 ease-in-out"
+          style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+        >
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className="w-full h-full flex-shrink-0 bg-cover bg-center relative"
+              style={{ backgroundImage: `url(${image})` }}
+            >
+              <div className="absolute inset-0 bg-black/40" />
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="relative text-center space-y-6 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
-          <div className="overflow-hidden">
-            <div className="flex flex-wrap justify-center gap-x-3">
-              {titleWords.map((word, index) => (
-                <span
-                  key={index}
-                  className={`
-                    inline-block transform transition-all duration-700 ease-out
-                    ${isVisible 
-                      ? 'translate-y-0 opacity-100 scale-100'
-                      : 'translate-y-full opacity-0 scale-95'
-                    }
-                  `}
-                  style={{ transitionDelay: `${index * 100}ms` }}
-                >
-                  {word}
-                </span>
-              ))}
-            </div>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-snug pb-2">
+          <div className="flex flex-wrap justify-center gap-x-3">
+            {titleWords.map((word, index) => (
+              <span
+                key={index}
+                className={`
+                  inline-block transform transition-all duration-700 ease-out
+                  ${isVisible 
+                    ? 'translate-y-0 opacity-100 scale-100'
+                    : 'translate-y-full opacity-0 scale-95'
+                  }
+                `}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                {word}
+              </span>
+            ))}
           </div>
         </h1>
         
@@ -125,13 +126,13 @@ const Hero = () => {
       <div className="absolute bottom-6 flex gap-3 z-10">
         <button 
           onClick={handlePrev} 
-          className="bg-white/80 hover:bg-white text-black px-4 py-2 rounded-lg shadow-md transition-all"
+          className="bg-white/80 hover:bg-white text-black px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out focus:outline-none active:opacity-90 active:scale-95"
         >
           ◀
         </button>
         <button 
           onClick={handleNext} 
-          className="bg-white/80 hover:bg-white text-black px-4 py-2 rounded-lg shadow-md transition-all"
+          className="bg-white/80 hover:bg-white text-black px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out focus:outline-none active:opacity-90 active:scale-95"
         >
           ▶
         </button>
