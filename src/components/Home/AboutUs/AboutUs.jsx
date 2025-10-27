@@ -83,7 +83,7 @@ const AboutUs = () => {
 
           <div className="space-y-5 self-start">
             <h3 className="text-2xl font-bold text-gray-900">
-            Professional Association dor Civil Engineering
+            Professional Association for Civil Engineering
             </h3>
             <p className="text-gray-700 text-base leading-relaxed">
   PACE NITK is a student-driven club bridging academia and industry in civil engineering. We offer hands-on learning, industry exposure, 
