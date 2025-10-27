@@ -7,7 +7,7 @@ import Expo from './pages/projects/Expo';
 import HostedProjects from './pages/projects/HostedProjects';
 import ExpoProjectDetail from './pages/projects/expo/[id]';
 import HostedProjectDetail from './pages/projects/hosted-projects/[id]';
-import Nirman from './components/Nirman/Nirman';
+import Nirmaan from './components/Nirmaan/Nirmaan';
 import TeamPage from './components/Team/Team';
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
         <Route path="/projects/hosted-projects" element={<HostedProjects />} />
         <Route path="/projects/expo/:id" element={<ExpoProjectDetail />} />
         <Route path="/projects/hosted-projects/:id" element={<HostedProjectDetail />} />
-        <Route path="/nirman" element={<Nirman />} />
+        <Route path="/nirmaan" element={<Nirmaan />} />
         <Route path="/team" element={<TeamPage />} />
       </Routes>
     </Router>

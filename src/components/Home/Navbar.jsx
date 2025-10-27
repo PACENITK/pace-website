@@ -58,7 +58,7 @@ const Navbar = ({ scrollToFooter }) => {
       ]
     },
     { name: "TEAM", path: "/team" },
-    { name: "NIRMAN", path: "/nirman" },
+    { name: "NIRMAAN", path: "/nirmaan" },
     { name: "ASCE", path: "https://ascenitk.wordpress.com/" },
     { name: "CONTACT US", path: "#", action: scrollToFooter },
   ];

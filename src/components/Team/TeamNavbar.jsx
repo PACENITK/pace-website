@@ -57,7 +57,8 @@ const TeamNavbar = () => {
       ]
     },
     { name: "EVENTS", path: "/events" },
-    { name: "NIRMAN", path: "/nirman" },
+    { name: "NIRMAAN", path: "/nirmaan" },
+    { name: "ASCE", path: "https://ascenitk.wordpress.com/" }
   ];
 
   return (
@@ -80,7 +81,7 @@ const TeamNavbar = () => {
             </div>
             <div className="flex flex-col">
               <p className="text-sm md:text-lg font-semibold text-black">
-              Professional Association For Civil Engineering
+              Professional Association for Civil Engineering
               </p>
               <p className="text-xs md:text-sm text-black">
                 National Institute of Technology Karnataka, Surathkal
