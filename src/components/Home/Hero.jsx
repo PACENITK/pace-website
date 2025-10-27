@@ -7,13 +7,13 @@ import h2 from '../../assets/Home/h2.jpg';
 import h3 from '../../assets/Home/h3.jpg';
 import prestressing from '../../assets/Events/prestressing.jpg';
 import h4 from '../../assets/Home/h4.jpg';
-import a2 from '../../assets/AboutUs/a2.jpg';
 import h5 from '../../assets/Home/h5.jpg';
 import h6 from '../../assets/Home/h6.jpg';
 import h7 from '../../assets/Home/h7.jpg';
-import h8 from '../../assets/Home/h8.jpg';
+import h8 from '../../assets/Home/h8.jpeg';
 import h9 from '../../assets/Home/h9.jpg';
-import h10 from '../../assets/Home/h10.jpg';
+import h10 from '../../assets/Home/h10.jpeg';
+import a4 from '../../assets/AboutUs/a4.jpeg';
 
 import { Heading6Icon } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
   
   // Store images in an array
-  const images = [ prestressing, h1, h4, h2, h3, a2, h5, h6, h7, h8, h9, h10];
+  const images = [ h1, h10, prestressing, a4, h4, h2, h3, h5, h6, h7, h9];
 
   const titleWords = "Professional Association for Civil Engineering".split(" ");
 

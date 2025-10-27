@@ -4,15 +4,15 @@ import { ExternalLink } from 'lucide-react';
 const AnnouncementToolbox = () => {
   const announcements = [
     {
+       title: "Revit-athon",
+      description: "Join our Revit Day 1 Workshop here",
+      link: "https://meet.google.com/gvz-jibq-ybt"
+    },
+    {
       title: "the civil saga",
       description: "Form a team and tackle exciting challenges! Register here",
       link: "https://forms.gle/wLU7EChgouqNEET58"
-    },
-    // {
-    //   // title: "New Research Publication",
-    //   // description: "Latest findings in structural engineering",
-    //   link: "http://localhost:5173/events/1"
-    // }
+    }
   ];
 
   return (
