@@ -59,8 +59,11 @@ const Navbar = ({ scrollToFooter }) => {
     },
     { name: "TEAM", path: "/team" },
     { name: "NIRMAN", path: "/nirman" },
+    { name: "ASCE", path: "https://ascenitk.wordpress.com/" },
     { name: "CONTACT US", path: "#", action: scrollToFooter },
   ];
+
+  const isExternalLink = (path) => path.startsWith('http');
 
   return (
     <nav 
@@ -69,9 +72,9 @@ const Navbar = ({ scrollToFooter }) => {
         ${isOpen ? 'bg-white' : ''}`}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center px-4 py-2">
+        <div className="flex justify-between items-center pl-0 pr-0 py-2">
           {/* Logo and title section */}
-          <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4 -ml-4 md:-ml-8">
             <div className="w-16 h-12 md:w-32 md:h-16 flex items-center justify-center overflow-hidden">
               <img
                 src={logo}
@@ -90,71 +93,76 @@ const Navbar = ({ scrollToFooter }) => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6">
-            {navItems.map((item) => (
-              <div key={item.name} className="relative">
-                {item.hasDropdown ? (
-                  <div>
-                    <button
-                      className={`projects-dropdown-toggle flex items-center text-base font-medium px-3 py-2 rounded transition-colors duration-150
-                        ${scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}`}
+          {/* Desktop Navigation and Mobile Button Wrapper */}
+          <div className="flex items-center lg:space-x-6">
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-6 mr-0">
+              {navItems.map((item) => (
+                <div key={item.name} className="relative">
+                  {item.hasDropdown ? (
+                    <div>
+                      <button
+                        className={`projects-dropdown-toggle flex items-center text-base font-medium px-3 py-2 rounded transition-colors duration-150
+                          ${scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setProjectsDropdownOpen(!projectsDropdownOpen);
+                        }}
+                      >
+                        {item.name}
+                        <ChevronDown size={16} className="ml-1" />
+                      </button>
+                      {projectsDropdownOpen && (
+                        <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 overflow-hidden">
+                          <div className="py-1">
+                            {item.dropdownItems.map((dropdownItem) => (
+                              <a
+                                key={dropdownItem.name}
+                                href={dropdownItem.path}
+                                className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 
+                                         transition-colors duration-150 border-l-4 border-transparent hover:border-blue-500"
+                              >
+                                {dropdownItem.name}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <a
+                      href={item.path}
+                      target={isExternalLink(item.path) ? '_blank' : undefined}
+                      rel={isExternalLink(item.path) ? 'noopener noreferrer' : undefined}
                       onClick={(e) => {
-                        e.stopPropagation();
-                        setProjectsDropdownOpen(!projectsDropdownOpen);
+                        if (item.action) {
+                          e.preventDefault();
+                          item.action();
+                        }
                       }}
+                      className={`text-base font-medium px-3 py-2 rounded transition-all duration-150 ease-in-out
+                        ${scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}
+                        hover:scale-105`}
                     >
                       {item.name}
-                      <ChevronDown size={16} className="ml-1" />
-                    </button>
-                    {projectsDropdownOpen && (
-                      <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 overflow-hidden">
-                        <div className="py-1">
-                          {item.dropdownItems.map((dropdownItem) => (
-                            <a
-                              key={dropdownItem.name}
-                              href={dropdownItem.path}
-                              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 
-                                       transition-colors duration-150 border-l-4 border-transparent hover:border-blue-500"
-                            >
-                              {dropdownItem.name}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <a
-                    href={item.path}
-                    onClick={(e) => {
-                      if (item.action) {
-                        e.preventDefault();
-                        item.action();
-                      }
-                    }}
-                    className={`text-base font-medium px-3 py-2 rounded transition-all duration-150 ease-in-out
-                      ${scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}
-                      hover:scale-105`}
-                  >
-                    {item.name}
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={`lg:hidden p-2 rounded-md transition-all duration-150
-              ${scrolled || isOpen ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-gray-300'}
-              focus:outline-none`}
-            aria-label="Toggle menu"
-            aria-expanded={isOpen}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`lg:hidden p-2 rounded-md transition-all duration-150 ml-4
+                ${scrolled || isOpen ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-gray-300'}
+                focus:outline-none`}
+              aria-label="Toggle menu"
+              aria-expanded={isOpen}
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation Menu */}
@@ -197,6 +205,8 @@ const Navbar = ({ scrollToFooter }) => {
               ) : (
                 <a
                   href={item.path}
+                  target={isExternalLink(item.path) ? '_blank' : undefined}
+                  rel={isExternalLink(item.path) ? 'noopener noreferrer' : undefined}
                   onClick={(e) => {
                     setIsOpen(false);
                     if (item.action) {

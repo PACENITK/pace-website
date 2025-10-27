@@ -38,7 +38,7 @@ const Footer = forwardRef((_, ref) => {
     moreLinks: {
       title: "More Links",
       links: [
-        { name: "CE Courses", url: "https://civil.nitk.ac.in/" },
+        { name: "ASCE", url: "https://ascenitk.wordpress.com/" },
         { name: "IRINS", url: "https://nitk.irins.org/faculty/index/Civil+Engineering" },
         { name: "CE Achievements", url: "https://civil.nitk.ac.in/achievements" }
       ]
