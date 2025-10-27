@@ -74,6 +74,33 @@ const teamData = {
       imageSrc: likith
     },
     {
+      name: "Subodh Kumar",
+      role: "Advisor",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/subodh0907/",  
+        email: "subodh.221cv149@nitk.edu.in"
+      },
+      imageSrc: subhodh
+    },
+    {
+      name: "Anushka Mishra",
+      role: "Advisor",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/anushka-mishra-b7ab19319/",
+        email: "anushkamishra.221mn009@nitk.edu.in"
+      },
+      imageSrc: ""
+    },
+    {
+      name: "Ayush Seenam",
+      role: "Advisor",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/ayush-seenam-813bb7314",
+        email: "ayushseenam.221cv112@nitk.edu.in"
+      },
+      imageSrc: ayush
+    },
+    {
       name: "Sai Krishna Charan",
       role: "Secretary",
       socialLinks: {
@@ -120,33 +147,6 @@ const teamData = {
   ],
   
   coreTeam: [
-    {
-      name: "Subodh Kumar",
-      role: "Advisor",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/subodh0907/",  
-        email: "subodh.221cv149@nitk.edu.in"
-      },
-      imageSrc: subhodh
-    },
-    {
-      name: "Anushka Mishra",
-      role: "Advisor",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/anushka-mishra-b7ab19319/",
-        email: "anushkamishra.221mn009@nitk.edu.in"
-      },
-      imageSrc: ""
-    },
-    {
-      name: "Ayush Seenam",
-      role: "Advisor",
-      socialLinks: {
-        linkedin: "https://www.linkedin.com/in/ayush-seenam-813bb7314",
-        email: "ayushseenam.221cv112@nitk.edu.in"
-      },
-      imageSrc: ayush
-    },
     {
       name: "Sree Chandana Malyala",
       role: "Technical Coordinator",
