@@ -59,6 +59,11 @@ const ProjectDetail = ({ project }) => {
                   <span>{project.team}</span>
                 </div>
               )}
+              {project.mentors && (
+                <div className="flex items-center text-gray-300">
+                  <span>{project.mentors}</span>
+                </div>
+              )}
             </div>
 
             {/* LinkedIn Post as a Button (No Extra Title) */}
