@@ -116,10 +116,96 @@ export const expoProjectsData = [
     incorporates a micropile support system with precisely calculated depth and spacing parameters. These micropiles are combined with grouted soil nails, shotcrete facing, and horizontal waler beams to create a cohesive support structure. A significant aspect of the project involves ensuring adequate factor of safety against various failure modes including overturning, sliding, and bearing capacity failure.\n\nThe temporary nature of these structures is a key consideration in our design approach. Unlike permanent retaining walls, these systems only need to function during the construction phase until permanent basement walls are in place. This allows for optimization of materials and costs while still maintaining rigorous safety standards. The project emphasizes practical engineering solutions that balance technical requirements, construction feasibility, and economic considerations in deep excavation projects.`,
     category: 'Geotechnical Engineering',
     team: 'Civil Engineering Department',
-    mentors: 'CP Shreyas, TG Abhinandhan, Sreeja',
+    mentors: 'Shreyas, TG Abhinandhan, Sreeja',
     // resources: [
     //   { title: 'Design Documents', url: '#' },
     //   { title: 'Stability Analysis', url: '#' }
+    // ]
+  },
+
+  {
+    id: 'expo-9',
+    title: 'Website for generating SFD and BMD for statically determinate structures',
+    date: '2025-2026',
+    status: 'Ongoing',
+    description: `This project focuses on the development of a web-based application for generating Shear Force Diagrams (SFD) and Bending Moment Diagrams (BMD) for statically determinate beam structures. The primary objective of the project was to simplify structural analysis calculations and provide an interactive visualization tool for civil engineering students and professionals. Manual computation of SFD and BMD is often time-consuming and prone to calculation errors, especially for multiple loading conditions. This website automates the entire process and produces accurate graphical results efficiently.
+    \n\nThe system accepts various input parameters such as beam type, span length, support conditions, point loads, uniformly distributed loads (UDL), and applied moments. Support reactions are calculated using equilibrium equations based on the principles of statics. The program then computes shear force and bending moment values at different beam sections and generates corresponding diagrams using graphical visualization techniques.
+    \n\nThe developed website provides accurate results that closely match manual calculations while significantly reducing analysis time. It improves conceptual understanding through clear graphical representation of structural behavior and serves as an effective educational and analytical tool. Future enhancements include extending the system to indeterminate structures, dynamic loading analysis, and advanced 3D visualization features.`,
+    category: 'Structural Analysis using Web-Based Computational Tools',
+    team: 'Civil Engineering Department',
+    mentors: 'Abhijith Sogal, Tejas Kumar, Vidya S.J',
+    // resources: [
+    //   { title: 'Coding documents', url: '#' },
+    //   { title: 'User Interface results', url: '#' }
+    // ]
+  },
+
+  {
+    id: 'expo-10',
+    title: 'Integration of BIM and GIS for a campus building model',
+    date: '2025-2026',
+    status: 'Ongoing',
+    description: `This project focuses on the integration of Building Information Modeling (BIM) and Geographic Information Systems (GIS) to develop an accurate digital model of a campus building. The main objective was to create a detailed 3D BIM model of the Himalaya Block (Mega Tower) at National Institute of Technology Karnataka and integrate it with GIS-based terrain data for improved spatial visualization and infrastructure documentation.
+    \n\nThe project was carried out using Autodesk Revit for architectural modeling, QGIS for terrain and contour data processing, and Twinmotion for photorealistic rendering. Initially, a sample residential model was created in Revit to understand BIM concepts such as walls, floors, roofs, and structural components. Campus contour data was then processed in QGIS and integrated into the BIM environment to achieve accurate site placement and terrain-aware design.
+    \n\nA detailed field survey of the building was conducted to collect precise dimensional data, which was used to create a realistic digital twin of the structure. The final integrated model enhanced visualization, spatial analysis, and future campus infrastructure planning while demonstrating the effectiveness of BIM-GIS integration in civil engineering applications.`,
+    category: 'BIM-GIS Integrated Infrastructure Modeling.',
+    team: 'Civil Engineering Department',
+    mentors: 'Amarnath, Asiya',
+    // resources: [
+    //   { title: 'BIM and GIS data', url: '#' },
+    //   { title: 'Integrated model results', url: '#' }
+    // ]
+  },
+
+  {
+    id: 'expo-11',
+    title: 'Precision Runway Engineering',
+    date: '2025-2026',
+    status: 'Ongoing',
+    description: `This project focuses on the development of an integrated framework for airport runway planning, combining geospatial analysis, wind alignment studies, and pavement structural design for efficient aviation infrastructure development. The primary objective was to identify technically suitable and economically feasible runway locations in Karnataka while ensuring compliance with international aviation standards.
+    \n\nThe project utilized Google Earth Engine for large-scale spatial filtering and site selection, along with meteorological analysis and FAARFIELD structural design software for pavement evaluation. Various GIS-based parameters such as land cover, terrain slope, road accessibility, urban safety, and growth potential were analyzed to shortlist optimal airport locations. Historical wind data was studied to determine the most suitable runway alignment for minimizing crosswind effects and improving operational safety.
+    \n\nStructural pavement design was carried out for a Code 4C airport supporting the Boeing 737-900 as the critical design aircraft. The pavement layers, runway dimensions, and bearing capacity were designed using mechanistic-empirical principles and verified through FAARFIELD analysis. The project demonstrates how integrating GIS, aviation engineering, and pavement design techniques can significantly improve airport planning efficiency, reduce survey costs, and support future regional infrastructure development.`,
+    category: 'GIS-Based Airport Infrastructure Planning and Pavement Engineering.',
+    team: 'Civil Engineering Department',
+    mentors: 'Gajendra, Sanjana, Aarshi',
+    // resources: [
+    //   { title: 'Design details', url: '#' },
+    //   { title: 'Analysis and results', url: '#' }
+    // ]
+  },
+
+  {
+    id: 'expo-12',
+    title: 'Printable Habitat Module for Extreme Environments',
+    date: '2025-2026',
+    status: 'Ongoing',
+    description: `This project focuses on the design and analysis of a printable habitat module suitable for extreme environments such as underwater regions, disaster-prone areas, deserts, polar regions, and extraterrestrial locations. The primary objective was to develop a structurally stable, durable, and rapidly deployable habitat using advanced construction technologies like 3D printing and modular construction. These technologies reduce dependency on heavy machinery, transportation, and labor while improving construction efficiency in inaccessible environments.
+    \n\nThe proposed habitat consists of a semi-spherical reinforced concrete dome designed using STAAD.Pro and analyzed through COMSOL Multiphysics for structural stability and environmental performance. The structure utilizes M40 grade concrete and Fe550 reinforcement steel to ensure high strength, low permeability, and resistance against severe environmental and hydrostatic conditions. Finite element analysis was carried out to evaluate stress distribution, displacement, and safety factors under extreme loading conditions.
+    \n\nThe results confirmed that the dome structure is structurally safe, durable, and economically feasible for offshore and remote applications. The project demonstrates the potential of combining 3D printing, structural engineering, and simulation technologies for future sustainable habitat construction in challenging environments.`,
+    category: 'Advanced Construction Technology and Structural Design.',
+    team: 'Civil Engineering Department',
+    mentors: 'Sahitya Boyar, Sounak Pal',
+    // resources: [
+    //   { title: 'Workflow details', url: '#' },
+    //   { title: 'Analysis and results', url: '#' }
+    // ]
+  },
+
+
+  {
+    id: 'expo-13',
+    title: 'Traffic Flow Prediction Using Machine Learning and Deep Learning',
+    date: '2025-2026',
+    status: 'Ongoing',
+    description: `This project focuses on predicting urban traffic flow using machine learning and deep learning techniques to improve traffic management and reduce congestion in rapidly growing cities. The main objective was to develop and compare different predictive models to identify the most accurate and efficient method for forecasting key traffic characteristics such as flow, density, and speed. Accurate prediction helps transportation systems respond proactively to changing traffic conditions and improve road efficiency.
+    \n\nThe study utilized historical single-sensor traffic data, where timestamps were converted into fixed intervals for analysis. Traditional machine learning models including Naïve Baseline, Moving Average, Random Forest, and Support Vector Machine (SVM) were implemented alongside the deep learning model Long Short-Term Memory (LSTM). The workflow involved data preprocessing, feature extraction, model training, hyperparameter tuning, and performance evaluation using metrics such as RMSE, MAE, Hit Ratio, and computational time.
+    \n\nThe results showed that the Support Vector Machine model achieved the best overall performance with the lowest prediction errors and highest accuracy, outperforming the deep learning approach for the given dataset. The project demonstrates the effectiveness of machine learning techniques in intelligent transportation systems and highlights their potential for future smart city traffic management applications.`,
+    category: 'Intelligent Transportation Systems',
+    team: 'Civil Engineering Department',
+    mentors: 'Priyanshu, Muskan',
+    // resources: [
+    //   { title: 'Workflow details', url: '#' },
+    //   { title: 'Analysis and results', url: '#' }
     // ]
   },
 ];
