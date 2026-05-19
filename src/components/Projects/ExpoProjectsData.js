@@ -134,6 +134,7 @@ export const expoProjectsData = [
     category: 'Structural Analysis using Web-Based Computational Tools',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Abhijith Sogal, Tejas Kumar, Vidya S.J',
+    report:  "/assets/websitesfdbmd.pptx",
     // resources: [
     //   { title: 'Coding documents', url: '#' },
     //   { title: 'User Interface results', url: '#' }
@@ -151,6 +152,7 @@ export const expoProjectsData = [
     category: 'BIM-GIS Integrated Infrastructure Modeling.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Amarnath, Asiya',
+    report : "/assets/bimngis.pdf",
     // resources: [
     //   { title: 'BIM and GIS data', url: '#' },
     //   { title: 'Integrated model results', url: '#' }
@@ -168,6 +170,7 @@ export const expoProjectsData = [
     category: 'GIS-Based Airport Infrastructure Planning and Pavement Engineering.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Gajendra, Sanjana, Aarshi',
+    report :  "/assets/runway.pptx",
     // resources: [
     //   { title: 'Design details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -185,6 +188,7 @@ export const expoProjectsData = [
     category: 'Advanced Construction Technology and Structural Design.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Sahitya Boyar, Sounak Pal',
+    report :  "/assets/printablehabitat.docx",
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -203,6 +207,7 @@ export const expoProjectsData = [
     category: 'Intelligent Transportation Systems',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Priyanshu, Muskan',
+    report :  "/assets/trafficflow.pptx",
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -220,6 +225,7 @@ export const expoProjectsData = [
     category: 'Sustainable Concrete Technology and Material Engineering.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Ayush Ashvaria, Shatayu Raut',
+    // report : 
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -237,6 +243,7 @@ export const expoProjectsData = [
     category: 'GIS-Based Renewable Energy Planning.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Not Known',
+    // report : 
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -254,6 +261,7 @@ export const expoProjectsData = [
     category: 'AI-Based Construction Cost Estimation.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors :Megharaj S Naik',
+    // report
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -271,6 +279,7 @@ export const expoProjectsData = [
     category: 'Smart Road Safety and Intelligent Transportation Systems.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Bhuvan Dharwad',
+    // report :
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -288,6 +297,7 @@ export const expoProjectsData = [
     category: 'Resilience-Based Earthquake Performance Assessment.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Prakhyath V Shetty, Pranaay Salian',
+    // report :
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -305,6 +315,7 @@ export const expoProjectsData = [
     category: 'Earthquake-Resistant Structural Design.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Vinitsing, Tanishq',
+    // report :
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -322,6 +333,7 @@ export const expoProjectsData = [
     category: 'Structural Rehabilitation and Retrofitting Engineering.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Not Known',
+    // report : 
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -339,6 +351,7 @@ export const expoProjectsData = [
     category: 'Structural Analysis of Transportation Infrastructure.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Eshan Mohamed Basheer, Aadil Rafeeque ',
+    // report : 
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }

@@ -48,13 +48,49 @@ const ProjectCard = ({ project, onClick }) => {
           {project.description ? project.description.split('\n')[0] : 'Project details coming soon'}
         </p>
         
-        {project.category && (
+        {/* { {project.category && (
           <div className="mt-auto">
             <span className="inline-block bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">
               {project.category}
             </span>
           </div>
-        )}
+        )} }  */}
+
+        <div className="mt-auto">
+    {/* Buttons */}
+    <div className="flex gap-3 mb-4">
+    
+      {project.report && (
+        <a
+          href={project.report}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition duration-300"
+        >
+          View Report
+        </a>
+      )}
+
+      {project.ppt && (
+        <a
+          href={project.ppt}
+          download
+          onClick={(e) => e.stopPropagation()}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition duration-300"
+        >
+          Download PPT
+        </a>
+      )}
+    </div>
+
+  {/* Category */}
+  {project.category && (
+    <span className="inline-block bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">
+      {project.category}
+    </span>
+  )}
+</div>
       </div>
     </div>
   );
