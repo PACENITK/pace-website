@@ -6,6 +6,7 @@ import Footer from '../components/Home/Footer';
 import AboutUs from '../components/Home/AboutUs/AboutUs';
 
 function Home() {
+  console.log('Home component rendered');
   const aboutUsRef = useRef(null);
   const footerRef = useRef(null);
 

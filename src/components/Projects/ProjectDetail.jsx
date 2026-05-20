@@ -5,13 +5,18 @@ const ProjectDetail = ({ project }) => {
   const renderDescription = () => {
     if (!project.description) return null;
     return project.description.split('\n\n').map((paragraph, index) => (
-      <p key={index} className="text-gray-300 mb-4">{paragraph.trim()}</p>
+      <p key={index} className="text-black/80 mb-4 leading-relaxed">
+        {paragraph.trim()}
+      </p>
     ));
   };
 
+  const displayTags = project.tags || (project.category ? [project.category] : []);
+
   return (
-    <div className="bg-gray-800 rounded-xl overflow-hidden">
-      <div className="relative h-[400px]">
+    <div className="bg-white border border-black rounded-xl overflow-hidden shadow-sm">
+      {/* Image / Header Section */}
+      <div className="relative h-[400px] border-b border-black">
         {project.image ? (
           <img
             src={project.image}
@@ -19,63 +24,92 @@ const ProjectDetail = ({ project }) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-900 to-gray-900 flex items-center justify-center">
-            <h2 className="text-3xl text-white font-bold px-6 text-center">{project.title}</h2>
+          <div className="w-full h-full bg-black flex items-center justify-center">
+            <h2 className="text-3xl text-white font-bold px-6 text-center">
+              {project.title}
+            </h2>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+        {/* Black gradient overlay so the white title text pops */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="absolute bottom-0 left-0 right-0 p-8">
-          <h1 className="text-4xl font-bold text-white">{project.title}</h1>
+          <h1 className="text-4xl font-bold text-white tracking-tight">
+            {project.title}
+          </h1>
         </div>
       </div>
 
+      {/* Content Section */}
       <div className="p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          {/* Main Description Column */}
           <div className="md:col-span-2">
-            <div className="bg-gray-700/50 rounded-lg p-6 mb-6">
-              <h2 className="text-xl font-semibold text-white mb-4">About the Project</h2>
+            <div className="border border-black rounded-lg p-6 mb-6">
+              <h2 className="text-xl font-bold text-black mb-4 pb-2 border-b border-black/10">
+                About the Project
+              </h2>
               {renderDescription()}
             </div>
           </div>
 
-          <div className="bg-gray-700/50 rounded-lg p-6 h-fit">
-            <h2 className="text-xl font-semibold text-white mb-4">Project Details</h2>
-            <div className="space-y-4">
+          {/* Sidebar / Details Column */}
+          <div className="border border-black rounded-lg p-6 h-fit bg-white">
+            <h2 className="text-xl font-bold text-black mb-4 pb-2 border-b border-black/10">
+              Project Details
+            </h2>
+            <div className="space-y-4 font-medium">
               {project.date && (
-                <div className="flex items-center text-gray-300">
-                  <Calendar className="w-5 h-5 mr-3 text-blue-400" />
+                <div className="flex items-center text-black/80">
+                  <Calendar className="w-5 h-5 mr-3 text-black" />
                   <span>{project.date}</span>
                 </div>
               )}
               {project.venue && (
-                <div className="flex items-center text-gray-300">
-                  <MapPin className="w-5 h-5 mr-3 text-blue-400" />
+                <div className="flex items-center text-black/80">
+                  <MapPin className="w-5 h-5 mr-3 text-black" />
                   <span>{project.venue}</span>
                 </div>
               )}
               {project.team && (
-                <div className="flex items-center text-gray-300">
-                  <Users className="w-5 h-5 mr-3 text-blue-400" />
+                <div className="flex items-center text-black/80">
+                  <Users className="w-5 h-5 mr-3 text-black" />
                   <span>{project.team}</span>
                 </div>
               )}
               {project.mentors && (
-                <div className="flex items-center text-gray-300">
-                  <span>{project.mentors}</span>
+                <div className="flex items-center text-black/80">
+                  <span className="pl-8">{project.mentors}</span>
+                </div>
+              )}
+              {/* Tags Section */}
+              {displayTags.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-black/10">
+                  <h3 className="text-sm font-bold text-black mb-3 uppercase tracking-wider">Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {displayTags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="inline-block bg-white text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* LinkedIn Post as a Button (No Extra Title) */}
+            {/* LinkedIn Post as a Button */}
             {project.resources && project.resources.length > 0 && (
-              <div className="mt-6">
+              <div className="mt-8 pt-6 border-t border-black/10">
                 {project.resources.map((resource, index) => (
                   <a
                     key={index}
                     href={resource.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
+                    className="block w-full text-center bg-black hover:bg-red-600 text-white font-medium py-2.5 rounded-md transition-colors duration-300"
                   >
                     LinkedIn Post
                   </a>

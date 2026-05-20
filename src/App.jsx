@@ -11,6 +11,7 @@ import Nirmaan from './components/Nirmaan/Nirmaan';
 import TeamPage from './components/Team/Team';
 
 function App() {
+  console.log('App component rendered');
   return (
     <Router>
       <Routes>

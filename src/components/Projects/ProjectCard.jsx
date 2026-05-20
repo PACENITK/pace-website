@@ -2,95 +2,99 @@ import React from 'react';
 import { Calendar, Activity } from 'lucide-react';
 
 const ProjectCard = ({ project, onClick }) => {
+  // Normalize tags array (supports both new 'tags' array and old 'category' string)
+  const displayTags = project.tags || (project.category ? [project.category] : []);
+
   return (
     <div 
       onClick={() => onClick(project)}
-      className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-[1.02] h-full flex flex-col"
+      className="group bg-white border border-black rounded-lg overflow-hidden hover:border-red-600 transition-all duration-300 cursor-pointer flex flex-col h-full shadow-sm hover:shadow-md"
     >
       {project.image ? (
-        <div className="relative h-48">
+        <div className="relative h-48 border-b border-black">
           <img
             src={project.image}
             alt={project.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
         </div>
       ) : (
-        <div className="w-full h-48 bg-gradient-to-br from-blue-900 to-gray-900 flex items-center justify-center">
-          <h3 className="text-2xl text-white font-bold px-4 text-center">
+        <div className="w-full h-48 bg-black flex items-center justify-center border-b border-black">
+          <h3 className="text-2xl text-white font-bold px-6 text-center">
             {project.title}
           </h3>
         </div>
       )}
       
       <div className="p-6 flex-1 flex flex-col">
-        <div className="flex items-center space-x-4 text-blue-400 mb-4">
+        {/* Meta Info */}
+        <div className="flex items-center space-x-4 text-black/60 mb-4 text-sm font-medium">
           {project.date && (
             <div className="flex items-center">
-              <Calendar className="w-5 h-5 mr-2" />
+              <Calendar className="w-4 h-4 mr-1.5" />
               <span>{project.date}</span>
             </div>
           )}
           {project.status && (
             <div className="flex items-center">
-              <Activity className="w-5 h-5 mr-2" />
+              <Activity className="w-4 h-4 mr-1.5" />
               <span>{project.status}</span>
             </div>
           )}
         </div>
         
         {project.image && (
-          <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
+          <h3 className="text-xl font-bold text-black mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+            {project.title}
+          </h3>
         )}
         
-        <p className="text-gray-300 line-clamp-2 mb-4 flex-grow">
+        <p className="text-black/70 text-sm line-clamp-2 mb-6 flex-grow">
           {project.description ? project.description.split('\n')[0] : 'Project details coming soon'}
         </p>
-        
-        {/* { {project.category && (
-          <div className="mt-auto">
-            <span className="inline-block bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">
-              {project.category}
-            </span>
-          </div>
-        )} }  */}
 
         <div className="mt-auto">
-    {/* Buttons */}
-    <div className="flex gap-3 mb-4">
-    
-      {project.report && (
-        <a
-          href={project.report}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition duration-300"
-        >
-          View Report
-        </a>
-      )}
+          {/* Buttons */}
+          <div className="flex flex-wrap gap-3 mb-4">
+            {project.report && (
+              <a
+                href={project.report}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+              >
+                View Report
+              </a>
+            )}
 
-      {project.ppt && (
-        <a
-          href={project.ppt}
-          download
-          onClick={(e) => e.stopPropagation()}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition duration-300"
-        >
-          Download PPT
-        </a>
-      )}
-    </div>
+            {project.ppt && (
+              <a
+                href={project.ppt}
+                download
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white hover:bg-red-50 text-black border border-black hover:border-red-600 hover:text-red-600 px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+              >
+                Download PPT
+              </a>
+            )}
+          </div>
 
-  {/* Category */}
-  {project.category && (
-    <span className="inline-block bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">
-      {project.category}
-    </span>
-  )}
-</div>
+          {/* Multiple Tag Pills */}
+          {displayTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {displayTags.map((tag, index) => (
+                <span 
+                  key={index} 
+                  className="inline-block bg-white text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

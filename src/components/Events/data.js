@@ -3,7 +3,7 @@ import prestressing from '../../assets/Events/prestressing.jpg';
 import geoinnovate from '../../assets/Events/geoinnovate/geoinnovate.jpg';
 import stability from '../../assets/Events/stability/stability.jpg';
 import lhcd from '../../assets/Events/LHCD/LHCD.jpg';
-import inaugural from '../../assets/Events/inaugural/inaugural.jpg';
+// import inaugural from '../../assets/Events/inaugural/inaugural.jpg';
 import riskitright from '../../assets/Events/riskitright/riskitright.jpeg';
 import catapult from '../../assets/Events/catapult/catapult.jpeg';
 import techsite from '../../assets/Events/tech-sitevisit/tech-sitevisit.jpeg';
@@ -191,7 +191,7 @@ It was a fun, hands-on experience in problem-solving, teamwork, and engineering 
         time: "Completed",
         description: `We recently held our first full-club meet, where 100+ students came together to kickstart this initiative! The event featured exciting discussions, team introductions, and goal-setting for the semester. 
         Our team shared the vision for the club, and our new members got a glimpse of the ambitious projects ahead.`,
-        image: inaugural,
+        image: "",
         // venue: ,
         mode: "Offline",
         resources: [
