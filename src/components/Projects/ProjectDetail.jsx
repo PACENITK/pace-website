@@ -34,7 +34,7 @@ const ProjectDetail = ({ project }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <h1 className="text-4xl font-bold text-white tracking-tight">
-            {project.title}
+            {/* {project.title} */}
           </h1>
         </div>
       </div>
@@ -60,25 +60,25 @@ const ProjectDetail = ({ project }) => {
             </h2>
             <div className="space-y-4 font-medium">
               {project.date && (
-                <div className="flex items-center text-black/80">
-                  <Calendar className="w-5 h-5 mr-3 text-black" />
+                <div className="flex items-center  text-blue-900">
+                  <Calendar className="w-5 h-5 mr-3 text-blue-900" />
                   <span>{project.date}</span>
                 </div>
               )}
               {project.venue && (
-                <div className="flex items-center text-black/80">
-                  <MapPin className="w-5 h-5 mr-3 text-black" />
+                <div className="flex items-center text-blue-900">
+                  <MapPin className="w-5 h-5 mr-3 text-blue-900" />
                   <span>{project.venue}</span>
                 </div>
               )}
               {project.team && (
-                <div className="flex items-center text-black/80">
-                  <Users className="w-5 h-5 mr-3 text-black" />
+                <div className="flex items-center text-blue-900">
+                  <Users className="w-5 h-5 mr-3 text-blue-900" />
                   <span>{project.team}</span>
                 </div>
               )}
               {project.mentors && (
-                <div className="flex items-center text-black/80">
+                <div className="flex items-center text-black">
                   <span className="pl-8">{project.mentors}</span>
                 </div>
               )}
@@ -90,7 +90,7 @@ const ProjectDetail = ({ project }) => {
                     {displayTags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-block bg-white text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
+                        className="inline-block bg-blue-400 text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
                       >
                         {tag}
                       </span>

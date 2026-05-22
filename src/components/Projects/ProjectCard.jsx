@@ -29,7 +29,7 @@ const ProjectCard = ({ project, onClick }) => {
       
       <div className="p-6 flex-1 flex flex-col">
         {/* Meta Info */}
-        <div className="flex items-center space-x-4 text-black/60 mb-4 text-sm font-medium">
+        <div className="flex items-center space-x text-blue-900/60 mb-4 text-sm font-medium">
           {project.date && (
             <div className="flex items-center">
               <Calendar className="w-4 h-4 mr-1.5" />
@@ -87,7 +87,7 @@ const ProjectCard = ({ project, onClick }) => {
               {displayTags.map((tag, index) => (
                 <span 
                   key={index} 
-                  className="inline-block bg-white text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
+                  className="inline-block bg-blue-400 text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
                 >
                   {tag}
                 </span>

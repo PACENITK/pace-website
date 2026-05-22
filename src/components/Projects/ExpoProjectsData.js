@@ -9,6 +9,7 @@ export const expoProjectsData = [
     category: 'Remote Sensing & ML',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Aditi Pagariya, Swapnil, Aditya',
+    // report : ""
     // resources: [
     //   { title: 'Project Documentation', url: '#' },
     //   { title: 'Research Paper', url: '#' }
@@ -23,7 +24,8 @@ export const expoProjectsData = [
     description: 'This project explores the application of Building Information Modeling (BIM) for energy efficiency analysis using Autodesk Revit. We\'re developing comprehensive 3D building models that incorporate architectural elements, structural components, and mechanical systems to simulate and analyze energy performance.\n\nThe primary objectives include mastering Revits energy modeling capabilities, understanding the fundamental principles of building energy consumption, and designing energy-efficient structures under various environmental conditions. The project demonstrates how digital modeling can predict energy usage patterns before construction begins.\n\nOur methodology involves creating detailed building geometries in Revit, assigning appropriate materials with thermal properties, specifying HVAC systems, and conducting energy simulations across different seasons and climate conditions. We analyze factors such as heat gain/loss, solar exposure, natural ventilation, and insulation performance. The results provide valuable insights for optimizing building orientation, envelope design, material selection, and mechanical systems to minimize energy consumption while maintaining occupant comfort.',
     category: 'Building Information Modeling',
     team: 'Civil Engineering Department',
-    mentors: 'Mentors : Not specified',
+    mentors: 'Mentors : Shambhavi jha',
+    report : "/assets/BIM-20260521T030742Z-3-001.zip"
     // resources: [
     //   { title: 'Project Documentation', url: '#' },
     //   { title: 'Model Files', url: '#' }
@@ -39,6 +41,7 @@ export const expoProjectsData = [
     category: 'Structural Engineering',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Ayush',
+    report : "/assets/Optimization of Loads on Bridge-20260521T030744Z-3-001.zip"
     // resources: [
     //   { title: 'STAAD Pro Files', url: '#' },
     //   { title: 'Analysis Report', url: '#' }
@@ -54,6 +57,7 @@ export const expoProjectsData = [
     category: 'Structural Engineering',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Shubham Prakash',
+    // report : ""
     // resources: [
     //   { title: 'STAAD Pro Files', url: '#' },
     //   { title: 'Design Report', url: '#' }
@@ -69,6 +73,7 @@ export const expoProjectsData = [
     category: 'Concrete Technology & ML',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Sree Chandana, Pavithra',
+    report : "/assets/Prediction of Compressive strength of Concrete-20260522T032009Z-3-001.zip"
     // resources: [
     //   { title: 'Dataset', url: '#' },
     //   { title: 'ML Model', url: '#' }
@@ -82,8 +87,10 @@ export const expoProjectsData = [
     description: 'This architectural project employs advanced digital design tools to create a comprehensive 3D model of a residential house. Using a combination of Revit 3D and AutoCAD software, we\'re developing a fully detailed architectural visualization that demonstrates modern Building Information Modeling (BIM) principles.\n\nThe project encompasses multiple design elements, beginning with accurate floor plans that define spatial relationships and room arrangements. Detailed elevations showcase the exterior appearance from all cardinal directions, highlighting facade treatments, window placements, and roofing designs. Cross-sectional views reveal the internal structural relationships and vertical circulation elements.\n\nA major focus is creating photorealistic 3D visualizations that accurately represent materials, lighting conditions, and spatial qualities. These renderings help clients and stakeholders better understand the proposed design before construction begins. The integration between Revit\'s parametric modeling capabilities and AutoCAD\'s precise drafting tools demonstrates how modern architects leverage complementary software to streamline the design process.\n\nBeyond the technical aspects, this project explores principles of residential design including spatial efficiency, natural lighting optimization, circulation flow, and aesthetic cohesion. The resulting model serves as both a design development tool and a communication medium for presenting architectural concepts to non-technical audiences. Students gain valuable experience in digital design methodology that directly translates to professional practice in architectural firms.',
     category: 'Architectural & Designing',
     team: 'Civil Engineering Department',
-    mentors: 'Mentors : Aakash Kumar S K',
+    mentors: 'Mentors : Shubham Prakash',
     tags: ['Architecture', 'BIM', 'Revit', 'AutoCAD'],
+    report : "/assets/3D Modelling of Residential Building -20260521T030739Z-3-001.zip"
+    // repoort : 
     // resources: [
     //   { title: 'Revit Files', url: '#' },
     //   { title: 'AutoCAD Drawings', url: '#' }
@@ -103,6 +110,7 @@ export const expoProjectsData = [
     category: 'RS and GIS',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Saketh N',
+    // report : 
     // resources: [
     //   { title: 'GIS Data', url: '#' },
     //   { title: 'Classification Results', url: '#' }
@@ -119,6 +127,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Shreyas, TG Abhinandhan, Sreeja',
     tags: ['Geotechnical Engineering', 'Construction Management', 'Soil Mechanics'],
+    report : "/assets/Design of Temporary structure for deep excavation-20260522T032246Z-3-001.zip"
     // resources: [
     //   { title: 'Design Documents', url: '#' },
     //   { title: 'Stability Analysis', url: '#' }
@@ -193,7 +202,7 @@ export const expoProjectsData = [
     category: 'Advanced Construction Technology and Structural Design.',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Sahitya Boyar, Sounak Pal',
-    report :  "/assets/printablehabitat.docx",
+    report :  "/assets/Printable Habitat Module for Extreme Environments-20260522T032939Z-3-001.zip",
     tags: ['GIS', 'Transportation Engineering', 'Pavement Design'],
     // resources: [
     //   { title: 'Workflow details', url: '#' },
@@ -233,6 +242,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Ayush Ashvaria, Shatayu Raut',
     tags: ['Concrete Technology', 'Sustainability', 'Material Science'],
+    report : "/assets/Mechanical and Durability Performance of Fly Ash-Based Geopolymer Concrete-20260522T033155Z-3-001.zip"
     // report : 
     // resources: [
     //   { title: 'Workflow details', url: '#' },
@@ -250,8 +260,9 @@ export const expoProjectsData = [
     \n\nThe results demonstrated that GIS-based analysis provides an effective and accurate approach for planning rooftop solar energy systems in urban areas. The project highlights the importance of integrating renewable energy technologies with geospatial tools to support sustainable infrastructure planning, reduce dependence on conventional energy sources, and encourage environmentally responsible residential development.`,
     category: 'GIS-Based Renewable Energy Planning.',
     team: 'Civil Engineering Department',
-    mentors: 'Mentors : Not Known',
+    mentors: 'Mentors : Bidisha Koley, Zia Zohra, Saranksh T.R',
     tags: ['GIS', 'Renewable Energy', 'QGIS', 'Urban Planning'],
+    report : "/assets/Solar Energy Suitability for Residential Rooftops Using QGIS-20260522T033614Z-3-001.zip"
     // report : 
     // resources: [
     //   { title: 'Workflow details', url: '#' },
@@ -271,6 +282,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors :Megharaj S Naik',
     tags: ['Machine Learning', 'Construction Management', 'AI'],
+    // report : ""
     // report
     // resources: [
     //   { title: 'Workflow details', url: '#' },
@@ -290,7 +302,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Bhuvan Dharwad',
     tags: ['Transportation Engineering', 'Material Science', 'Road Safety'],
-    // report :
+    report : "/assets/Smart Road Bump Using Non-Newtonian Fluids-20260522T033851Z-3-001.zip"
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -328,6 +340,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Vinitsing, Tanishq',
     tags: ['Earthquake Engineering', 'Structural Engineering', 'RC Design'],
+    // report : "/assets/"
     // report :
     // resources: [
     //   { title: 'Workflow details', url: '#' },
@@ -365,7 +378,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Eshan Mohamed Basheer, Aadil Rafeeque ',
     tags: ['Structural Engineering', 'Bridge Engineering', 'Transportation Infrastructure'],
-    // report : 
+    report : "/assets/Structural Analysis of Bandra–Worli Sea Link-20260522T034445Z-3-001.zip"
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
