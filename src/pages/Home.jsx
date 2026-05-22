@@ -4,6 +4,7 @@ import Hero from '../components/Home/Hero';
 import ActivityLog from '../components/Home/ActivityLog/ActivityLog';
 import Footer from '../components/Home/Footer';
 import AboutUs from '../components/Home/AboutUs/AboutUs';
+import SeniorMessages from '../components/Home/SeniorMessages';
 
 function Home() {
   console.log('Home component rendered');
@@ -32,6 +33,7 @@ function Home() {
           <AboutUs />
         </div>
       </main>
+      <SeniorMessages/>
       <div ref={footerRef}>
         <Footer />
       </div>
