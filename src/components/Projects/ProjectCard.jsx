@@ -2,14 +2,16 @@ import React from 'react';
 import { Calendar, Activity } from 'lucide-react';
 
 const ProjectCard = ({ project, onClick }) => {
-  // Normalize tags array (supports both new 'tags' array and old 'category' string)
-  const displayTags = project.tags || (project.category ? [project.category] : []);
+  // Normalize tags array
+  const displayTags =
+    project.tags || (project.category ? [project.category] : []);
 
   return (
-    <div 
+    <div
       onClick={() => onClick(project)}
       className="group bg-white border border-black rounded-lg overflow-hidden hover:border-red-600 transition-all duration-300 cursor-pointer flex flex-col h-full shadow-sm hover:shadow-md"
     >
+      {/* Project Image */}
       {project.image ? (
         <div className="relative h-48 border-b border-black">
           <img
@@ -26,7 +28,8 @@ const ProjectCard = ({ project, onClick }) => {
           </h3>
         </div>
       )}
-      
+
+      {/* Content */}
       <div className="p-6 flex-1 flex flex-col">
         {/* Meta Info */}
         <div className="flex items-center space-x text-blue-900/60 mb-4 text-sm font-medium">
@@ -36,6 +39,7 @@ const ProjectCard = ({ project, onClick }) => {
               <span>{project.date}</span>
             </div>
           )}
+
           {project.status && (
             <div className="flex items-center">
               <Activity className="w-4 h-4 mr-1.5" />
@@ -43,50 +47,61 @@ const ProjectCard = ({ project, onClick }) => {
             </div>
           )}
         </div>
-        
+
+        {/* Title */}
         {project.image && (
           <h3 className="text-xl font-bold text-black mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
             {project.title}
           </h3>
         )}
-        
+
+        {/* Description */}
         <p className="text-black/70 text-sm line-clamp-2 mb-6 flex-grow">
-          {project.description ? project.description.split('\n')[0] : 'Project details coming soon'}
+          {project.description
+            ? project.description.split('\n')[0]
+            : 'Project details coming soon'}
         </p>
 
+        {/* reports and ppts below description section */}
+            {/* <div className="flex flex-wrap gap-3 mt-10">
+              {project.report && (
+                <a
+                  href={project.report}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+                >
+                  View Report
+                </a>
+              )}
+
+            </div>
+
+            <div className="flex flex-wrap gap-3 mb-4">
+              {project.pptx && (
+                <a
+                  href={project.pptx}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+                >
+                  View Report
+                </a>
+              )}
+              
+            </div> */}
+
+        {/* Bottom Section */}
         <div className="mt-auto">
-          {/* Buttons */}
-          <div className="flex flex-wrap gap-3 mb-4">
-            {project.report && (
-              <a
-                href={project.report}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
-              >
-                View Report
-              </a>
-            )}
 
-            {project.ppt && (
-              <a
-                href={project.ppt}
-                download
-                onClick={(e) => e.stopPropagation()}
-                className="bg-white hover:bg-red-50 text-black border border-black hover:border-red-600 hover:text-red-600 px-4 py-2 rounded-md text-sm font-medium transition duration-300"
-              >
-                Download PPT
-              </a>
-            )}
-          </div>
-
-          {/* Multiple Tag Pills */}
+          {/* Tags */}
           {displayTags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {displayTags.map((tag, index) => (
-                <span 
-                  key={index} 
+                <span
+                  key={index}
                   className="inline-block bg-blue-400 text-black border border-black px-3 py-1 rounded-full text-xs font-semibold"
                 >
                   {tag}
@@ -94,6 +109,7 @@ const ProjectCard = ({ project, onClick }) => {
               ))}
             </div>
           )}
+
         </div>
       </div>
     </div>

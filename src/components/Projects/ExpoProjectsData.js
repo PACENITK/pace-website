@@ -201,9 +201,9 @@ export const expoProjectsData = [
     \n\nThe results confirmed that the dome structure is structurally safe, durable, and economically feasible for offshore and remote applications. The project demonstrates the potential of combining 3D printing, structural engineering, and simulation technologies for future sustainable habitat construction in challenging environments.`,
     category: 'Advanced Construction Technology and Structural Design.',
     team: 'Civil Engineering Department',
-    mentors: 'Mentors : Sahitya Boyar, Sounak Pal',
+    mentors: 'Mentors : Sahitya Bhoyar, Sounak Pal',
     report :  "/assets/Printable Habitat Module for Extreme Environments-20260522T032939Z-3-001.zip",
-    tags: ['GIS', 'Transportation Engineering', 'Pavement Design'],
+    tags: ['3D Printing', 'Structural Engineering', 'Modular Construction', 'Finite Element Analysis'],
     // resources: [
     //   { title: 'Workflow details', url: '#' },
     //   { title: 'Analysis and results', url: '#' }
@@ -260,7 +260,7 @@ export const expoProjectsData = [
     \n\nThe results demonstrated that GIS-based analysis provides an effective and accurate approach for planning rooftop solar energy systems in urban areas. The project highlights the importance of integrating renewable energy technologies with geospatial tools to support sustainable infrastructure planning, reduce dependence on conventional energy sources, and encourage environmentally responsible residential development.`,
     category: 'GIS-Based Renewable Energy Planning.',
     team: 'Civil Engineering Department',
-    mentors: 'Mentors : Bidisha Koley, Zia Zohra, Saranksh T.R',
+    mentors: 'Mentors : Saranksh T.R, Bidisha Koley, Zia Zohra,',
     tags: ['GIS', 'Renewable Energy', 'QGIS', 'Urban Planning'],
     report : "/assets/Solar Energy Suitability for Residential Rooftops Using QGIS-20260522T033614Z-3-001.zip"
     // report : 

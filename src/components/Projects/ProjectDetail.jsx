@@ -100,6 +100,37 @@ const ProjectDetail = ({ project }) => {
               )}
             </div>
 
+              {/* reports and ppts inside description section */}
+            <div className="flex flex-wrap gap-3 mt-10">
+              {project.report && (
+                <a
+                  href={project.report}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+                >
+                  View Report
+                </a>
+              )}
+
+            </div>
+
+            <div className="flex flex-wrap gap-3 mb-4">
+              {project.pptx && (
+                <a
+                  href={project.pptx}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+                >
+                  View Report
+                </a>
+              )}
+              
+            </div>
+
             {/* LinkedIn Post as a Button */}
             {project.resources && project.resources.length > 0 && (
               <div className="mt-8 pt-6 border-t border-black/10">
