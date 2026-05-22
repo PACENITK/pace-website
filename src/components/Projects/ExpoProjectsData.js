@@ -9,7 +9,7 @@ export const expoProjectsData = [
     category: 'Remote Sensing & ML',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Aditi Pagariya, Swapnil, Aditya',
-    // report : ""
+    report : "/assets/Shoreline Erosion Prediction.pdf"
     // resources: [
     //   { title: 'Project Documentation', url: '#' },
     //   { title: 'Research Paper', url: '#' }
@@ -49,7 +49,7 @@ export const expoProjectsData = [
   },
   {
     id: 'expo-4',
-    title: 'Design and Analysis of a G+5 Residential Building Under Wind Load and Seismic Load',
+    title: 'Design and Analysis of a G+10 Residential Building Under Wind Load and Seismic Load',
     date: '2024-2025',
     status: 'Completed',
     tags: ['Structural Engineering', 'Seismic Design', 'STAAD Pro'],
@@ -57,7 +57,7 @@ export const expoProjectsData = [
     category: 'Structural Engineering',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Shubham Prakash',
-    // report : ""
+    report : "/assets/Analysis & Design of G+10 residential Building -20260521T030740Z-3-001.zip"
     // resources: [
     //   { title: 'STAAD Pro Files', url: '#' },
     //   { title: 'Design Report', url: '#' }
@@ -110,7 +110,7 @@ export const expoProjectsData = [
     category: 'RS and GIS',
     team: 'Civil Engineering Department',
     mentors: 'Mentors : Saketh N',
-    // report : 
+    // report : ""
     // resources: [
     //   { title: 'GIS Data', url: '#' },
     //   { title: 'Classification Results', url: '#' }
