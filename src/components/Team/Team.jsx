@@ -105,7 +105,7 @@ const SectionTitle = ({ title }) => (
 );
 
 const TeamPage = () => {
-  const { leadership, adminCore, coreTeam } = teamData;
+  const { leadership, adminCore, coreTeam,prevadminCore, prevcoreTeam  } = teamData;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -135,7 +135,7 @@ const TeamPage = () => {
                 ))}
               </div>
             </div>
-
+                {/* Just copy from here */}
             <div className="mt-32">
               <SectionTitle title="Admin Core" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
@@ -191,6 +191,29 @@ const TeamPage = () => {
                 </div>
               </div>
             </div> */}
+
+            <div className="mt-32">
+              <SectionTitle title="Previous Admin Core" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {prevadminCore.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-32">
+              <SectionTitle title="Previous Core Team" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-items-center mb-32">
+                <div className="col-span-full flex justify-center gap-24 flex-wrap">
+                  {prevcoreTeam.map((member, index) => (
+                    <ProfileCard key={index} {...member} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

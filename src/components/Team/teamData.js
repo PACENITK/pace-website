@@ -11,6 +11,7 @@ import subhodh from "../../assets/Team/AdminCore/subhodh.jpeg";
 import shubham from "../../assets/Team/Core/shubham.png";
 import charan from "../../assets/Team/Core/charan.jpeg";
 import abhiram from '../../assets/Team/Core/abhiram.jpg';
+import vidya from '../../assets/Team/admincore2/vidya.jpeg';
 
 const teamData = {
   leadership: [
@@ -35,8 +36,137 @@ const teamData = {
       imageSrc: FA
     }
   ],
-  
+
+  // current admin core and core team details
+
   adminCore: [
+    {
+      name: "Saranksh Thara Ramprakash",
+      role: "Convenor",
+      socialLinks: {
+         linkedin: "https://www.linkedin.com/in/saranksh-tr-29b447323/",
+         email: "sarankshthararamprakash.231cv145@nitk.edu.in"
+      },
+      //imageSrc: saranksh
+    },
+
+    {
+      name: "Sahitya V Bhoyar",
+      role: "Joint Convenor",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/sahitya-bhoyar-789672304/",
+        email: "bhoyarsahityavinodkumar.231cv114@nitk.edu.in"
+      },
+      //imageSrc: sahitya
+    },
+
+    {
+      name: "Amarnath",
+      role: "Secretary",
+      socialLinks: {
+         linkedin: "",
+         email: ""
+      },
+      //imageSrc: amarnath
+    },
+
+    {
+      name: "prakhyath",
+      role: "Chairperson",
+      socialLinks: {
+         linkedin: "",
+         email: ""
+      },
+      //imageSrc: prakhyath
+    },
+
+    {
+      name: "Ayush Ashvaria",
+      role: "Treasurer",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/ayush-ashvaria-5a0859300/?originalSubdomain=in",
+        email: "ayush.231cv212@nitk.edu.in"
+      },
+      //imageSrc: ayush
+    },
+
+    {
+      name: "Abhijith Sogal",
+      role: "Technical Coordinator",
+      socialLinks: {
+         linkedin: "https://www.linkedin.com/in/abhijith-sogal/?originalSubdomain=in",
+         email: "abhijith.231cv203@nitk.edu.in"
+      },
+      //imageSrc: abhijith
+    },
+
+    {
+      name: "Gajendra Kinodiya",
+      role: "Technical Coordinator",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/gajendra-kinodiya-2b3b1334a/",  
+        email: "gajendra.231CV222@nitk.edu.in"
+      },
+      //imageSrc: gajendra
+    },
+    
+    {
+      name: "Vidya S.J",
+      role: "Web Head",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/vidya-s-j-bb3b66276/",
+        email: "vidyasiddappajamkhandi.231cv155@nitk.edu.in" // default empty
+      },
+      imageSrc: vidya
+    },
+
+  ],
+  
+  coreTeam: [
+    {
+      name: "Tanush Rakesh karkade",
+      role: "Media Head",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/tanushkarkade?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+        email: "tanushkarkade.241cv228@nitk.edu.in"
+      },
+      //imageSrc: tanush
+    },
+    {
+      name: "Anubhav Narayan Rob",
+      role: "Marketing head",
+      socialLinks: {
+        //linkedin: ,
+        email: "anubhavnarayanrob.241cv208@nitk.edu.in"
+      },
+      //imageSrc: anubhav
+    },
+
+    {
+      name: "Omair Ahmed J",
+      role: "Event Coordinator",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/omair-ahmed-j-76395a369/",
+        email: "omairahmedj.241cv237@nitk.edu.in"
+      },
+      //imageSrc: omair
+    },
+
+    {
+      name: "Vaishmi",
+      role: "Event Coordinator",
+      socialLinks: {
+        linkedin: "",
+        email: ""
+      },
+      //imageSrc: vaishmi
+    },
+    
+  ],
+
+  // old admin core and core team details
+  
+  prevadminCore: [
     {
       name: "Riya Aji",
       role: "Convenor",
@@ -146,7 +276,7 @@ const teamData = {
     }
   ],
   
-  coreTeam: [
+  prevcoreTeam: [
     {
       name: "Sree Chandana Malyala",
       role: "Technical Coordinator",
