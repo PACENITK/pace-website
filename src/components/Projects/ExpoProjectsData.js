@@ -282,7 +282,7 @@ export const expoProjectsData = [
     team: 'Civil Engineering Department',
     mentors: 'Mentors :Megharaj S Naik',
     tags: ['Machine Learning', 'Construction Management', 'AI'],
-    // report : ""
+    report : "/assets/Smart_Construction_Cost_ML_Report.docx"
     // report
     // resources: [
     //   { title: 'Workflow details', url: '#' },
