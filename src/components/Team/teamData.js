@@ -12,6 +12,14 @@ import shubham from "../../assets/Team/Core/shubham.png";
 import charan from "../../assets/Team/Core/charan.jpeg";
 import abhiram from '../../assets/Team/Core/abhiram.jpg';
 import vidya from '../../assets/Team/admincore2/vidya.jpeg';
+import abhijith from '../../assets/Team/admincore2/abhijith.png';
+import anubhav from '../../assets/Team/admincore2/anubhav.jpg';
+import ayushash from '../../assets/Team/admincore2/ayushash.jpeg';
+import gajendra from '../../assets/Team/admincore2/gajendra..jpg';
+import omair from '../../assets/Team/admincore2/omair.png';
+import sahitya from '../../assets/Team/admincore2/sahitya.jpeg';
+import saranksh from '../../assets/Team/admincore2/saranksh.jpeg';
+import tanush from '../../assets/Team/admincore2/tanush.jpg';
 
 const teamData = {
   leadership: [
@@ -47,7 +55,7 @@ const teamData = {
          linkedin: "https://www.linkedin.com/in/saranksh-tr-29b447323/",
          email: "sarankshthararamprakash.231cv145@nitk.edu.in"
       },
-      //imageSrc: saranksh
+      imageSrc: saranksh
     },
 
     {
@@ -57,7 +65,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/sahitya-bhoyar-789672304/",
         email: "bhoyarsahityavinodkumar.231cv114@nitk.edu.in"
       },
-      //imageSrc: sahitya
+      imageSrc: sahitya
     },
 
     {
@@ -87,7 +95,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/ayush-ashvaria-5a0859300/?originalSubdomain=in",
         email: "ayush.231cv212@nitk.edu.in"
       },
-      //imageSrc: ayush
+      imageSrc: ayushash
     },
 
     {
@@ -97,7 +105,7 @@ const teamData = {
          linkedin: "https://www.linkedin.com/in/abhijith-sogal/?originalSubdomain=in",
          email: "abhijith.231cv203@nitk.edu.in"
       },
-      //imageSrc: abhijith
+      imageSrc: abhijith
     },
 
     {
@@ -107,7 +115,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/gajendra-kinodiya-2b3b1334a/",  
         email: "gajendra.231CV222@nitk.edu.in"
       },
-      //imageSrc: gajendra
+      imageSrc: gajendra
     },
     
     {
@@ -130,7 +138,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/tanushkarkade?utm_source=share_via&utm_content=profile&utm_medium=member_android",
         email: "tanushkarkade.241cv228@nitk.edu.in"
       },
-      //imageSrc: tanush
+      imageSrc: tanush
     },
     {
       name: "Anubhav Narayan Rob",
@@ -139,7 +147,7 @@ const teamData = {
         //linkedin: ,
         email: "anubhavnarayanrob.241cv208@nitk.edu.in"
       },
-      //imageSrc: anubhav
+      imageSrc: anubhav
     },
 
     {
@@ -149,7 +157,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/omair-ahmed-j-76395a369/",
         email: "omairahmedj.241cv237@nitk.edu.in"
       },
-      //imageSrc: omair
+      imageSrc: omair
     },
 
     {
