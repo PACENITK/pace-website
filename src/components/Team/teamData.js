@@ -20,6 +20,8 @@ import omair from '../../assets/Team/admincore2/omair.png';
 import sahitya from '../../assets/Team/admincore2/sahitya.jpeg';
 import saranksh from '../../assets/Team/admincore2/saranksh.jpeg';
 import tanush from '../../assets/Team/admincore2/tanush.jpg';
+import amarnath from '../../assets/Team/admincore2/amarnath.png';
+import prakhyath from '../../assets/Team/admincore2/prakhyath.jpg';
 
 const teamData = {
   leadership: [
@@ -69,23 +71,23 @@ const teamData = {
     },
 
     {
-      name: "Amarnath",
+      name: "Amarnath K. Muralidhar",
       role: "Secretary",
       socialLinks: {
-         linkedin: "",
-         email: ""
+         linkedin: "https://www.linkedin.com/in/amarnath-kallungal-muralidhar-9777a5331",
+         email: "amarnathkallungalmuralidhar.231cv105@nitk.edu.in"
       },
-      //imageSrc: amarnath
+      imageSrc: amarnath
     },
 
     {
-      name: "prakhyath",
+      name: "Prakhyath V Shetty",
       role: "Chairperson",
       socialLinks: {
-         linkedin: "",
-         email: ""
+         linkedin: "https://www.linkedin.com/in/prakhyath-v-shetty/",
+         email: "shettyprakhyathveerendra.231cv249@nitk.edu.in"
       },
-      //imageSrc: prakhyath
+      imageSrc: prakhyath
     },
 
     {
@@ -161,11 +163,11 @@ const teamData = {
     },
 
     {
-      name: "Vaishmi",
+      name: "Vaishmi B N",
       role: "Event Coordinator",
       socialLinks: {
-        linkedin: "",
-        email: ""
+        linkedin: "https://www.linkedin.com/in/vaishmi-b-n-b23b44335?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+        email: "vaishmibn.241cv158@nitk.edu.in"
       },
       //imageSrc: vaishmi
     },
