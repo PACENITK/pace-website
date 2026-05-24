@@ -26,10 +26,10 @@ const SeniorMessages = () => {
       position: "Joint Convenor",
       batch: "Batch of 2026",
       content: [
-        "Becoming PACE president for me came as a surprise. The inaugural year of the club was filled with good initiatives through the efforts of Mr Likhit as well as the members of our batch. We planned to grow the club including the scale of projects as well as activities in the near future. As the original leaders had additional responsibilities, Rhea, Shubhodeep and myself were given the responsibility of navigating the club this academic year.",
+        "Becoming PACE Joint Convenor for me came as a surprise. The inaugural year of the club was filled with good initiatives through the efforts the members of our batch. We planned to grow the club including the scale of projects as well as activities in the near future. As the original leaders had additional responsibilities, Riya, Shubhodeep and myself were given the responsibility of navigating the club this academic year.",
         "Even though we might not have been able to meet all the objectives, it was very good to see the commitment from 3rd years as project mentors to guide the juniors through their projects. I would like to thank all of you in being part of my journey in PACE which gave me the confidence that all you juniors are extremely talented and capable to take the club forward.",
-        "By nature I am an introvert and don't necessarily indulge in a lot of conversations. But this club gave me an opportunity to interact with all of you which has helped me grow as a person in all aspects.",
-        "As we move forward with the changes in the carriculum( many things I don't fully comprehend), it will be a new challenge for all of you to adapt to the new normal. I wish all you juniors big success in your professional and personal lives. Thank you 👍"
+        "By nature I am an introvert and don’t necessarily indulge in a lot of conversations. But this club gave me an opportunity to interact with all of you which has helped me grow as a person in all aspects.", 
+        "As we move forward with the changes in the carriculum( many things I don’t fully comprehend), it will be a new challenge for all of you to adapt to the new normal. I wish all you juniors big success in your professional and personal lives. Thank you 👍",
       ]
     },
     {
