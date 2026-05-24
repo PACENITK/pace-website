@@ -137,7 +137,7 @@ const TeamPage = () => {
             </div>
                 {/* Just copy from here */}
             <div className="mt-32">
-              <SectionTitle title="Admin Core" />
+              <SectionTitle title="Admin Core (2026-2027)" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
                 <div className="col-span-full flex justify-center gap-24 flex-wrap">
                   {adminCore.map((member, index) => (
@@ -148,7 +148,7 @@ const TeamPage = () => {
             </div>
 
             <div className="mt-32">
-              <SectionTitle title="Core Team" />
+              <SectionTitle title="Core Team (2026-2027)" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-items-center mb-32">
                 <div className="col-span-full flex justify-center gap-24 flex-wrap">
                   {coreTeam.map((member, index) => (
@@ -193,7 +193,7 @@ const TeamPage = () => {
             </div> */}
 
             <div className="mt-32">
-              <SectionTitle title="Previous Admin Core" />
+              <SectionTitle title="Admin Core (2025-2026)" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-24 justify-items-center mb-32">
                 <div className="col-span-full flex justify-center gap-24 flex-wrap">
                   {prevadminCore.map((member, index) => (
@@ -204,7 +204,7 @@ const TeamPage = () => {
             </div>
 
             <div className="mt-32">
-              <SectionTitle title="Previous Core Team" />
+              <SectionTitle title="Core Team (2025-2026)" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-items-center mb-32">
                 <div className="col-span-full flex justify-center gap-24 flex-wrap">
                   {prevcoreTeam.map((member, index) => (
