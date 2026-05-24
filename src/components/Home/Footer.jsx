@@ -44,7 +44,6 @@ const Footer = forwardRef((_, ref) => {
       ]
     },
     socialLinks: [
-      { icon: FaFacebook, link: '#', name: 'Facebook' },
       { icon: FaInstagram, link: 'https://www.instagram.com/pacenitk/', name: 'Instagram' },
       { icon: FaLinkedin, link: 'https://www.linkedin.com/company/pace-nitk/', name: 'LinkedIn' },
     ],
