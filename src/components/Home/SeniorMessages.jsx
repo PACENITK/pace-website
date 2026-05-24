@@ -8,7 +8,7 @@ const SeniorMessages = () => {
     {
       id: 1,
       name: "Riya Aji",
-      imageUrl: riyaImg,
+      //imageUrl: riyaImg,
       position: "Convenor",
       batch: "Batch of 2026",
       content: [
@@ -22,7 +22,7 @@ const SeniorMessages = () => {
     {
       id: 2,
       name: "Shreyas",
-      imageUrl: shreyasImg,
+      //imageUrl: shreyasImg,
       position: "Joint Convenor",
       batch: "Batch of 2026",
       content: [
@@ -35,7 +35,7 @@ const SeniorMessages = () => {
     {
       id: 3,
       name: "Subhodeep",
-      imageUrl: subhodeepImg,
+      //imageUrl: subhodeepImg,
       position: "Chairperson",
       batch: "Batch of 2026",
       content: [
@@ -47,7 +47,7 @@ const SeniorMessages = () => {
     {
       id: 4,
       name: "Shubham",
-      imageUrl: shubhamImg,
+      //imageUrl: shubhamImg,
       position: "Secretary",
       batch: "Batch of 2026",
       content: [
@@ -71,13 +71,13 @@ const SeniorMessages = () => {
               key={msg.id} 
               className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
             >
-              <div className="mb-8 w-full">
+              {/* <div className="mb-8 w-full">
                 <img 
                   src={msg.imageUrl} 
                   alt={`${msg.name}'s profile`} 
                   className="w-full h-72 sm:h-80 object-cover object-top rounded-xl shadow-sm border border-gray-100"
                 />
-              </div>
+              </div> */}
 
               <div className="flex-grow space-y-4">
                 {msg.content.map((paragraph, index) => (
