@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import logo from '../../assets/logoo.png';
 
-const Navbar = ({ scrollToFooter }) => {
+const Navbar = ({ scrollToFooter, isHomePage = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [projectsDropdownOpen, setProjectsDropdownOpen] = useState(false);
@@ -60,7 +60,7 @@ const Navbar = ({ scrollToFooter }) => {
     { name: "TEAM", path: "/team" },
     { name: "NIRMAAN", path: "/nirmaan" },
     { name: "ASCE", path: "https://ascenitk.wordpress.com/" },
-    { name: "CONTACT US", path: "#", action: scrollToFooter },
+    // { name: "CONTACT US", path: "#", action: scrollToFooter },
   ];
 
   const isExternalLink = (path) => path.startsWith('http');
@@ -68,8 +68,8 @@ const Navbar = ({ scrollToFooter }) => {
   return (
     <nav 
       className={`fixed w-full z-50 transition-all duration-200 ease-in-out
-        ${scrolled ? 'bg-white shadow-md' : 'bg-transparent'}
-        ${isOpen ? 'bg-white' : ''}`}
+        ${!isHomePage ? 'bg-white' : scrolled ? 'bg-white shadow-md' : 'bg-transparent'}
+        ${!isHomePage ? '' : isOpen ? 'bg-white' : ''}`}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center pl-0 pr-0 py-2">
@@ -84,10 +84,10 @@ const Navbar = ({ scrollToFooter }) => {
               />
             </div>
             <div className="flex flex-col">
-              <p className={`text-sm md:text-lg font-medium transition-colors duration-150 ${scrolled || isOpen ? 'text-black' : 'text-white'}`}>
+              <p className={`text-sm md:text-lg font-medium transition-colors duration-150 ${!isHomePage || scrolled || isOpen ? 'text-black' : 'text-white'}`}>
               Professional Association for Civil Engineering
               </p>
-              <p className={`text-xs md:text-sm transition-colors duration-150 ${scrolled || isOpen ? 'text-black' : 'text-white'}`}>
+              <p className={`text-xs md:text-sm transition-colors duration-150 ${!isHomePage || scrolled || isOpen ? 'text-black' : 'text-white'}`}>
                 National Institute of Technology Karnataka, Surathkal
               </p>
             </div>
@@ -103,7 +103,7 @@ const Navbar = ({ scrollToFooter }) => {
                     <div>
                       <button
                         className={`projects-dropdown-toggle flex items-center text-base font-medium px-3 py-2 rounded transition-colors duration-150
-                          ${scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}`}
+                          ${!isHomePage || scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           setProjectsDropdownOpen(!projectsDropdownOpen);
@@ -141,7 +141,7 @@ const Navbar = ({ scrollToFooter }) => {
                         }
                       }}
                       className={`text-base font-medium px-3 py-2 rounded transition-all duration-150 ease-in-out
-                        ${scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}
+                        ${!isHomePage || scrolled ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' : 'text-white hover:text-gray-300'}
                         hover:scale-105`}
                     >
                       {item.name}
@@ -155,7 +155,7 @@ const Navbar = ({ scrollToFooter }) => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className={`lg:hidden p-2 rounded-md transition-all duration-150 ml-4
-                ${scrolled || isOpen ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-gray-300'}
+                ${!isHomePage || scrolled || isOpen ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-gray-300'}
                 focus:outline-none`}
               aria-label="Toggle menu"
               aria-expanded={isOpen}

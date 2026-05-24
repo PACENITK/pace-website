@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { expoProjectsData } from '../../../components/Projects/ExpoProjectsData';
 import ProjectDetail from '../../../components/Projects/ProjectDetail';
-import TeamNavbar from '../../../components/Team/TeamNavbar';
 import Footer from '../../../components/Home/Footer';
+import Navbar from '../../../components/Home/Navbar';
 
 const ExpoProjectDetail = () => {
   const { id } = useParams();
@@ -25,7 +25,7 @@ const ExpoProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-sky-50">
-      <TeamNavbar />
+      <Navbar />
       <div className="pt-36 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {project ? (
           <div className="max-w-7xl mx-auto">

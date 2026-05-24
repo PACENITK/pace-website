@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import TeamNavbar from '../Team/TeamNavbar.jsx';
-
+import Navbar from '../Home/Navbar.jsx';
 const Nirman = () => {
   useEffect(() => {
     // Remove the overflow hidden since TeamNavbar already handles this
@@ -14,7 +13,7 @@ const Nirman = () => {
 
   return (
     <>
-      <TeamNavbar />
+      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center relative overflow-hidden pt-24">
         {/* Animated background particles */}
         <div className="absolute inset-0 overflow-hidden">

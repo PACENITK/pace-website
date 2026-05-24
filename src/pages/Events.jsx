@@ -6,6 +6,7 @@ import TeamNavbar from '../components/Team/TeamNavbar';
 import Footer from '../components/Home/Footer';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Navbar from '../components/Home/Navbar';
 
 const Events = () => {
   const navigate = useNavigate();
@@ -104,7 +105,7 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-sky-50">
-      <TeamNavbar />
+      <Navbar/>
       <div className="pt-36 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {selectedEvent ? (
           <div className="max-w-7xl mx-auto">

@@ -25,7 +25,7 @@ function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <Navbar scrollToFooter={scrollToFooter} />
+      <Navbar scrollToFooter={scrollToFooter} isHomePage={true} />
       <main className="flex-grow">
         <Hero scrollToAboutUs={scrollToAboutUs} scrollToFooter={scrollToFooter} />
         <ActivityLog />

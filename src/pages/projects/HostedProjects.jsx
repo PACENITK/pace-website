@@ -5,6 +5,7 @@ import ProjectCard from '../../components/Projects/ProjectCard';
 import TeamNavbar from '../../components/Team/TeamNavbar';
 import Footer from '../../components/Home/Footer';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Navbar from '../../components/Home/Navbar';
 
 const HostedProjects = () => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const HostedProjects = () => {
 
   return (
     <div className="min-h-screen bg-sky-50">
-      <TeamNavbar />
+      <Navbar />
       <div className="pt-36 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-20">
           <h1 className="text-4xl font-bold mb-4">Hosted Projects</h1>

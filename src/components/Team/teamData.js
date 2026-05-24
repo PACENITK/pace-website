@@ -22,6 +22,7 @@ import saranksh from '../../assets/Team/admincore2/saranksh.jpeg';
 import tanush from '../../assets/Team/admincore2/tanush.jpg';
 import amarnath from '../../assets/Team/admincore2/amarnath.png';
 import prakhyath from '../../assets/Team/admincore2/prakhyath.jpg';
+import vaishmi from '../../assets/Team/admincore2/vaishmi.jpeg';
 
 const teamData = {
   leadership: [
@@ -169,7 +170,7 @@ const teamData = {
         linkedin: "https://www.linkedin.com/in/vaishmi-b-n-b23b44335?utm_source=share_via&utm_content=profile&utm_medium=member_android",
         email: "vaishmibn.241cv158@nitk.edu.in"
       },
-      //imageSrc: vaishmi
+      imageSrc: vaishmi
     },
     
   ],

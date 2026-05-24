@@ -1,10 +1,10 @@
 import { FaLinkedin, FaTwitter, FaEnvelope, FaUserCircle } from 'react-icons/fa';
 import { SiGooglescholar } from 'react-icons/si'; 
 import { useState } from 'react';
-import TeamNavbar from './TeamNavbar';
 import Footer from '../Home/Footer';
 import './Team.css';
 import teamData from './teamData';
+import Navbar from '../Home/Navbar.jsx';
 
 const ProfileCard = ({ name, role, socialLinks, imageSrc }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -109,7 +109,7 @@ const TeamPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <TeamNavbar />
+      <Navbar />
       <div className="flex-grow">
         <div className="pt-24">
           <div className="relative py-28 px-4 overflow-hidden hero-background">

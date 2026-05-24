@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { expoProjectsData } from '../../components/Projects/ExpoProjectsData';
 import ProjectCard from '../../components/Projects/ProjectCard';
-import TeamNavbar from '../../components/Team/TeamNavbar';
+import Navbar from '../../components/Home/Navbar';
 import Footer from '../../components/Home/Footer';
 import { ChevronLeft, ChevronRight, Search, XCircle, ChevronDown } from 'lucide-react';
 const Expo = () => {
@@ -119,7 +119,7 @@ const Expo = () => {
 
   return (
     <div className="min-h-screen bg-white text-black font-sans">
-      <TeamNavbar />
+      <Navbar />
 
       <div className="pt-36 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-12">
