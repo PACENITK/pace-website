@@ -1,0 +1,23 @@
+name: Deploy PACE Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Copy files to the live folder
+        run: cp -r dist/* /var/www/pace/

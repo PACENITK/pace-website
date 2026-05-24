@@ -7,4 +7,3 @@ PACE NITK is a student-driven club bridging academia and industry in civil engin
 ## Our Vision
 
 To empower the next generation of civil engineers by bridging the gap between academia and industry, fostering innovation, and creating a collaborative platform for hands-on learning, research, and sustainable development.
-
