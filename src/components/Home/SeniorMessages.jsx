@@ -1,14 +1,14 @@
-import riyaImg from '../../assets/SeniorMessage/1. riya.jpeg';
-import shreyasImg from '../../assets/SeniorMessage/2. shreyas.png';
-import subhodeepImg from '../../assets/SeniorMessage/3. subhodeep.jpeg';
-import shubhamImg from '../../assets/SeniorMessage/4. shubham.png';
+import riyaImg from '../../assets/SeniorMessage/riya.jpeg';
+import shreyasImg from '../../assets/SeniorMessage/shreyas.jpeg';
+import subhodeepImg from '../../assets/SeniorMessage/subhodeep.png';
+import shubhamImg from '../../assets/SeniorMessage/shubham.jpeg';
 import statsreport from '../../assets/SeniorMessage/stats-report.png';
 const SeniorMessages = () => {
   const messages = [
     {
       id: 1,
       name: "Riya Aji",
-      //imageUrl: riyaImg,
+      imageUrl: riyaImg,
       position: "Convenor",
       batch: "Batch of 2026",
       content: [
@@ -22,7 +22,7 @@ const SeniorMessages = () => {
     {
       id: 2,
       name: "Shreyas",
-      //imageUrl: shreyasImg,
+      imageUrl: shreyasImg,
       position: "Joint Convenor",
       batch: "Batch of 2026",
       content: [
@@ -35,7 +35,7 @@ const SeniorMessages = () => {
     {
       id: 3,
       name: "Subhodeep",
-      //imageUrl: subhodeepImg,
+      imageUrl: subhodeepImg,
       position: "Chairperson",
       batch: "Batch of 2026",
       content: [
@@ -47,7 +47,7 @@ const SeniorMessages = () => {
     {
       id: 4,
       name: "Shubham",
-      //imageUrl: shubhamImg,
+      imageUrl: shubhamImg,
       position: "Secretary",
       batch: "Batch of 2026",
       content: [
@@ -64,20 +64,21 @@ const SeniorMessages = () => {
         <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-12">
           Messages from the Batch of 2026
         </h2>
-        <img className='w-full' src={statsreport} alt="Stats Report"></img>
+        <img className='w-full mb-12' src={statsreport} alt="Stats Report" />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {messages.map((msg) => (
             <div 
               key={msg.id} 
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
+              className="bg-white rounded-2xl shadow-md border-2 border-blue-100 p-6 sm:p-8 hover:shadow-[0_15px_40px_rgba(37,99,235,0.45)] hover:border-blue-400 transition-all duration-300 hover:-translate-y-2 flex flex-col h-full"
             >
-              {/* <div className="mb-8 w-full">
+              <div className="mb-8 flex justify-center">
                 <img 
                   src={msg.imageUrl} 
                   alt={`${msg.name}'s profile`} 
-                  className="w-full h-72 sm:h-80 object-cover object-top rounded-xl shadow-sm border border-gray-100"
+                  className="w-52 h-52 sm:w-60 sm:h-60 object-cover rounded-full shadow-md border-4 border-gray-100"
                 />
-              </div> */}
+              </div>
 
               <div className="flex-grow space-y-4">
                 {msg.content.map((paragraph, index) => (
