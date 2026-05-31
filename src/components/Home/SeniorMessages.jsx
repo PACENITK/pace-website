@@ -9,18 +9,6 @@ const SeniorMessages = () => {
   const messages = [
     {
       id: 1,
-      name: "Likith M",
-      imageUrl: likithImg,
-      position: "Founder",
-      batch: "Batch of 2026",
-      content: [
-        "Being the founder and first-ever convenor of our department’s club has been an incredible privilege, and looking back, I am filled with immense pride at what we built together. What started as a simple idea was driven by a single, unwavering goal: to ensure that we, as Civil Engineering students, had a platform to learn beyond the confines of the classroom, bridge the gap with industry-relevant skills, and truly prepare ourselves for the careers we aspired to.",
-        "For me, PACE was never just a club—it was a vision of a place we could all call home. I wanted to create a community that connected juniors, seniors, alumni, researchers, and professionals under one roof, fostering a space where we could grow together, share experiences, and support one another in our professional journeys.",
-        "Seeing that vision take shape, evolve, and become a cornerstone of our department is a journey I will always hold close. To everyone who believed in the idea, contributed to those early foundations, and helped turn a concept into a family: thank you. It has been an honor to lead this chapter, and I am so grateful to have played a part in starting something that continues to inspire. Forever proud to be the founder of PACE NITK."
-      ]
-    },
-    {
-      id: 2,
       name: "Riya Aji",
       imageUrl: riyaImg,
       position: "Convenor",
@@ -34,7 +22,7 @@ const SeniorMessages = () => {
       ]
     },
     {
-      id: 3,
+      id: 2,
       name: "Shreyas",
       imageUrl: shreyasImg,
       position: "Joint Convenor",
@@ -47,7 +35,7 @@ const SeniorMessages = () => {
       ]
     },
     {
-      id: 4,
+      id: 3,
       name: "Subhodeep",
       imageUrl: subhodeepImg,
       position: "Chairperson",
@@ -56,6 +44,20 @@ const SeniorMessages = () => {
         "Serving as Chairman of PACE NITK across two consecutive terms (2024 - 26) has been a very memorable part of my college journey. More than the title, it was the people, the shared vision, the late-night discussions, the challenges we worked through, and the moments where ideas turned into reality that made this experience so special. I'm incredibly grateful to everyone who believed in PACE and helped shape it into what it is today.",
         "To the incoming core: you're stepping into something with immense potential. Trust each other, dream bigger, embrace the tough moments, and make this journey your own.",
         "Proud to have been a part of building this."
+      ]
+    },
+    {
+      id: 4,
+      name: "Likith M",
+      imageUrl: likithImg,
+      position: "Executive Secretary",
+      batch: "Batch of 2026",
+      content: [
+         "Serving as the Executive Secretary of PACE has been an incredibly rewarding journey, and looking back, I am filled with immense pride at what we have achieved together. From the very beginning, I believed in the vision behind PACE—a platform dedicated to helping Civil Engineering students learn beyond the classroom, develop industry-relevant skills, and prepare themselves for the opportunities and challenges that lie ahead.",
+         "For me, PACE was never just a club; it was a community. A place where juniors, seniors, alumni, researchers, and professionals could come together to learn, collaborate, and grow. Being part of the team that helped nurture this vision and contribute to its growth has been a privilege.",
+         "Watching PACE evolve into a vibrant and impactful organization within our department has been truly inspiring. The workshops, events, industry interactions, and countless moments of learning and teamwork are a testament to the dedication of every member who contributed along the way.",
+         "To everyone who supported PACE, participated in its initiatives, and helped strengthen the community we built together—thank you. It has been an honor to serve as Executive Secretary and contribute to a journey that continues to create opportunities and inspire future generations of Civil Engineering students.",
+         "Forever proud to have been a part of the PACE family."
       ]
     },
     {
