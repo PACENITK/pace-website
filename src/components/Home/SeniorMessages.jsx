@@ -3,10 +3,24 @@ import shreyasImg from '../../assets/SeniorMessage/shreyas.jpeg';
 import subhodeepImg from '../../assets/SeniorMessage/subhodeep.png';
 import shubhamImg from '../../assets/SeniorMessage/shubham.jpeg';
 import statsreport from '../../assets/SeniorMessage/stats-report.png';
+import likithImg from '../../assets/SeniorMessage/likith.png';
+
 const SeniorMessages = () => {
   const messages = [
     {
       id: 1,
+      name: "Likith M",
+      imageUrl: likithImg,
+      position: "Founder",
+      batch: "Batch of 2026",
+      content: [
+        "Being the founder and first-ever convenor of our department’s club has been an incredible privilege, and looking back, I am filled with immense pride at what we built together. What started as a simple idea was driven by a single, unwavering goal: to ensure that we, as Civil Engineering students, had a platform to learn beyond the confines of the classroom, bridge the gap with industry-relevant skills, and truly prepare ourselves for the careers we aspired to.",
+        "For me, PACE was never just a club—it was a vision of a place we could all call home. I wanted to create a community that connected juniors, seniors, alumni, researchers, and professionals under one roof, fostering a space where we could grow together, share experiences, and support one another in our professional journeys.",
+        "Seeing that vision take shape, evolve, and become a cornerstone of our department is a journey I will always hold close. To everyone who believed in the idea, contributed to those early foundations, and helped turn a concept into a family: thank you. It has been an honor to lead this chapter, and I am so grateful to have played a part in starting something that continues to inspire. Forever proud to be the founder of PACE NITK."
+      ]
+    },
+    {
+      id: 2,
       name: "Riya Aji",
       imageUrl: riyaImg,
       position: "Convenor",
@@ -20,7 +34,7 @@ const SeniorMessages = () => {
       ]
     },
     {
-      id: 2,
+      id: 3,
       name: "Shreyas",
       imageUrl: shreyasImg,
       position: "Joint Convenor",
@@ -33,7 +47,7 @@ const SeniorMessages = () => {
       ]
     },
     {
-      id: 3,
+      id: 4,
       name: "Subhodeep",
       imageUrl: subhodeepImg,
       position: "Chairperson",
@@ -45,7 +59,7 @@ const SeniorMessages = () => {
       ]
     },
     {
-      id: 4,
+      id: 5,
       name: "Shubham",
       imageUrl: shubhamImg,
       position: "Secretary",
@@ -67,10 +81,19 @@ const SeniorMessages = () => {
         <img className='w-full mb-12' src={statsreport} alt="Stats Report" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {messages.map((msg) => (
+          {/* {messages.map((msg) => (
             <div 
               key={msg.id} 
               className="bg-white rounded-2xl shadow-md border-2 border-blue-100 p-6 sm:p-8 hover:shadow-[0_15px_40px_rgba(37,99,235,0.45)] hover:border-blue-400 transition-all duration-300 hover:-translate-y-2 flex flex-col h-full"
+            > */}
+          {messages.map((msg, index) => (
+            <div
+              key={msg.id}
+              className={`bg-white rounded-2xl shadow-md border-2 border-blue-100 p-6 sm:p-8 hover:shadow-[0_15px_40px_rgba(37,99,235,0.45)] hover:border-blue-400 transition-all duration-300 hover:-translate-y-2 flex flex-col h-full ${
+              messages.length % 2 === 1 && index === messages.length - 1
+              ? "md:col-span-2 md:max-w-2xl md:mx-auto"
+              : ""
+              }`}
             >
               <div className="mb-8 flex justify-center">
                 <img 
