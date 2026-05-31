@@ -48,6 +48,18 @@ const SeniorMessages = () => {
     },
     {
       id: 4,
+      name: "Shubham",
+      imageUrl: shubhamImg,
+      position: "Secretary",
+      batch: "Batch of 2026",
+      content: [
+        "PACE was more than just a technical club for me; it became a journey filled with learning, trust, teamwork, and personal growth. Being a part of a newly developing club and watching it grow with the combined efforts core members and juniors was truly a memorable experience.",
+        "What inspired me the most was the dedication, enthusiasm, and sincerity that every junior brought to each project and activity. Their willingness to learn, collaborate, and put in consistent effort exceeded all my expectations. The supportive environment within the team made every challenge enjoyable and every achievement meaningful.",
+        "Serving as a Technical Coordinator not only helped me strengthen my technical and leadership skills but also gave me the opportunity to connect with passionate individuals who shared the same vision of learning. The entire journey at PACE has been incredibly special for me, and I will always be proud to have contributed to such a positive and growing community."
+      ]
+    },
+    {
+      id: 5,
       name: "Likith M",
       imageUrl: likithImg,
       position: "Executive Secretary",
@@ -58,18 +70,6 @@ const SeniorMessages = () => {
          "Watching PACE evolve into a vibrant and impactful organization within our department has been truly inspiring. The workshops, events, industry interactions, and countless moments of learning and teamwork are a testament to the dedication of every member who contributed along the way.",
          "To everyone who supported PACE, participated in its initiatives, and helped strengthen the community we built together—thank you. It has been an honor to serve as Executive Secretary and contribute to a journey that continues to create opportunities and inspire future generations of Civil Engineering students.",
          "Forever proud to have been a part of the PACE family."
-      ]
-    },
-    {
-      id: 5,
-      name: "Shubham",
-      imageUrl: shubhamImg,
-      position: "Secretary",
-      batch: "Batch of 2026",
-      content: [
-        "PACE was more than just a technical club for me; it became a journey filled with learning, trust, teamwork, and personal growth. Being a part of a newly developing club and watching it grow with the combined efforts core members and juniors was truly a memorable experience.",
-        "What inspired me the most was the dedication, enthusiasm, and sincerity that every junior brought to each project and activity. Their willingness to learn, collaborate, and put in consistent effort exceeded all my expectations. The supportive environment within the team made every challenge enjoyable and every achievement meaningful.",
-        "Serving as a Technical Coordinator not only helped me strengthen my technical and leadership skills but also gave me the opportunity to connect with passionate individuals who shared the same vision of learning. The entire journey at PACE has been incredibly special for me, and I will always be proud to have contributed to such a positive and growing community."
       ]
     }
   ];
