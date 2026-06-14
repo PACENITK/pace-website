@@ -72,16 +72,6 @@ const teamData = {
     },
 
     {
-      name: "Amarnath K. Muralidhar",
-      role: "Secretary",
-      socialLinks: {
-         linkedin: "https://www.linkedin.com/in/amarnath-kallungal-muralidhar-9777a5331",
-         email: "amarnathkallungalmuralidhar.231cv105@nitk.edu.in"
-      },
-      imageSrc: amarnath
-    },
-
-    {
       name: "Prakhyath V Shetty",
       role: "Chairperson",
       socialLinks: {
@@ -89,6 +79,16 @@ const teamData = {
          email: "shettyprakhyathveerendra.231cv249@nitk.edu.in"
       },
       imageSrc: prakhyath
+    },
+
+    {
+      name: "Amarnath K. Muralidhar",
+      role: "Secretary",
+      socialLinks: {
+         linkedin: "https://www.linkedin.com/in/amarnath-kallungal-muralidhar-9777a5331",
+         email: "amarnathkallungalmuralidhar.231cv105@nitk.edu.in"
+      },
+      imageSrc: amarnath
     },
 
     {
