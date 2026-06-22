@@ -9,8 +9,18 @@ import ExpoProjectDetail from './pages/projects/expo/[id]';
 import HostedProjectDetail from './pages/projects/hosted-projects/[id]';
 import Nirmaan from './components/Nirmaan/Nirmaan';
 import TeamPage from './components/Team/Team';
+import { useEffect } from "react";
+import AOS from "aos";
 
 function App() {
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+  
   console.log('App component rendered');
   return (
     <Router>
@@ -29,5 +39,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

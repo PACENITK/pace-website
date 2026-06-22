@@ -41,3 +41,17 @@
   color: #888;
 }
 
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+.animate-slowZoom {
+  animation: slowZoom 5s linear forwards;
+}
+

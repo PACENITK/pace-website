@@ -70,7 +70,10 @@ const Hero = () => {
           {images.map((image, index) => (
             <div
               key={index}
-              className="w-full h-full flex-shrink-0 bg-cover bg-center relative"
+              className={`
+                w-full h-full flex-shrink-0 bg-cover bg-center relative
+                animate-slowZoom
+              `}
               style={{ backgroundImage: `url(${image})` }}
             >
               <div className="absolute inset-0 bg-black/40" />

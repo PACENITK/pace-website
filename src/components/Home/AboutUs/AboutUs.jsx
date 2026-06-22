@@ -22,12 +22,14 @@ const AboutUs = () => {
     return () => clearInterval(timer);
   }, []);
 
+  <div data-aos="fade-up"></div>
+
   // Next & Previous functions
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div id="about-us" className="bg-gray-100 py-16 pb-24 scroll-mt-16">
+    <div id="about-us" className="bg-gray-100 py-16 pb-24 scroll-mt-16" data-aos="fade-up">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-bold text-gray-800 mb-4 text-center underline decoration-blue-600 underline-offset-8">
           About Us

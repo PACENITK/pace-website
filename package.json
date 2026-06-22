@@ -13,6 +13,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.2",
+    "aos": "^2.3.4",
     "framer-motion": "^11.17.0",
     "lucide-react": "^1.16.0",
     "prop-types": "^15.8.1",
