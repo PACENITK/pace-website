@@ -69,15 +69,26 @@ const EventDetail = ({ event }) => {
             </div>
 
             {/* LinkedIn Post Button */}
-            {event.resources && event.resources.length > 0 && (
-              <a
-                href={event.resources[0].url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-              >
-                LinkedIn Post
-              </a>
+            {event.linkedinLink && (
+            <a
+              href={event.linkedinLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            >
+              LinkedIn Post
+            </a>
+            )}
+
+            {event.gmeetLink && (
+            <a
+              href={event.gmeetLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-block text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors mt-3"
+            >
+              Join Google Meet
+            </a>
             )}
           </div>
         </div>

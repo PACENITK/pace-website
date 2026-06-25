@@ -8,8 +8,76 @@ import riskitright from '../../assets/Events/riskitright/riskitright.jpeg';
 import catapult from '../../assets/Events/catapult/catapult.jpeg';
 import techsite from '../../assets/Events/tech-sitevisit/tech-sitevisit.jpeg';
 import civilsaga from '../../assets/Events/civilsaga/civilsaga.png';
+import nidhirao from '../../assets/Events/nextstep/nidhirao.jpeg';
+import nikeshshetty from '../../assets/Events/nextstep/nikeshshetty.jpeg';
+import smitak from '../../assets/Events/nextstep/smitak.jpeg';
+
 
 export const eventsData = [
+  {
+    id: "13",
+    title: "NextStep Talks - From Civil Engineering to Business Analytics",
+    date: "27th June, 2026",
+    time: "Upcoming",
+    gmeetLink: "https://meet.google.com/kmr-wwqb-prg",
+    description: `PACE NITK is pleased to host an interactive session featuring Smita Kulkarni (Civil Engineering Batch of 2019), currently working as a Senior Data Analyst at Walmart. Having begun her professional journey at Deloitte, she later pursued an M.S. in Business Analytics from the University of Washington, a globally recognized institution, before advancing her career in the field of analytics and data-driven decision-making\n
+    The session will provide participants with valuable insights into her transition from Civil Engineering to the analytics domain, her experience pursuing higher studies abroad, and the opportunities available in the rapidly growing field of business analytics. Drawing from her academic and professional experiences, she will discuss the skills, challenges, and learning experiences that shaped her career journey.\n
+    The event will also feature an interactive Q&A session, giving students the opportunity to engage directly with the speaker and seek guidance on career planning, higher education, analytics, and professional development. Whether you are interested in data analytics, pursuing studies abroad, or exploring career opportunities beyond traditional engineering pathways, this session promises to offer valuable perspectives and practical advice.`,
+    image: smitak,
+    venue: "Google Meet",
+    mode: "Online",
+    resources: [
+      { 
+        //title: 'LinkedIn Post', 
+        //url: ''
+        //title : 'Google Meet Link',
+        //url : 'https://meet.google.com/kmr-wwqb-prg'
+
+      }
+    ]
+},
+
+  {
+    id: "12",
+    title: "NextStep Talks - Beyond Engineering: Careers, Leadership, and Higher Studies",
+    date: "20th June, 2026",
+    time: "Completed",
+    description: `PACE NITK organized an inspiring interaction session with Nidhi Rao (Civil Engineering Batch of 2017), currently a Manager at Bharat Petroleum Corporation Limited (BPCL) and an Executive MBA candidate at SPJIMR, one of India's premier business schools. The session highlighted her remarkable journey from a Civil Engineering graduate at NITK to a professional thriving in a leading Maharatna Public Sector Undertaking while simultaneously pursuing advanced management education.\n
+    During the session, she shared valuable insights into career opportunities and growth within Public Sector Undertakings (PSUs), the transition into leadership and management roles, and the challenges and rewards of pursuing an MBA alongside a full-time career. Drawing from her own experiences, she emphasized the importance of adaptability, continuous learning, and exploring opportunities beyond conventional career paths.\n
+    The interactive discussion encouraged students to think beyond traditional boundaries and gain a broader perspective on professional development. Participants had the opportunity to engage directly with the speaker, gaining practical advice on career planning, higher studies, and building a successful career across diverse domains. The session proved to be both informative and motivating, inspiring students to confidently pursue their aspirations and explore the wide range of opportunities available to engineering graduates.`,
+    image: nidhirao,
+    venue: "Google Meet",
+    mode: "Online",
+    resources: [
+      { 
+        title: 'LinkedIn Post', 
+        url: 'https://www.linkedin.com/posts/pace-nitk_had-a-wonderful-interaction-today-with-the-activity-7474407512675438592-OIl8?utm_source=share&utm_medium=member_android&rcm=ACoAADK-WDkBfzjzwmWCfqdODNNdzL5eeUMO-Ww'
+      }
+    ]
+    
+},
+
+
+  {
+    id: "11",
+    title: "NextStep Talks - Tech Talk on Building Modern AI Applications",
+    date: "13th June, 2026",
+    time: "Completed",
+    description: `PACE NITK organized an engaging technical session featuring Nikesh Shetty, Associate at Fractal Analytics, who shared valuable insights into the development of modern AI applications and his journey from intern to industry professional. The session provided students with a practical perspective on how cutting-edge AI systems are built, deployed, and scaled to solve real-world problems.\n
+    The talk covered key topics such as Retrieval-Augmented Generation (RAGs), Agentic AI, and Modern Web Development, highlighting the technologies and workflows behind today's intelligent applications. Participants gained an understanding of the challenges, opportunities, and best practices involved in building AI-powered solutions in an industry setting.\n
+    The session concluded with an interactive Q&A, where students had the opportunity to discuss career paths, industry expectations, and emerging trends in Artificial Intelligence. The event served as an excellent platform for learning and inspired participants to explore the rapidly evolving world of AI and technology.`,
+    image: nikeshshetty,
+    venue: "Google Meet",
+    mode: "Online",
+    resources: [
+        { 
+          //title: 'LinkedIn Post', 
+          //url: ''
+        }
+    ]
+   
+},
+
   {
     id: "10",
     title: "the civil saga",
@@ -20,10 +88,10 @@ export const eventsData = [
     venue: "Pavillion",
     mode: "Offline",
     resources: [
-      // { 
-      //   title: 'LinkedIn Post', 
-      //   url: '' // add URL if available
-      // }
+        { 
+          //title: 'LinkedIn Post', 
+          //  url: '' 
+        }
     ]
 },
 {
