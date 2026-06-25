@@ -26,13 +26,13 @@ export const eventsData = [
     image: smitak,
     venue: "Google Meet",
     mode: "Online",
-    resources: [
-      { 
-        //title: 'LinkedIn Post', 
-        //url: ''
+    // resources: [
+    //   { 
+    //     //title: 'LinkedIn Post', 
+    //     //url: ''
 
-      }
-    ]
+    //   }
+    // ]
 },
 
   {
@@ -67,12 +67,12 @@ export const eventsData = [
     image: nikeshshetty,
     venue: "Google Meet",
     mode: "Online",
-    resources: [
-        { 
-          //title: 'LinkedIn Post', 
-          //url: ''
-        }
-    ]
+    // resources: [
+    //     { 
+    //       //title: 'LinkedIn Post', 
+    //       //url: ''
+    //     }
+    // ]
    
 },
 
