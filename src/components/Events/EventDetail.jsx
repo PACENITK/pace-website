@@ -69,9 +69,9 @@ const EventDetail = ({ event }) => {
             </div>
 
             {/* LinkedIn Post Button */}
-            {event.linkedinLink && (
+            {event.resources && event.resources.length > 0 && (
             <a
-              href={event.linkedinLink}
+              href={event.resources[0].url}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full inline-block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"

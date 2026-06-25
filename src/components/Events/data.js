@@ -30,8 +30,6 @@ export const eventsData = [
       { 
         //title: 'LinkedIn Post', 
         //url: ''
-        //title : 'Google Meet Link',
-        //url : 'https://meet.google.com/kmr-wwqb-prg'
 
       }
     ]
