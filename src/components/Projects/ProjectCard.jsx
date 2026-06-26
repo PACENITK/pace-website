@@ -9,8 +9,8 @@ const ProjectCard = ({ project, onClick }) => {
   return (
     <div
       onClick={() => onClick(project)} 
-      className="group bg-white border border-blue-300 rounded-lg overflow-hidden hover:border-blue-500 transition-all duration-300 cursor-pointer flex flex-col h-full shadow-md hover:shadow-[0_18px_45px_rgba(37,99,235,0.45)] hover:-translate-y-2"
-      >
+      className="group bg-white border border-blue-300 rounded-lg overflow-hidden hover:border-blue-500 transition-all duration-300 cursor-pointer flex flex-col h-full shadow-md hover:shadow-[0_18px_45px_rgba(37,99,235,0.45)] hover:-translate-y-2"       >
+hover:before:opacity-100
       {/* Project Image */}
       {project.image ? (
         <div className="relative h-48 border-b border-black">
