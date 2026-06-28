@@ -18,11 +18,11 @@ export const eventsData = [
     id: "13",
     title: "NextStep Talks - From Civil Engineering to Business Analytics",
     date: "27th June, 2026",
-    time: "Upcoming",
-    gmeetLink: "https://meet.google.com/kmr-wwqb-prg",
-    description: `PACE NITK is pleased to host an interactive session featuring Smita Kulkarni (Civil Engineering Batch of 2019), currently working as a Senior Data Analyst at Walmart. Having begun her professional journey at Deloitte, she later pursued an M.S. in Business Analytics from the University of Washington, a globally recognized institution, before advancing her career in the field of analytics and data-driven decision-making\n
-    The session will provide participants with valuable insights into her transition from Civil Engineering to the analytics domain, her experience pursuing higher studies abroad, and the opportunities available in the rapidly growing field of business analytics. Drawing from her academic and professional experiences, she will discuss the skills, challenges, and learning experiences that shaped her career journey.\n
-    The event will also feature an interactive Q&A session, giving students the opportunity to engage directly with the speaker and seek guidance on career planning, higher education, analytics, and professional development. Whether you are interested in data analytics, pursuing studies abroad, or exploring career opportunities beyond traditional engineering pathways, this session promises to offer valuable perspectives and practical advice.`,
+    time: "Completed",
+    //gmeetLink: "https://meet.google.com/kmr-wwqb-prg",
+    description: `PACE NITK hosted an interactive session featuring Smita Kulkarni (Civil Engineering Batch of 2019), currently a Senior Data Analyst at Walmart. Having begun her professional journey at Deloitte, she later pursued an M.S. in Business Analytics from the University of Washington, a globally recognized institution, before advancing her career in analytics and data-driven decision-making.\n
+    The session provided participants with valuable insights into her transition from Civil Engineering to the analytics domain, her experience pursuing higher studies abroad, and the opportunities available in the rapidly growing field of business analytics. Drawing from her academic and professional experiences, she discussed the skills, challenges, and learning experiences that shaped her career journey.\n
+    The event also featured an interactive Q&A session, giving students the opportunity to engage directly with the speaker and seek guidance on career planning, higher education, analytics, and professional development. Students interested in data analytics, pursuing studies abroad, or exploring career opportunities beyond traditional engineering pathways gained valuable perspectives and practical advice from the session.`,
     image: smitak,
     venue: "Google Meet",
     mode: "Online",
