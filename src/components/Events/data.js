@@ -11,11 +11,12 @@ import civilsaga from '../../assets/Events/civilsaga/civilsaga.png';
 import nidhirao from '../../assets/Events/nextstep/nidhirao.jpeg';
 import nikeshshetty from '../../assets/Events/nextstep/nikeshshetty.jpeg';
 import smitak from '../../assets/Events/nextstep/smitak.jpeg';
+import mrpl from '../../assets/Events/mrpl/mrpl.jpeg';
 
 
 export const eventsData = [
   {
-    id: "13",
+    id: "14",
     title: "NextStep Talks - From Civil Engineering to Business Analytics",
     date: "27th June, 2026",
     time: "Completed",
@@ -36,7 +37,7 @@ export const eventsData = [
 },
 
   {
-    id: "12",
+    id: "13",
     title: "NextStep Talks - Beyond Engineering: Careers, Leadership, and Higher Studies",
     date: "20th June, 2026",
     time: "Completed",
@@ -57,7 +58,7 @@ export const eventsData = [
 
 
   {
-    id: "11",
+    id: "12",
     title: "NextStep Talks - Tech Talk on Building Modern AI Applications",
     date: "13th June, 2026",
     time: "Completed",
@@ -74,6 +75,26 @@ export const eventsData = [
     //     }
     // ]
    
+},
+
+  {
+    id: "11",
+    title: "Industrial Visit to Mangalore Refinery and Petrochemicals Limited (MRPL)",
+    date: "1st Novemeber, 2025",
+    time: "Completed",
+    description: `PACE NITK successfully organized an industrial visit to Mangalore Refinery and Petrochemicals Limited (MRPL), providing participants with an enriching opportunity to gain first-hand exposure to one of India's leading petroleum refining and petrochemical facilities.\n
+    Upon arrival, participants completed the necessary authentication and safety procedures before being escorted on a guided tour of the refinery premises in an MRPL bus. Throughout the visit, experienced MRPL engineers accompanied the group, offering detailed explanations of the refinery's plants, machinery, and operational processes./n
+    The engineers shared valuable insights into various aspects of refinery operations, including crude oil processing, storage systems, quality control measures, equipment inspection, and maintenance practices. Participants were encouraged to interact with the experts, who addressed their queries and provided a deeper understanding of the engineering principles and industrial practices involved in large-scale refinery operations./n
+    The visit served as an excellent platform for students to bridge the gap between theoretical knowledge and real-world industrial applications, while also gaining exposure to the standards, technologies, and safety protocols followed in the petroleum and petrochemical industry./n`,
+    image: mrpl, 
+    venue: "MRPL, Mangaluru",
+    mode: "Offline",
+    //resources: [
+        //{ 
+          //title: 'LinkedIn Post', 
+          //  url: '' 
+        //}
+    //]
 },
 
   {
