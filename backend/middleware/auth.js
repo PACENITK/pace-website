@@ -89,9 +89,33 @@ const requireOwnership = async (req, res, next) => {
   }
 };
 
+const optionalAuth = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.JWT_ACCESS_SECRET);
+    const user = await User.findById(decoded.id);
+    req.user = user || null;
+    next();
+  } catch (error) {
+    req.user = null;
+    next();
+  }
+};
+
 module.exports = {
   requireAuth,
   requireRole,
   requireVerified,
-  requireOwnership
+  requireOwnership,
+  optionalAuth
 };

@@ -20,6 +20,19 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resumeUrl: {
+    type: String,
+  },
+  eligibilityWarning: {
+    type: Boolean,
+    default: false,
+  },
+  responses: [
+    {
+      fieldId: { type: String, required: true },
+      value: { type: mongoose.Schema.Types.Mixed, required: true }
+    }
+  ],
   coverNote: {
     type: String,
     default: '',

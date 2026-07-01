@@ -53,8 +53,38 @@ const internshipSchema = new mongoose.Schema({
     enum: ['open', 'closed'],
     default: 'open',
   },
+  customFields: [
+    {
+      fieldId: { type: String, required: true },
+      label: { type: String, required: true },
+      type: { type: String, enum: ['text', 'textarea', 'link', 'number', 'select'], required: true },
+      options: [{ type: String }],
+      required: { type: Boolean, default: false }
+    }
+  ],
 }, {
   timestamps: true,
+});
+
+internshipSchema.pre('validate', function (next) {
+  if (this.customFields && Array.isArray(this.customFields)) {
+    const crypto = require('crypto');
+    for (const field of this.customFields) {
+      if (!field.fieldId) {
+        field.fieldId = crypto.randomUUID();
+      }
+      if (field.type === 'select') {
+        if (!field.options || !Array.isArray(field.options) || field.options.length === 0) {
+          const err = new Error(`Validation Error: Options must be non-empty when type is 'select' for field: ${field.label || 'unnamed'}`);
+          err.statusCode = 400;
+          return next(err);
+        }
+      } else {
+        field.options = [];
+      }
+    }
+  }
+  next();
 });
 
 internshipSchema.pre('save', async function (next) {
