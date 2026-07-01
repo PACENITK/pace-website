@@ -9,7 +9,8 @@ const NAV_MAP = {
   ],
   student: [
     { label: 'Discovery Board', path: '/portal' },
-    { label: 'My Applications', path: '/portal/applications' }
+    { label: 'My Applications', path: '/portal/applications' },
+    { label: 'My Profile', path: '/portal/profile' }
   ],
   professor: [
     { label: 'Dashboard', path: '/portal/professor' },
@@ -88,7 +89,11 @@ export const PortalLayout = ({ children }) => {
               {isAuthenticated ? (
                 <div className="flex items-center gap-3">
                   <div className="hidden lg:flex flex-col text-right">
-                    <span className="text-sm font-bold text-ink leading-tight">{user.name}</span>
+                    {role === 'student' ? (
+                      <Link to="/portal/profile" className="text-sm font-bold text-ink hover:text-blueprint leading-tight transition-colors">{user.name}</Link>
+                    ) : (
+                      <span className="text-sm font-bold text-ink leading-tight">{user.name}</span>
+                    )}
                     <span className="font-mono text-[10px] text-concrete uppercase tracking-wider">
                       {role.replace('_', ' ')}
                     </span>

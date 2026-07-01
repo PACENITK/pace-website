@@ -18,9 +18,16 @@ export const Detail = () => {
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Eligibility Warning calculation
+  // Eligibility Warnings
   const [eligibilityWarning, setEligibilityWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
+
+  // Pre-fill student resumeUrl from profile on mount
+  useEffect(() => {
+    if (user && user.profile && user.profile.resumeUrl) {
+      setResumeUrl(user.profile.resumeUrl);
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchDetails = () => {
@@ -70,18 +77,22 @@ export const Detail = () => {
       ...responses,
       [fieldId]: value
     });
+    // Clear field specific error on change
+    if (errors[fieldId]) {
+      setErrors({ ...errors, [fieldId]: null });
+    }
   };
 
   const handleApply = (e) => {
     e.preventDefault();
     const newErrors = {};
 
-    // Validate resumeUrl URL format
+    // Validate resumeUrl URL format client-side
     const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/;
     if (!resumeUrl) {
       newErrors.resumeUrl = 'Resume URL is required.';
     } else if (!urlPattern.test(resumeUrl)) {
-      newErrors.resumeUrl = 'Resume URL is malformed.';
+      newErrors.resumeUrl = 'Resume URL must be a valid URL link (e.g. https://drive.google.com/...).';
     }
 
     // Validate custom fields
@@ -114,6 +125,16 @@ export const Detail = () => {
     setErrors({});
   };
 
+  // Determine if required fields are filled out to toggle disabled state
+  const isResumeUrlFilled = !!resumeUrl && resumeUrl.trim().length > 0;
+  const areCustomFieldsFilled = internship?.customFields?.every((field) => {
+    if (!field.required) return true;
+    const ans = responses[field.fieldId];
+    return ans !== undefined && ans !== null && ans.trim().length > 0;
+  }) ?? true;
+
+  const canSubmit = isResumeUrlFilled && areCustomFieldsFilled;
+
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center bg-paper font-mono text-xs text-concrete uppercase tracking-widest animate-pulse">
@@ -138,7 +159,7 @@ export const Detail = () => {
 
   return (
     <div className="mx-auto max-w-4xl font-body text-ink space-y-6">
-      {/* Detail Head */}
+      {/* Morph Anchor Card Head */}
       <div className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
           <PlateTag text={internship.plateId} type="plate" />
@@ -152,7 +173,7 @@ export const Detail = () => {
           </span>
         </div>
 
-        <h1 className="font-display text-3xl font-bold tracking-tight mb-2">{internship.title}</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight mb-2 transition-all duration-500 ease-in-out">{internship.title}</h1>
         <p className="text-sm text-concrete mb-4">Posted by {internship.professorId?.name || 'Professor'}</p>
 
         {isAuthenticated ? (
@@ -190,7 +211,7 @@ export const Detail = () => {
         
         {isAuthenticated && internship.eligibility && (
           <div className="mt-6 border-t border-concrete/10 pt-4">
-            <h3 className="font-display text-sm font-bold mb-2">Eligibility Criteria</h3>
+            <h3 className="font-display text-sm font-bold mb-2">Eligibility Requirements</h3>
             <ul className="text-xs space-y-1.5 font-mono text-concrete">
               <li>• Required Branches: <span className="text-ink font-semibold">{internship.eligibility.branches.join(', ')}</span></li>
               <li>• Minimum CGPA: <span className="text-blueprint font-bold">{internship.eligibility.minCGPA}</span></li>
@@ -241,7 +262,7 @@ export const Detail = () => {
             </div>
           ) : (
             <form onSubmit={handleApply} className="space-y-4">
-              {/* Eligibility Alert Banner */}
+              {/* Warn-Only Eligibility Alert */}
               {eligibilityWarning && (
                 <div className="rounded bg-signal/5 border border-signal/20 p-4 text-xs text-signal font-mono leading-relaxed">
                   <span className="font-bold uppercase tracking-wider block mb-1">⚠ Eligibility Warning</span>
@@ -350,12 +371,25 @@ export const Detail = () => {
                 </div>
               )}
 
-              <button
-                type="submit"
-                className="w-full rounded bg-signal py-3 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-signal/90 transition-colors"
-              >
-                Submit Application
-              </button>
+              {/* Submit panel */}
+              <div className="pt-2">
+                {!canSubmit && (
+                  <p className="text-xs font-mono text-signal mb-2">
+                    ⚠ Please fill in the required fields (* Resume URL and required custom responses) to enable submission.
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className={`w-full rounded py-3 font-mono text-xs font-bold uppercase tracking-wider text-white transition-colors ${
+                    canSubmit 
+                      ? 'bg-signal hover:bg-signal/90 cursor-pointer shadow-sm' 
+                      : 'bg-concrete/40 cursor-not-allowed text-white/70'
+                  }`}
+                >
+                  Submit Application
+                </button>
+              </div>
             </form>
           )}
         </div>

@@ -13,6 +13,7 @@ import PostListing from './pages/PostListing';
 import ApplicantList from './pages/ApplicantList';
 import AdminDashboard from './pages/AdminDashboard';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
+import Profile from './pages/Profile';
 
 const GuestOnlyRoute = ({ children }) => {
   const { isAuthenticated, role } = useAuth();
@@ -70,6 +71,16 @@ const PortalRouterContent = () => {
           } 
         />
 
+        {/* Student Profile page */}
+        <Route 
+          path="profile" 
+          element={
+            <RoleGuard allow={['student']}>
+              <Profile />
+            </RoleGuard>
+          } 
+        />
+
         {/* Professor Workspace Dashboard */}
         <Route 
           path="professor" 
@@ -83,6 +94,14 @@ const PortalRouterContent = () => {
         {/* Professor Post Internship proposal */}
         <Route 
           path="professor/post" 
+          element={
+            <RoleGuard allow={['professor']}>
+              <PostListing />
+            </RoleGuard>
+          } 
+        />
+        <Route 
+          path="professor/post/:id" 
           element={
             <RoleGuard allow={['professor']}>
               <PostListing />

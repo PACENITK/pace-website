@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { mockInternships, mockApplications } from '../mocks/fixtures';
 
 export const PostListing = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [hasApplications, setHasApplications] = useState(false);
+
+  // Proposal fields
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [scope, setScope] = useState('open');
+  const [specificColleges, setSpecificColleges] = useState('');
   const [stipend, setStipend] = useState('');
   const [duration, setDuration] = useState('2 Months');
   const [deadline, setDeadline] = useState('');
@@ -14,11 +21,40 @@ export const PostListing = () => {
   const [minCGPA, setMinCGPA] = useState(7.0);
   const [selectedBranches, setSelectedBranches] = useState(['Civil Engineering']);
 
-  // Custom Fields state
+  // Custom Questionnaire builder
   const [customFields, setCustomFields] = useState([]);
+  const [originalCustomFieldsCount, setOriginalCustomFieldsCount] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
 
   const branches = ['Civil Engineering', 'Mining Engineering', 'Computer Science', 'Mechanical Engineering'];
+
+  useEffect(() => {
+    if (id) {
+      const found = mockInternships.find((i) => i._id === id);
+      if (found) {
+        setIsEditMode(true);
+        setTitle(found.title || '');
+        setDescription(found.description || '');
+        setScope(found.scope || 'open');
+        setSpecificColleges(found.specificColleges || '');
+        setStipend(found.stipend || '');
+        setDuration(found.duration || '2 Months');
+        setDeadline(found.deadline ? found.deadline.slice(0, 16) : ''); // Format for datetime-local
+        setOpenings(found.openings || 1);
+        setMinCGPA(found.eligibility?.minCGPA || 7.0);
+        setSelectedBranches(found.eligibility?.branches || ['Civil Engineering']);
+        
+        // Load custom fields
+        const fields = found.customFields || [];
+        setCustomFields(fields.map(f => ({ ...f, isOriginal: true })));
+        setOriginalCustomFieldsCount(fields.length);
+
+        // Check if there are applications
+        const hasApps = mockApplications.some((a) => a.internshipId._id === id);
+        setHasApplications(hasApps);
+      }
+    }
+  }, [id]);
 
   const handleBranchChange = (branch) => {
     if (selectedBranches.includes(branch)) {
@@ -32,16 +68,22 @@ export const PostListing = () => {
     setCustomFields([
       ...customFields,
       {
-        fieldId: `mock-cf-${Date.now()}`,
+        fieldId: `cf-new-${Date.now()}`,
         label: '',
         type: 'text',
         options: '',
-        required: false
+        required: false,
+        isOriginal: false // New field
       }
     ]);
   };
 
   const removeCustomField = (index) => {
+    const field = customFields[index];
+    if (hasApplications && field.isOriginal) {
+      // Cannot delete original field when applications exist
+      return;
+    }
     setCustomFields(customFields.filter((_, idx) => idx !== index));
   };
 
@@ -49,11 +91,27 @@ export const PostListing = () => {
     setCustomFields(
       customFields.map((field, idx) => {
         if (idx === index) {
+          // Rule: newly added fields must be optional when applications exist
+          if (hasApplications && !field.isOriginal && key === 'required') {
+            return { ...field, required: false }; // Lock to false
+          }
           return { ...field, [key]: val };
         }
         return field;
       })
     );
+  };
+
+  // Reorder up/down helper
+  const moveField = (index, direction) => {
+    const nextIndex = direction === 'up' ? index - 1 : index + 1;
+    if (nextIndex < 0 || nextIndex >= customFields.length) return;
+
+    const updated = [...customFields];
+    const temp = updated[index];
+    updated[index] = updated[nextIndex];
+    updated[nextIndex] = temp;
+    setCustomFields(updated);
   };
 
   const handleSubmit = (e) => {
@@ -62,29 +120,47 @@ export const PostListing = () => {
 
     // Validations
     if (!title || !description || !deadline) {
-      setErrorMsg('Please fill in all mandatory fields.');
+      setErrorMsg('Please fill out all mandatory fields.');
       return;
     }
 
-    // Validate select custom fields have non-empty options
+    // Append-only validations when editing an internship with applications
+    if (hasApplications) {
+      // 1. Check if any original field was deleted
+      const currentOriginalIds = customFields.filter(f => f.isOriginal).map(f => f.fieldId);
+      if (currentOriginalIds.length < originalCustomFieldsCount) {
+        setErrorMsg('Validation Error: Existing fields cannot be removed once applications have been submitted.');
+        return;
+      }
+
+      // 2. Check if new fields are optional
+      const newFields = customFields.filter(f => !f.isOriginal);
+      const hasRequiredNew = newFields.some(f => f.required);
+      if (hasRequiredNew) {
+        setErrorMsg('Validation Error: Newly added custom fields must be optional.');
+        return;
+      }
+    }
+
+    // Options validation for dropdown select fields
     for (let field of customFields) {
       if (field.type === 'select') {
-        const parsedOptions = field.options
-          .split(',')
-          .map((o) => o.trim())
-          .filter((o) => o.length > 0);
-        if (parsedOptions.length === 0) {
+        const opts = typeof field.options === 'string' 
+          ? field.options.split(',').map((o) => o.trim()).filter((o) => o.length > 0)
+          : field.options;
+        if (!opts || opts.length === 0) {
           setErrorMsg(`Select custom field "${field.label || 'unnamed'}" must have options (comma-separated list).`);
           return;
         }
       }
     }
 
-    // Success Mock submit
-    console.log('[MOCK] Internship Proposal Created:', {
+    // Successful submit mock
+    console.log(`[MOCK] Proposal ${isEditMode ? 'updated' : 'created'} successfully:`, {
       title,
       description,
       scope,
+      specificColleges: scope === 'specific_colleges' ? specificColleges : '',
       stipend,
       duration,
       deadline,
@@ -94,8 +170,13 @@ export const PostListing = () => {
         minCGPA
       },
       customFields: customFields.map((field) => ({
-        ...field,
-        options: field.type === 'select' ? field.options.split(',').map((o) => o.trim()) : []
+        fieldId: field.fieldId,
+        label: field.label,
+        type: field.type,
+        required: field.required,
+        options: field.type === 'select' && typeof field.options === 'string'
+          ? field.options.split(',').map((o) => o.trim())
+          : field.options || []
       }))
     });
 
@@ -105,41 +186,51 @@ export const PostListing = () => {
   return (
     <div className="mx-auto max-w-2xl font-body text-ink space-y-6">
       <div className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm">
-        <h1 className="font-display text-2xl font-bold tracking-tight mb-1">Create Internship Proposal</h1>
-        <p className="text-sm text-concrete">Fill out the proposal details. You can attach custom application questions below.</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight mb-1">
+          {isEditMode ? 'Edit Internship Proposal' : 'Create Internship Proposal'}
+        </h1>
+        <p className="text-sm text-concrete">
+          {hasApplications 
+            ? '⚠ Note: Applications exist for this posting. Existing custom fields are locked in append-only mode.' 
+            : 'Fill out the proposal details. You can attach custom application questions below.'}
+        </p>
       </div>
 
       {errorMsg && (
-        <div className="rounded bg-signal/10 border border-signal/30 p-4 text-xs text-signal font-mono font-medium">
+        <div className="rounded bg-signal/10 border border-signal/30 p-4 text-xs text-signal font-mono font-medium animate-pulse">
           {errorMsg}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm space-y-6">
-        {/* Core fields */}
         <div className="space-y-4">
+          {/* Project Title */}
           <div className="flex flex-col gap-1">
             <label className="font-mono text-xs uppercase tracking-wider text-concrete">Project Title</label>
             <input
               type="text"
+              required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Bridge Health Monitoring"
+              placeholder="e.g. Concrete Compression Analytics"
               className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
             />
           </div>
 
+          {/* Description */}
           <div className="flex flex-col gap-1">
             <label className="font-mono text-xs uppercase tracking-wider text-concrete">Project Description</label>
             <textarea
               rows="4"
+              required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the research goals, student responsibilities, and methodologies..."
+              placeholder="Describe tasks, required skills, and key objectives..."
               className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
             />
           </div>
 
+          {/* Scope selection */}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-1">
               <label className="font-mono text-xs uppercase tracking-wider text-concrete">Access Scope</label>
@@ -148,18 +239,35 @@ export const PostListing = () => {
                 onChange={(e) => setScope(e.target.value)}
                 className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
               >
-                <option value="open">Open (All applicants allowed)</option>
-                <option value="internal">Internal (Restricted to Civil/Mining NITK)</option>
+                <option value="open">Open (All students)</option>
+                <option value="internal">Internal (Civil/Mining only)</option>
+                <option value="specific_colleges">Specific Colleges</option>
               </select>
             </div>
+
+            {/* Conditional Specific Colleges */}
+            {scope === 'specific_colleges' && (
+              <div className="flex flex-col gap-1">
+                <label className="font-mono text-xs uppercase tracking-wider text-concrete">Target Colleges (comma-separated)</label>
+                <input
+                  type="text"
+                  required
+                  value={specificColleges}
+                  onChange={(e) => setSpecificColleges(e.target.value)}
+                  placeholder="e.g. NITK, IIT Bombay"
+                  className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
+                />
+              </div>
+            )}
 
             <div className="flex flex-col gap-1">
               <label className="font-mono text-xs uppercase tracking-wider text-concrete">Stipend Amount</label>
               <input
                 type="text"
+                required
                 value={stipend}
                 onChange={(e) => setStipend(e.target.value)}
-                placeholder="e.g. ₹15,000 / month, or Unpaid"
+                placeholder="e.g. ₹10,000 / month, or Unpaid"
                 className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
               />
             </div>
@@ -182,6 +290,7 @@ export const PostListing = () => {
               <label className="font-mono text-xs uppercase tracking-wider text-concrete font-bold text-signal">Application Deadline</label>
               <input
                 type="datetime-local"
+                required
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
@@ -200,7 +309,7 @@ export const PostListing = () => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-xs uppercase tracking-wider text-concrete">Minimum Required CGPA</label>
+              <label className="font-mono text-xs uppercase tracking-wider text-concrete">Min Required CGPA</label>
               <input
                 type="number"
                 step="0.1"
@@ -229,10 +338,10 @@ export const PostListing = () => {
           </div>
         </div>
 
-        {/* Dynamic custom questions */}
+        {/* Dynamic Questionnaire Custom Fields Builder */}
         <div className="border-t border-concrete/20 pt-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-display font-bold text-base">Posting Custom Fields</h3>
+            <h3 className="font-display font-bold text-base">Custom Proposal Fields</h3>
             <button
               type="button"
               onClick={addCustomField}
@@ -244,77 +353,133 @@ export const PostListing = () => {
 
           {customFields.length > 0 ? (
             <div className="space-y-4">
-              {customFields.map((field, index) => (
-                <div key={field.fieldId} className="p-4 border border-concrete/25 rounded bg-paper/50 relative space-y-3">
-                  <button
-                    type="button"
-                    onClick={() => removeCustomField(index)}
-                    className="absolute right-3 top-3 text-concrete hover:text-signal font-mono text-sm"
-                  >
-                    ✕
-                  </button>
+              {customFields.map((field, index) => {
+                const isLocked = hasApplications && field.isOriginal;
+                const canMoveUp = index > 0;
+                const canMoveDown = index < customFields.length - 1;
 
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <div className="flex flex-col gap-1">
-                      <label className="font-mono text-[10px] uppercase tracking-wider text-concrete">Question Label</label>
-                      <input
-                        type="text"
-                        value={field.label}
-                        onChange={(e) => updateCustomField(index, 'label', e.target.value)}
-                        placeholder="e.g. Preferred Software, Link to project"
-                        className="rounded border border-concrete/35 bg-white px-2 py-1.5 text-xs text-ink outline-none focus:border-blueprint"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <label className="font-mono text-[10px] uppercase tracking-wider text-concrete">Field Type</label>
-                      <select
-                        value={field.type}
-                        onChange={(e) => updateCustomField(index, 'type', e.target.value)}
-                        className="rounded border border-concrete/35 bg-white px-2 py-1.5 text-xs text-ink outline-none focus:border-blueprint"
+                return (
+                  <div key={field.fieldId} className="p-4 border border-concrete/25 rounded bg-paper/50 relative space-y-3">
+                    {/* Controls Panel */}
+                    <div className="absolute right-3 top-3 flex items-center gap-2">
+                      {/* Reordering buttons */}
+                      <button
+                        type="button"
+                        disabled={!canMoveUp}
+                        onClick={() => moveField(index, 'up')}
+                        className={`font-mono text-xs ${canMoveUp ? 'text-concrete hover:text-blueprint' : 'text-concrete/20 cursor-not-allowed'}`}
+                        title="Move Up"
                       >
-                        <option value="text">Text (short line)</option>
-                        <option value="textarea">Textarea (paragraphs)</option>
-                        <option value="number">Number</option>
-                        <option value="link">Link (validated URL)</option>
-                        <option value="select">Select (dropdown options)</option>
-                      </select>
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!canMoveDown}
+                        onClick={() => moveField(index, 'down')}
+                        className={`font-mono text-xs ${canMoveDown ? 'text-concrete hover:text-blueprint' : 'text-concrete/20 cursor-not-allowed'}`}
+                        title="Move Down"
+                      >
+                        ▼
+                      </button>
+                      
+                      {/* Delete button (disabled if locked by append-only applications exist rule) */}
+                      <button
+                        type="button"
+                        disabled={isLocked}
+                        onClick={() => removeCustomField(index)}
+                        className={`font-mono text-sm leading-none ${
+                          isLocked 
+                            ? 'text-concrete/20 cursor-not-allowed' 
+                            : 'text-concrete hover:text-signal'
+                        }`}
+                        title={isLocked ? "Field locked: Applications exist." : "Delete Field"}
+                      >
+                        ✕
+                      </button>
                     </div>
-                  </div>
 
-                  {field.type === 'select' && (
-                    <div className="flex flex-col gap-1">
-                      <label className="font-mono text-[10px] uppercase tracking-wider text-concrete">
-                        Dropdown Options (comma-separated list)
-                      </label>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      {/* Question Label */}
+                      <div className="flex flex-col gap-1">
+                        <label className="font-mono text-[10px] uppercase tracking-wider text-concrete">Question Label</label>
+                        <input
+                          type="text"
+                          required
+                          disabled={isLocked}
+                          value={field.label}
+                          onChange={(e) => updateCustomField(index, 'label', e.target.value)}
+                          placeholder="e.g. Prior Projects, Choice of base location"
+                          className={`rounded border bg-white px-2 py-1.5 text-xs text-ink outline-none ${
+                            isLocked ? 'border-concrete/20 bg-concrete/5 text-concrete/75 cursor-not-allowed' : 'border-concrete/35 focus:border-blueprint'
+                          }`}
+                        />
+                      </div>
+
+                      {/* Field Type */}
+                      <div className="flex flex-col gap-1">
+                        <label className="font-mono text-[10px] uppercase tracking-wider text-concrete">Field Type</label>
+                        <select
+                          disabled={isLocked}
+                          value={field.type}
+                          onChange={(e) => updateCustomField(index, 'type', e.target.value)}
+                          className={`rounded border bg-white px-2 py-1.5 text-xs text-ink outline-none ${
+                            isLocked ? 'border-concrete/20 bg-concrete/5 text-concrete/75 cursor-not-allowed' : 'border-concrete/35 focus:border-blueprint'
+                          }`}
+                        >
+                          <option value="text">Text (short answer)</option>
+                          <option value="textarea">Textarea (long answer)</option>
+                          <option value="number">Number</option>
+                          <option value="link">Link (validated URL)</option>
+                          <option value="select">Select (dropdown options)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Conditional Options */}
+                    {field.type === 'select' && (
+                      <div className="flex flex-col gap-1">
+                        <label className="font-mono text-[10px] uppercase tracking-wider text-concrete">
+                          Dropdown Options (comma-separated list)
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          disabled={isLocked}
+                          value={typeof field.options === 'string' ? field.options : field.options?.join(', ') || ''}
+                          onChange={(e) => updateCustomField(index, 'options', e.target.value)}
+                          placeholder="Option A, Option B, Option C"
+                          className={`rounded border bg-white px-2 py-1.5 text-xs text-ink outline-none ${
+                            isLocked ? 'border-concrete/20 bg-concrete/5 text-concrete/75 cursor-not-allowed' : 'border-concrete/35 focus:border-blueprint'
+                          }`}
+                        />
+                      </div>
+                    )}
+
+                    {/* Required Checkbox */}
+                    <label className={`flex items-center gap-2 text-xs cursor-pointer pt-1 ${
+                      hasApplications && !field.isOriginal 
+                        ? 'text-concrete/40 cursor-not-allowed' 
+                        : 'text-ink'
+                    }`}>
                       <input
-                        type="text"
-                        value={field.options}
-                        onChange={(e) => updateCustomField(index, 'options', e.target.value)}
-                        placeholder="Option A, Option B, Option C"
-                        className="rounded border border-concrete/35 bg-white px-2 py-1.5 text-xs text-ink outline-none focus:border-blueprint"
+                        type="checkbox"
+                        checked={field.required}
+                        disabled={hasApplications && !field.isOriginal} // Force optional for new fields when apps exist
+                        onChange={(e) => updateCustomField(index, 'required', e.target.checked)}
+                        className="accent-blueprint rounded"
                       />
-                    </div>
-                  )}
-
-                  <label className="flex items-center gap-2 text-xs text-ink cursor-pointer pt-1">
-                    <input
-                      type="checkbox"
-                      checked={field.required}
-                      onChange={(e) => updateCustomField(index, 'required', e.target.checked)}
-                      className="accent-blueprint rounded"
-                    />
-                    Required field
-                  </label>
-                </div>
-              ))}
+                      Required field {hasApplications && !field.isOriginal && <span className="text-[10px] text-concrete font-mono">(new fields must be optional)</span>}
+                    </label>
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            <p className="text-xs text-concrete italic">No custom fields added. Applications will default to standard fields (Resume + Cover Note).</p>
+            <p className="text-xs text-concrete italic">No custom fields added. Student applications will require Resume PDF and Cover Note only.</p>
           )}
         </div>
 
-        {/* Action Panel */}
+        {/* Form Actions */}
         <div className="flex items-center gap-3 justify-end border-t border-concrete/10 pt-6">
           <button
             type="button"
@@ -325,7 +490,7 @@ export const PostListing = () => {
           </button>
           <button
             type="submit"
-            className="rounded bg-signal px-6 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-signal/90 transition-colors"
+            className="rounded bg-signal px-6 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-signal/90 transition-colors shadow-sm"
           >
             Submit proposal
           </button>
