@@ -3,76 +3,46 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_DEFAULTS } from '../components/RoleGuard';
 
-const decodeJwt = (token) => {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      window
-        .atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (err) {
-    console.error('Error decoding JWT token:', err);
-    return null;
-  }
-};
-
 export const AuthComplete = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { restoreSession, user, isAuthenticated } = useAuth();
   const [errorMsg, setErrorMsg] = useState('');
   const [isPending, setIsPending] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = searchParams.get('token');
     const pending = searchParams.get('pending');
 
     if (pending === 'true') {
       setIsPending(true);
-      return;
-    }
-
-    if (!token) {
-      setErrorMsg('No authentication token received from identity provider.');
+      setLoading(false);
       return;
     }
 
     const completeHandoff = async () => {
-      const decoded = decodeJwt(token);
-      if (!decoded) {
-        setErrorMsg('Invalid token format received.');
-        return;
+      try {
+        // Query /auth/me using the cookie (sent automatically by axios/browser)
+        await restoreSession();
+      } catch (err) {
+        setErrorMsg('Failed to establish session credentials. Please try signing in again.');
+      } finally {
+        setLoading(false);
       }
-
-      // Log in using context helper and cache locally
-      const role = decoded.role || 'student';
-      const mockEmail = decoded.email || `${role}@nitk.edu.in`;
-      
-      const userObj = {
-        _id: decoded.id || 'u-iris',
-        role,
-        name: decoded.name || `IRIS User (${role})`,
-        email: mockEmail,
-        token
-      };
-
-      localStorage.setItem('pace_portal_user', JSON.stringify(userObj));
-      
-      // Perform session login
-      await login(mockEmail, role);
-
-      // Redirect to landing dashboard based on role
-      const dest = ROLE_DEFAULTS[role] || '/portal';
-      navigate(dest);
     };
 
     completeHandoff();
-  }, [searchParams, navigate, login]);
+  }, [searchParams, restoreSession]);
+
+  // Once authenticated, redirect immediately based on role
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      const dest = ROLE_DEFAULTS[user.role] || '/portal';
+      navigate(dest);
+    } else if (!loading && !isAuthenticated && !isPending && !errorMsg) {
+      setErrorMsg('Not authorized. No active session established.');
+    }
+  }, [loading, isAuthenticated, user, navigate, isPending, errorMsg]);
 
   if (isPending) {
     return (
@@ -112,7 +82,7 @@ export const AuthComplete = () => {
     <div className="flex flex-col items-center justify-center p-12 bg-paper font-body text-ink">
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-concrete border-t-blueprint mb-4" />
       <h3 className="font-display font-bold text-lg mb-1">Finalizing Authentication</h3>
-      <p className="text-xs font-mono text-concrete tracking-widest uppercase">Writing session parameters...</p>
+      <p className="text-xs font-mono text-concrete tracking-widest uppercase">Verifying session token cookies...</p>
     </div>
   );
 };

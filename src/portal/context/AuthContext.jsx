@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { mockUsers } from '../mocks/fixtures';
+import api, { setAccessToken } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -7,55 +7,110 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restore session from localStorage on mount
-  useEffect(() => {
-    const restoreSession = async () => {
-      try {
-        const storedUser = localStorage.getItem('pace_portal_user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (err) {
-        console.error('Failed to restore session:', err);
-      } finally {
-        // Add a tiny delay to simulate network latency
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 300);
+  // Restore session from httpOnly cookie by calling GET /auth/me
+  const restoreSession = async () => {
+    try {
+      const res = await api.get('/auth/me');
+      if (res.data && res.data.success) {
+        setUser(res.data.user);
+        setAccessToken(res.data.accessToken);
       }
-    };
-    restoreSession();
-  }, []);
-
-  const login = async (email, role = 'student') => {
-    setIsLoading(true);
-    // Find matching mock user
-    let loggedUser = mockUsers[role];
-    if (!loggedUser) {
-      // Fallback fallback if requested role doesn't exist
-      loggedUser = {
-        _id: 'u-custom',
-        role,
-        name: `Mock ${role.replace('_', ' ')}`,
-        email: email || `${role}@nitk.edu.in`
-      };
+    } catch (err) {
+      console.log('[AUTH] No active session found or cookie expired.');
+      setUser(null);
+      setAccessToken(null);
+    } finally {
+      setIsLoading(false);
     }
-
-    localStorage.setItem('pace_portal_user', JSON.stringify(loggedUser));
-    setUser(loggedUser);
-    setIsLoading(false);
-    return loggedUser;
   };
 
+  useEffect(() => {
+    restoreSession();
+
+    // Listen for custom logout event emitted by the API client on refresh failures
+    const handleForcedLogout = () => {
+      setUser(null);
+      setAccessToken(null);
+    };
+
+    window.addEventListener('pace-auth-logout', handleForcedLogout);
+    return () => {
+      window.removeEventListener('pace-auth-logout', handleForcedLogout);
+    };
+  }, []);
+
+  // Standard password login
+  const login = async (email, password) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      if (res.data && res.data.success) {
+        setUser(res.data.user);
+        setAccessToken(res.data.accessToken);
+        return res.data.user;
+      }
+    } catch (err) {
+      setUser(null);
+      setAccessToken(null);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sign up NITK student
+  const signupStudent = async (name, email, password) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post('/auth/signup', { name, email, password });
+      if (res.data && res.data.success) {
+        setUser(res.data.user);
+        setAccessToken(res.data.accessToken);
+        return res.data.user;
+      }
+    } catch (err) {
+      setUser(null);
+      setAccessToken(null);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sign up pending Professor
+  const signupProfessor = async (name, email, password, department) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post('/auth/professor/signup', { name, email, password, department });
+      return res.data;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Logout invalidates session
   const logout = async () => {
     setIsLoading(true);
-    localStorage.removeItem('pace_portal_user');
-    setUser(null);
-    setIsLoading(false);
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Failed to log out cleanly on backend:', err);
+    } finally {
+      setUser(null);
+      setAccessToken(null);
+      setIsLoading(false);
+    }
   };
 
   const refresh = async () => {
-    console.log('[MOCK] Session refresh triggered');
+    try {
+      const res = await api.post('/auth/refresh');
+      if (res.data && res.data.success) {
+        setAccessToken(res.data.accessToken);
+      }
+    } catch (err) {
+      console.error('Manual refresh call failed:', err);
+    }
   };
 
   const value = {
@@ -64,8 +119,11 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     isLoading,
     login,
+    signupStudent,
+    signupProfessor,
     logout,
-    refresh
+    refresh,
+    restoreSession
   };
 
   return (
@@ -82,3 +140,4 @@ export const useAuth = () => {
   }
   return context;
 };
+export default AuthContext;

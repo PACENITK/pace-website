@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 
 export const Profile = () => {
-  const { user, login } = useAuth();
+  const { user, restoreSession } = useAuth();
   
   const [name, setName] = useState('');
   const [college, setCollege] = useState('NITK Surathkal');
@@ -64,30 +65,29 @@ export const Profile = () => {
       return;
     }
 
-    // Save profile to LocalStorage mock layer
-    const updatedUser = {
-      ...user,
-      name,
-      profile: {
-        college,
-        branch,
-        year: parseInt(year),
-        cgpa: parseFloat(cgpa),
-        skills: skills.split(',').map(s => s.trim()).filter(s => s.length > 0),
-        resumeUrl,
-        linkedin,
-        github,
-        phone
-      }
-    };
-
-    localStorage.setItem('pace_portal_user', JSON.stringify(updatedUser));
-    
-    // Refresh auth context state
-    await login(user.email, user.role);
-    
-    setSuccessMsg('Profile updated successfully!');
-    setTimeout(() => setSuccessMsg(''), 4000);
+    try {
+      await api.patch('/auth/profile', {
+        name,
+        profile: {
+          college,
+          branch,
+          year: parseInt(year),
+          cgpa: parseFloat(cgpa),
+          skills: skills.split(',').map(s => s.trim()).filter(s => s.length > 0),
+          resumeUrl,
+          linkedin,
+          github,
+          phone
+        }
+      });
+      
+      setSuccessMsg('Profile updated successfully!');
+      await restoreSession();
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      setErrors({ cgpa: err.response?.data?.message || 'Failed to update profile details on server.' });
+    }
   };
 
   return (

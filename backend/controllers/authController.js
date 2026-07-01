@@ -44,7 +44,7 @@ const sendTokens = (user, statusCode, res) => {
 const sendIrisTokens = (user, statusCode, res, isFacultyPending = false) => {
   const redirectUrl = isFacultyPending
     ? `${config.FRONTEND_URL}/portal/auth/complete?pending=true`
-    : `${config.FRONTEND_URL}/portal/auth/complete?token=${generateAccessToken(user)}`;
+    : `${config.FRONTEND_URL}/portal/auth/complete`;
 
   if (!isFacultyPending) {
     const refreshToken = generateRefreshToken(user);
@@ -395,4 +395,70 @@ exports.logout = (req, res) => {
     success: true,
     message: 'Logged out successfully.'
   });
+};
+
+/**
+  * GET /auth/me
+  * Restore student or professor session state using httpOnly refresh token cookie
+  */
+exports.getMe = async (req, res, next) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ success: false, message: 'Not authorized, no session cookie found.' });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, config.JWT_REFRESH_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized, user not found.' });
+    }
+
+    const accessToken = generateAccessToken(user);
+    const userObj = user.toObject();
+    delete userObj.passwordHash;
+
+    res.status(200).json({
+      success: true,
+      accessToken,
+      user: userObj,
+    });
+  } catch (error) {
+    return res.status(401).json({ success: false, message: 'Not authorized, session expired.' });
+  }
+};
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (req.body.name) {
+      user.name = req.body.name;
+    }
+
+    if (req.body.profile) {
+      user.profile = {
+        ...user.profile,
+        ...req.body.profile
+      };
+    }
+
+    await user.save();
+
+    const userObj = user.toObject();
+    delete userObj.passwordHash;
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user: userObj
+    });
+  } catch (error) {
+    next(error);
+  }
 };

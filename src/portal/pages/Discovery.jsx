@@ -4,12 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { FilterBar } from '../components/FilterBar';
 import { InternshipCard } from '../components/InternshipCard';
 import { SkeletonCard } from '../components/SkeletonCard';
-import { mockInternships } from '../mocks/fixtures';
+import { PortalError } from '../components/PortalError';
+import api from '../utils/api';
 
 export const Discovery = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const [filters, setFilters] = useState({
     search: '',
@@ -25,44 +27,49 @@ export const Discovery = () => {
     setShouldAnimate(!mediaQuery.matches);
   }, []);
 
-  // Simulate network loading delay
-  useEffect(() => {
+  const fetchInternships = async () => {
     setLoading(true);
-    const timer = setTimeout(() => {
-      let filtered = [...mockInternships];
+    setError('');
+    try {
+      const params = {};
+      if (filters.branch) params.branch = filters.branch;
+      if (filters.duration) params.duration = filters.duration;
 
+      const res = await api.get('/internships', { params });
+      let data = res.data.data || [];
+
+      // Client-side text keyword search
       if (filters.search) {
         const query = filters.search.toLowerCase();
-        filtered = filtered.filter(
+        data = data.filter(
           (i) =>
             i.title.toLowerCase().includes(query) ||
-            i.description.toLowerCase().includes(query) ||
-            i.plateId.toLowerCase().includes(query)
+            (i.description && i.description.toLowerCase().includes(query)) ||
+            (i.plateId && i.plateId.toLowerCase().includes(query))
         );
       }
 
-      if (filters.branch) {
-        filtered = filtered.filter((i) =>
-          i.eligibility.branches.includes(filters.branch)
-        );
-      }
-
-      if (filters.duration) {
-        filtered = filtered.filter((i) => i.duration === filters.duration);
-      }
-
+      // Client-side stipend filter mapping
       if (filters.stipend) {
-        filtered = filtered.filter((i) => {
-          const isPaid = i.stipend.includes('₹') || (i.stipend.toLowerCase().includes('paid') && !i.stipend.toLowerCase().includes('unpaid'));
+        data = data.filter((i) => {
+          if (!i.stipend) return filters.stipend === 'Unpaid';
+          const isPaid = i.stipend.includes('₹') || 
+            (i.stipend.toLowerCase().includes('paid') && !i.stipend.toLowerCase().includes('unpaid'));
           return filters.stipend === 'Paid' ? isPaid : !isPaid;
         });
       }
 
-      setFilteredInternships(filtered);
+      setFilteredInternships(data);
+    } catch (err) {
+      console.error('Error fetching internships:', err);
+      setError(err.response?.data?.message || 'Failed to connect to the backend server. Please verify connections.');
+    } finally {
       setLoading(false);
-    }, 450);
+    }
+  };
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    fetchInternships();
   }, [filters]);
 
   const handleCardClick = (id) => {
@@ -78,7 +85,7 @@ export const Discovery = () => {
     });
   };
 
-  const openListingsCount = mockInternships.filter(i => i.status === 'open').length;
+  const activeProposalsCount = filteredInternships.filter(i => i.status !== 'closed').length;
 
   return (
     <div className="space-y-6 font-body text-ink">
@@ -110,7 +117,7 @@ export const Discovery = () => {
           shouldAnimate ? 'scale-100 opacity-100' : ''
         }`}>
           <span className="font-display text-4xl font-extrabold text-blueprint leading-none mb-1">
-            {openListingsCount}
+            {loading ? '...' : activeProposalsCount}
           </span>
           <span className="font-mono text-[9px] uppercase tracking-wider text-blueprint font-semibold">
             Active Proposals
@@ -122,35 +129,42 @@ export const Discovery = () => {
       {/* Controlled Filters */}
       <FilterBar filters={filters} onChange={setFilters} />
 
+      {/* Scoped failure banner */}
+      {error && (
+        <PortalError message={error} onRetry={fetchInternships} />
+      )}
+
       {/* Listings Grid */}
-      {loading ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-      ) : filteredInternships.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredInternships.map((internship) => (
-            <InternshipCard
-              key={internship._id}
-              internship={internship}
-              onClick={() => handleCardClick(internship._id)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 border border-dashed border-concrete/30 rounded-md bg-paper/50 font-body">
-          <div className="text-concrete text-3xl font-mono mb-2">📭</div>
-          <h3 className="font-display font-bold text-lg text-ink">No Internships Found</h3>
-          <p className="text-xs text-concrete mt-1 mb-4">No listings match your current filters. Try resetting the options.</p>
-          <button
-            onClick={clearFilters}
-            className="rounded bg-blueprint px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-blueprint/90 transition-colors"
-          >
-            Clear Search Filters
-          </button>
-        </div>
+      {!error && (
+        loading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        ) : filteredInternships.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredInternships.map((internship) => (
+              <InternshipCard
+                key={internship._id}
+                internship={internship}
+                onClick={() => handleCardClick(internship._id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 border border-dashed border-concrete/30 rounded-md bg-paper/50 font-body">
+            <div className="text-concrete text-3xl font-mono mb-2">📭</div>
+            <h3 className="font-display font-bold text-lg text-ink">No Internships Found</h3>
+            <p className="text-xs text-concrete mt-1 mb-4">No listings match your current filters. Try resetting the options.</p>
+            <button
+              onClick={clearFilters}
+              className="rounded bg-blueprint px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-blueprint/90 transition-colors"
+            >
+              Clear Search Filters
+            </button>
+          </div>
+        )
       )}
     </div>
   );

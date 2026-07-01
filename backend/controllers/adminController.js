@@ -424,3 +424,27 @@ exports.toggleKillSwitch = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getFacultyList = async (req, res, next) => {
+  try {
+    const list = await FacultyList.find().populate('addedBy', 'name email');
+    res.status(200).json({
+      success: true,
+      data: list
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find().select('name email role verified status');
+    res.status(200).json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    next(error);
+  }
+};

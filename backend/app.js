@@ -52,6 +52,13 @@ app.use('/applications', applicationRoutes);
 app.use('/report', reportRoutes);
 
 // Root Level Super Admin / Compliance Routes
+app.get(
+  '/faculty-list',
+  requireAuth,
+  requireRole('admin', 'super_admin'),
+  adminController.getFacultyList
+);
+
 app.post(
   '/faculty-list',
   requireAuth,

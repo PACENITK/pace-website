@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockInternships, mockApplications } from '../mocks/fixtures';
+import { PortalError } from '../components/PortalError';
+import api from '../utils/api';
 
 export const PostListing = () => {
   const { id } = useParams();
@@ -8,7 +9,9 @@ export const PostListing = () => {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [hasApplications, setHasApplications] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  
   // Proposal fields
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -24,35 +27,54 @@ export const PostListing = () => {
   // Custom Questionnaire builder
   const [customFields, setCustomFields] = useState([]);
   const [originalCustomFieldsCount, setOriginalCustomFieldsCount] = useState(0);
-  const [errorMsg, setErrorMsg] = useState('');
 
   const branches = ['Civil Engineering', 'Mining Engineering', 'Computer Science', 'Mechanical Engineering'];
 
-  useEffect(() => {
-    if (id) {
-      const found = mockInternships.find((i) => i._id === id);
+  const fetchListingDetails = async () => {
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await api.get(`/internships/${id}`);
+      const found = res.data.data;
       if (found) {
         setIsEditMode(true);
         setTitle(found.title || '');
         setDescription(found.description || '');
         setScope(found.scope || 'open');
-        setSpecificColleges(found.specificColleges || '');
+        setSpecificColleges(
+          Array.isArray(found.specificColleges) 
+            ? found.specificColleges.join(', ') 
+            : found.specificColleges || ''
+        );
         setStipend(found.stipend || '');
         setDuration(found.duration || '2 Months');
-        setDeadline(found.deadline ? found.deadline.slice(0, 16) : ''); // Format for datetime-local
+        // Format ISO deadline date string to datetime-local input format
+        setDeadline(found.deadline ? found.deadline.slice(0, 16) : '');
         setOpenings(found.openings || 1);
         setMinCGPA(found.eligibility?.minCGPA || 7.0);
         setSelectedBranches(found.eligibility?.branches || ['Civil Engineering']);
         
-        // Load custom fields
+        // Custom fields loading
         const fields = found.customFields || [];
         setCustomFields(fields.map(f => ({ ...f, isOriginal: true })));
         setOriginalCustomFieldsCount(fields.length);
 
-        // Check if there are applications
-        const hasApps = mockApplications.some((a) => a.internshipId._id === id);
-        setHasApplications(hasApps);
+        // Query active applications for this posting
+        const appRes = await api.get(`/internships/${id}/applicants`);
+        const apps = appRes.data.data || [];
+        setHasApplications(apps.length > 0);
       }
+    } catch (err) {
+      console.error('Error fetching listing details for editor:', err);
+      setErrorMsg(err.response?.data?.message || 'Failed to retrieve internship details for editing.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchListingDetails();
     }
   }, [id]);
 
@@ -73,17 +95,14 @@ export const PostListing = () => {
         type: 'text',
         options: '',
         required: false,
-        isOriginal: false // New field
+        isOriginal: false
       }
     ]);
   };
 
   const removeCustomField = (index) => {
     const field = customFields[index];
-    if (hasApplications && field.isOriginal) {
-      // Cannot delete original field when applications exist
-      return;
-    }
+    if (hasApplications && field.isOriginal) return; // locked
     setCustomFields(customFields.filter((_, idx) => idx !== index));
   };
 
@@ -91,9 +110,8 @@ export const PostListing = () => {
     setCustomFields(
       customFields.map((field, idx) => {
         if (idx === index) {
-          // Rule: newly added fields must be optional when applications exist
           if (hasApplications && !field.isOriginal && key === 'required') {
-            return { ...field, required: false }; // Lock to false
+            return { ...field, required: false }; // lock false
           }
           return { ...field, [key]: val };
         }
@@ -102,11 +120,9 @@ export const PostListing = () => {
     );
   };
 
-  // Reorder up/down helper
   const moveField = (index, direction) => {
     const nextIndex = direction === 'up' ? index - 1 : index + 1;
     if (nextIndex < 0 || nextIndex >= customFields.length) return;
-
     const updated = [...customFields];
     const temp = updated[index];
     updated[index] = updated[nextIndex];
@@ -114,74 +130,85 @@ export const PostListing = () => {
     setCustomFields(updated);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
-    // Validations
     if (!title || !description || !deadline) {
       setErrorMsg('Please fill out all mandatory fields.');
       return;
     }
 
-    // Append-only validations when editing an internship with applications
     if (hasApplications) {
-      // 1. Check if any original field was deleted
       const currentOriginalIds = customFields.filter(f => f.isOriginal).map(f => f.fieldId);
       if (currentOriginalIds.length < originalCustomFieldsCount) {
         setErrorMsg('Validation Error: Existing fields cannot be removed once applications have been submitted.');
         return;
       }
-
-      // 2. Check if new fields are optional
-      const newFields = customFields.filter(f => !f.isOriginal);
-      const hasRequiredNew = newFields.some(f => f.required);
+      const hasRequiredNew = customFields.filter(f => !f.isOriginal).some(f => f.required);
       if (hasRequiredNew) {
         setErrorMsg('Validation Error: Newly added custom fields must be optional.');
         return;
       }
     }
 
-    // Options validation for dropdown select fields
-    for (let field of customFields) {
-      if (field.type === 'select') {
-        const opts = typeof field.options === 'string' 
-          ? field.options.split(',').map((o) => o.trim()).filter((o) => o.length > 0)
-          : field.options;
-        if (!opts || opts.length === 0) {
-          setErrorMsg(`Select custom field "${field.label || 'unnamed'}" must have options (comma-separated list).`);
-          return;
-        }
+    // Format fields
+    const formattedCustomFields = customFields.map((field) => ({
+      fieldId: field.fieldId,
+      label: field.label,
+      type: field.type,
+      required: field.required,
+      options: typeof field.options === 'string'
+        ? field.options.split(',').map((o) => o.trim()).filter((o) => o.length > 0)
+        : field.options || []
+    }));
+
+    // Verify option constraints
+    for (let field of formattedCustomFields) {
+      if (field.type === 'select' && field.options.length === 0) {
+        setErrorMsg(`Select custom field "${field.label || 'unnamed'}" must have options (comma-separated list).`);
+        return;
       }
     }
 
-    // Successful submit mock
-    console.log(`[MOCK] Proposal ${isEditMode ? 'updated' : 'created'} successfully:`, {
+    const payload = {
       title,
       description,
       scope,
-      specificColleges: scope === 'specific_colleges' ? specificColleges : '',
+      specificColleges: scope === 'specific_colleges' 
+        ? specificColleges.split(',').map(c => c.trim()).filter(c => c.length > 0) 
+        : [],
       stipend,
       duration,
       deadline,
-      openings,
+      openings: parseInt(openings) || 1,
       eligibility: {
         branches: selectedBranches,
-        minCGPA
+        minCGPA: parseFloat(minCGPA) || 0
       },
-      customFields: customFields.map((field) => ({
-        fieldId: field.fieldId,
-        label: field.label,
-        type: field.type,
-        required: field.required,
-        options: field.type === 'select' && typeof field.options === 'string'
-          ? field.options.split(',').map((o) => o.trim())
-          : field.options || []
-      }))
-    });
+      customFields: formattedCustomFields
+    };
 
-    navigate('/portal/professor');
+    try {
+      if (isEditMode) {
+        await api.patch(`/internships/${id}`, payload);
+      } else {
+        await api.post('/internships', payload);
+      }
+      navigate('/portal/professor');
+    } catch (err) {
+      console.error('Error submitting internship proposal:', err);
+      setErrorMsg(err.response?.data?.message || 'Failed to submit proposal details to server.');
+    }
   };
+
+  if (loading && !title) {
+    return (
+      <div className="flex h-64 items-center justify-center bg-paper font-mono text-xs text-concrete uppercase tracking-widest animate-pulse">
+        Loading Proposal Editor...
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl font-body text-ink space-y-6">
@@ -197,9 +224,7 @@ export const PostListing = () => {
       </div>
 
       {errorMsg && (
-        <div className="rounded bg-signal/10 border border-signal/30 p-4 text-xs text-signal font-mono font-medium animate-pulse">
-          {errorMsg}
-        </div>
+        <PortalError message={errorMsg} onRetry={isEditMode ? fetchListingDetails : undefined} />
       )}
 
       <form onSubmit={handleSubmit} className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm space-y-6">
@@ -338,7 +363,7 @@ export const PostListing = () => {
           </div>
         </div>
 
-        {/* Dynamic Questionnaire Custom Fields Builder */}
+        {/* Custom Questionnaire Custom Fields Builder */}
         <div className="border-t border-concrete/20 pt-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-display font-bold text-base">Custom Proposal Fields</h3>
@@ -362,7 +387,6 @@ export const PostListing = () => {
                   <div key={field.fieldId} className="p-4 border border-concrete/25 rounded bg-paper/50 relative space-y-3">
                     {/* Controls Panel */}
                     <div className="absolute right-3 top-3 flex items-center gap-2">
-                      {/* Reordering buttons */}
                       <button
                         type="button"
                         disabled={!canMoveUp}
@@ -382,7 +406,6 @@ export const PostListing = () => {
                         ▼
                       </button>
                       
-                      {/* Delete button (disabled if locked by append-only applications exist rule) */}
                       <button
                         type="button"
                         disabled={isLocked}
@@ -464,7 +487,7 @@ export const PostListing = () => {
                       <input
                         type="checkbox"
                         checked={field.required}
-                        disabled={hasApplications && !field.isOriginal} // Force optional for new fields when apps exist
+                        disabled={hasApplications && !field.isOriginal}
                         onChange={(e) => updateCustomField(index, 'required', e.target.checked)}
                         className="accent-blueprint rounded"
                       />

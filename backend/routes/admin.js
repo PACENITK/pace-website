@@ -22,6 +22,7 @@ router.get('/analytics', requireRole('admin', 'super_admin'), adminController.ge
 // ==========================================
 // Super Admin Specific Endpoints
 // ==========================================
+router.get('/users', requireRole('super_admin'), adminController.getUsers);
 router.patch('/promote/:id', requireRole('super_admin'), logAudit('PROMOTE_USER', 'User'), adminController.promoteUser);
 router.patch('/demote/:id', requireRole('super_admin'), logAudit('DEMOTE_USER', 'User'), adminController.demoteUser);
 

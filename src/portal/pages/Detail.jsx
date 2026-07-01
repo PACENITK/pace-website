@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { PlateTag } from '../components/PlateTag';
-import { mockInternships, mockApplications } from '../mocks/fixtures';
+import { PortalError } from '../components/PortalError';
+import api from '../utils/api';
 
 export const Detail = () => {
   const { id } = useParams();
@@ -11,14 +12,19 @@ export const Detail = () => {
 
   const [internship, setInternship] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  // Application details
   const [alreadyApplied, setAlreadyApplied] = useState(false);
+  const [applicationId, setApplicationId] = useState(null);
+  const [myApplication, setMyApplication] = useState(null);
   const [coverNote, setCoverNote] = useState('');
   const [resumeUrl, setResumeUrl] = useState('');
   const [responses, setResponses] = useState({});
-  const [errors, setErrors] = useState({});
+  const [formErrors, setFormErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Eligibility Warnings
+  // Eligibility Alerts
   const [eligibilityWarning, setEligibilityWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
 
@@ -29,46 +35,60 @@ export const Detail = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    const fetchDetails = () => {
-      const found = mockInternships.find((i) => i._id === id);
-      if (found) {
-        setInternship(found);
-        
-        // Check if student already applied
-        if (isAuthenticated && role === 'student') {
-          const applied = mockApplications.some(
-            (a) => a.internshipId._id === found._id && a.studentId._id === user._id
-          );
-          setAlreadyApplied(applied);
+  const fetchDetails = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.get(`/internships/${id}`);
+      const found = res.data.data;
+      setInternship(found);
 
-          // Calculate eligibility warning
-          if (found.eligibility) {
-            const studentBranch = user.profile?.branch;
-            const studentCGPA = user.profile?.cgpa || 0;
-            const minCGPA = found.eligibility.minCGPA || 0;
-            const eligibleBranches = found.eligibility.branches || [];
+      // Check if student already applied to this internship
+      if (isAuthenticated && role === 'student') {
+        const appsRes = await api.get('/applications/mine');
+        const myApps = appsRes.data.data || [];
+        const matchedApp = myApps.find(
+          (a) => a.internshipId?._id === found._id || a.internshipId === found._id
+        );
 
-            let warn = false;
-            let msg = [];
+        if (matchedApp) {
+          setAlreadyApplied(true);
+          setApplicationId(matchedApp._id);
+          setMyApplication(matchedApp);
+        }
 
-            if (studentCGPA < minCGPA) {
-              warn = true;
-              msg.push(`Your CGPA (${studentCGPA}) is below the required minimum (${minCGPA}).`);
-            }
-            if (eligibleBranches.length > 0 && !eligibleBranches.includes(studentBranch)) {
-              warn = true;
-              msg.push(`Your branch (${studentBranch}) is not in the eligible list (${eligibleBranches.join(', ')}).`);
-            }
+        // Calculate eligibility warning
+        if (found.eligibility) {
+          const studentBranch = user.profile?.branch;
+          const studentCGPA = user.profile?.cgpa || 0;
+          const minCGPA = found.eligibility.minCGPA || 0;
+          const eligibleBranches = found.eligibility.branches || [];
 
-            setEligibilityWarning(warn);
-            setWarningMessage(msg.join(' '));
+          let warn = false;
+          let msg = [];
+
+          if (studentCGPA < minCGPA) {
+            warn = true;
+            msg.push(`Your CGPA (${studentCGPA}) is below the required minimum (${minCGPA}).`);
           }
+          if (eligibleBranches.length > 0 && !eligibleBranches.includes(studentBranch)) {
+            warn = true;
+            msg.push(`Your branch (${studentBranch}) is not in the eligible list (${eligibleBranches.join(', ')}).`);
+          }
+
+          setEligibilityWarning(warn);
+          setWarningMessage(msg.join(' '));
         }
       }
+    } catch (err) {
+      console.error('Error fetching internship details:', err);
+      setError(err.response?.data?.message || 'Failed to retrieve internship listing details.');
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchDetails();
   }, [id, isAuthenticated, role, user]);
 
@@ -77,25 +97,24 @@ export const Detail = () => {
       ...responses,
       [fieldId]: value
     });
-    // Clear field specific error on change
-    if (errors[fieldId]) {
-      setErrors({ ...errors, [fieldId]: null });
+    if (formErrors[fieldId]) {
+      setFormErrors({ ...formErrors, [fieldId]: null });
     }
   };
 
-  const handleApply = (e) => {
+  const handleApply = async (e) => {
     e.preventDefault();
-    const newErrors = {};
+    setFormErrors({});
+    setSuccessMsg('');
 
-    // Validate resumeUrl URL format client-side
+    const newErrors = {};
     const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/;
     if (!resumeUrl) {
       newErrors.resumeUrl = 'Resume URL is required.';
     } else if (!urlPattern.test(resumeUrl)) {
-      newErrors.resumeUrl = 'Resume URL must be a valid URL link (e.g. https://drive.google.com/...).';
+      newErrors.resumeUrl = 'Resume URL must be a valid URL link.';
     }
 
-    // Validate custom fields
     if (internship.customFields) {
       internship.customFields.forEach((field) => {
         const val = responses[field.fieldId];
@@ -106,23 +125,52 @@ export const Detail = () => {
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+      setFormErrors(newErrors);
       return;
     }
 
-    // Success Mock Application
-    console.log('[MOCK] Application submitted:', {
-      internshipId: internship._id,
-      studentId: user._id,
-      coverNote,
-      resumeUrl,
-      responses,
-      eligibilityWarning
-    });
+    try {
+      const responsePayload = Object.keys(responses).map((fieldId) => ({
+        fieldId,
+        value: responses[fieldId]
+      }));
 
-    setSuccessMsg('Your application was submitted successfully!');
-    setAlreadyApplied(true);
-    setErrors({});
+      const res = await api.post(`/internships/${id}/apply`, {
+        resumeUrl,
+        coverNote,
+        responses: responsePayload
+      });
+
+      if (res.data && res.data.success) {
+        setSuccessMsg('Your application was submitted successfully!');
+        setAlreadyApplied(true);
+        setApplicationId(res.data.data?._id);
+        setMyApplication({
+          resumeUrl,
+          coverNote,
+          responses: responsePayload
+        });
+        setFormErrors({});
+      }
+    } catch (err) {
+      console.error('Error applying to internship:', err);
+      setError(err.response?.data?.message || 'Failed to submit application to backend.');
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      setError('');
+      const res = await api.patch(`/internships/${id}/withdraw`);
+      if (res.data && res.data.success) {
+        setSuccessMsg('Your application was successfully withdrawn.');
+        setAlreadyApplied(false);
+        setApplicationId(null);
+      }
+    } catch (err) {
+      console.error('Error withdrawing application:', err);
+      setError(err.response?.data?.message || 'Failed to withdraw application.');
+    }
   };
 
   // Determine if required fields are filled out to toggle disabled state
@@ -143,6 +191,19 @@ export const Detail = () => {
     );
   }
 
+  if (error && !internship) {
+    return (
+      <div className="space-y-4">
+        <PortalError message={error} onRetry={fetchDetails} />
+        <div className="text-center">
+          <Link to="/portal" className="text-blueprint hover:underline font-mono text-xs uppercase tracking-wider">
+            ← Back to Discovery
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (!internship) {
     return (
       <div className="text-center py-12 bg-paper border border-concrete/20 rounded">
@@ -159,7 +220,12 @@ export const Detail = () => {
 
   return (
     <div className="mx-auto max-w-4xl font-body text-ink space-y-6">
-      {/* Morph Anchor Card Head */}
+      {/* Scope level errors inside container */}
+      {error && internship && (
+        <PortalError message={error} onRetry={fetchDetails} />
+      )}
+
+      {/* Detail Card Head */}
       <div className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
           <PlateTag text={internship.plateId} type="plate" />
@@ -173,7 +239,7 @@ export const Detail = () => {
           </span>
         </div>
 
-        <h1 className="font-display text-3xl font-bold tracking-tight mb-2 transition-all duration-500 ease-in-out">{internship.title}</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight mb-2">{internship.title}</h1>
         <p className="text-sm text-concrete mb-4">Posted by {internship.professorId?.name || 'Professor'}</p>
 
         {isAuthenticated ? (
@@ -220,7 +286,7 @@ export const Detail = () => {
         )}
       </div>
 
-      {/* Application / guest login prompt section */}
+      {/* Application Form */}
       {!isAuthenticated ? (
         <div className="rounded-md border border-concrete/20 bg-blueprint/5 p-6 shadow-sm text-center">
           <h2 className="font-display text-lg font-bold mb-2">Apply for this Position</h2>
@@ -236,26 +302,77 @@ export const Detail = () => {
         <div className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm">
           <h2 className="font-display text-lg font-bold mb-4">Application Form</h2>
           
-          {successMsg ? (
-            <div className="rounded bg-structural/10 border border-structural/30 p-4 text-sm text-structural font-medium">
+          {successMsg && !alreadyApplied && (
+            <div className="rounded bg-structural/10 border border-structural/30 p-4 text-sm text-structural font-medium mb-4">
               {successMsg}
             </div>
-          ) : isExpired || internship.status === 'closed' ? (
+          )}
+
+          {isExpired || internship.status === 'closed' ? (
             <div className="rounded bg-signal/10 border border-signal/30 p-4 text-sm text-signal font-medium">
               This internship listing is closed or has passed its application deadline.
             </div>
           ) : alreadyApplied ? (
             <div className="space-y-4">
-              <div className="rounded bg-blueprint/10 border border-blueprint/30 p-4 text-sm text-blueprint font-medium">
-                You have already submitted an application for this position.
-              </div>
+              {successMsg ? (
+                <div className="rounded bg-structural/10 border border-structural/30 p-4 text-sm text-structural font-medium mb-4">
+                  {successMsg}
+                </div>
+              ) : (
+                <div className="rounded bg-blueprint/10 border border-blueprint/30 p-4 text-sm text-blueprint font-medium mb-4">
+                  You have already submitted an application for this position.
+                </div>
+              )}
+
+              {/* Submitted Details Display Card */}
+              {myApplication && (
+                <div className="border border-concrete/25 bg-concrete/5 p-5 rounded space-y-3 text-xs">
+                  <h3 className="font-display font-bold text-sm text-ink border-b border-concrete/15 pb-2">Your Submitted Application</h3>
+                  
+                  <div>
+                    <span className="block font-mono text-[9px] uppercase tracking-wider text-concrete mb-1">Resume Link</span>
+                    <a
+                      href={myApplication.resumeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blueprint font-semibold hover:underline font-mono"
+                    >
+                      {myApplication.resumeUrl} ↗
+                    </a>
+                  </div>
+
+                  {myApplication.coverNote && (
+                    <div>
+                      <span className="block font-mono text-[9px] uppercase tracking-wider text-concrete mb-1">Cover Note</span>
+                      <p className="text-ink leading-relaxed whitespace-pre-line bg-white/50 p-2.5 rounded border border-concrete/10">
+                        {myApplication.coverNote}
+                      </p>
+                    </div>
+                  )}
+
+                  {myApplication.responses && myApplication.responses.length > 0 && (
+                    <div>
+                      <span className="block font-mono text-[9px] uppercase tracking-wider text-concrete mb-1">Questionnaire Responses</span>
+                      <div className="space-y-2 bg-white/50 p-3 rounded border border-concrete/10">
+                        {myApplication.responses.map((ans, idx) => {
+                          const fieldDef = internship.customFields?.find(f => f.fieldId === ans.fieldId);
+                          const label = fieldDef ? fieldDef.label : `Question ${idx + 1}`;
+                          return (
+                            <div key={ans.fieldId} className="flex flex-col gap-0.5">
+                              <span className="font-semibold text-concrete text-[10px]">{label}:</span>
+                              <span className="text-ink font-bold">{ans.value}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <button
-                onClick={() => {
-                  setAlreadyApplied(false);
-                  setSuccessMsg('');
-                  console.log('[MOCK] Student withdrew application');
-                }}
-                className="rounded border border-signal text-signal px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider hover:bg-signal/5"
+                onClick={handleWithdraw}
+                className="rounded border border-signal text-signal px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider hover:bg-signal/5 transition-colors"
               >
                 Withdraw Application
               </button>
@@ -293,11 +410,11 @@ export const Detail = () => {
                   onChange={(e) => setResumeUrl(e.target.value)}
                   placeholder="https://drive.google.com/file/d/..."
                   className={`rounded border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint ${
-                    errors.resumeUrl ? 'border-signal' : 'border-concrete/30'
+                    formErrors.resumeUrl ? 'border-signal' : 'border-concrete/30'
                   }`}
                 />
-                {errors.resumeUrl && (
-                  <span className="text-xs text-signal font-mono">{errors.resumeUrl}</span>
+                {formErrors.resumeUrl && (
+                  <span className="text-xs text-signal font-mono">{formErrors.resumeUrl}</span>
                 )}
               </div>
 
@@ -307,7 +424,7 @@ export const Detail = () => {
                   <h3 className="font-mono text-xs uppercase tracking-wider text-concrete font-bold">Custom Questionnaire</h3>
                   
                   {internship.customFields.map((field) => {
-                    const error = errors[field.fieldId];
+                    const error = formErrors[field.fieldId];
                     return (
                       <div key={field.fieldId} className="flex flex-col gap-1">
                         <label className="font-body text-sm font-semibold text-ink">
