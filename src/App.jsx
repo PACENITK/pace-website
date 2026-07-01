@@ -9,6 +9,7 @@ import ExpoProjectDetail from './pages/projects/expo/[id]';
 import HostedProjectDetail from './pages/projects/hosted-projects/[id]';
 import Nirmaan from './components/Nirmaan/Nirmaan';
 import TeamPage from './components/Team/Team';
+import PortalRoutes from './portal/PortalRoutes';
 import { useEffect } from "react";
 import AOS from "aos";
 
@@ -35,6 +36,9 @@ function App() {
         <Route path="/projects/hosted-projects/:id" element={<HostedProjectDetail />} />
         <Route path="/nirmaan" element={<Nirmaan />} />
         <Route path="/team" element={<TeamPage />} />
+        
+        {/* Scaffolding Portal Routes */}
+        <Route path="/portal/*" element={<PortalRoutes />} />
       </Routes>
     </Router>
   );
