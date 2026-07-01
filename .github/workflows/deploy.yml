@@ -21,3 +21,6 @@ jobs:
 
       - name: Copy files to the live folder
         run: cp -r dist/* /var/www/pace/
+
+      - name: Build and restart backend container stack
+        run: docker compose up -d --build backend mongo

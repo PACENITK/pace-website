@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
 const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/error');
 const { checkMaintenance } = require('./middleware/maintenance');
@@ -37,12 +38,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(logger);
 
+app.get('/health', (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  if (!isDbConnected) {
+    return res.status(500).json({
+      success: false,
+      status: 'unhealthy',
+      database: 'disconnected',
+      timestamp: new Date().toISOString()
+    });
+  }
+  res.status(200).json({
+    success: true,
+    status: 'healthy',
+    database: 'connected',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Global Maintenance Mode check
 app.use(checkMaintenance);
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'PACE Backend API is healthy.' });
-});
 
 // App Routes
 app.use('/auth', authRoutes);
