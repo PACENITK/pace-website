@@ -7,6 +7,8 @@ const Application = require('../models/Application');
 const FacultyList = require('../models/FacultyList');
 const AuditLog = require('../models/AuditLog');
 const Counter = require('../models/Counter');
+const SystemConfig = require('../models/SystemConfig');
+const { clearMaintenanceCache } = require('../middleware/maintenance');
 const irisService = require('../services/irisService');
 
 // Define connection URI for tests
@@ -38,6 +40,8 @@ beforeEach(async () => {
   await FacultyList.deleteMany({});
   await AuditLog.deleteMany({});
   await Counter.deleteMany({});
+  await SystemConfig.deleteMany({});
+  clearMaintenanceCache();
 });
 
 describe('PACE Backend Integration Tests', () => {

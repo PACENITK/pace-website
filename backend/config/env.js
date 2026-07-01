@@ -27,6 +27,7 @@ const config = {
   IRIS_PROFILE_URL: process.env.IRIS_PROFILE_URL,
   SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
   SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME,
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
 };
 
 if (nodeEnv !== 'test') {
