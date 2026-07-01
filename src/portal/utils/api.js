@@ -34,8 +34,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    // Check if unauthorized and not already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isAuthRoute = originalRequest.url.includes('/auth/login') || 
+                        originalRequest.url.includes('/auth/signup') || 
+                        originalRequest.url.includes('/auth/professor/signup');
+
+    // Check if unauthorized, not already retried, and not an auth submission
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
       try {
         console.log('[API] 401 encountered, attempting token refresh...');

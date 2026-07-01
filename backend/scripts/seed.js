@@ -109,6 +109,7 @@ const seedData = async () => {
       irisVerified: true,
       verified: true,
       status: 'approved',
+      passwordHash: 'password123',
       profile: {
         college: 'NITK Surathkal',
         branch: 'Civil Engineering',
