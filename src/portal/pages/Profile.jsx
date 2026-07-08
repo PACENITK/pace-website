@@ -90,11 +90,35 @@ export const Profile = () => {
     }
   };
 
+  const handleDeleteRequest = async () => {
+    if (!window.confirm("Are you sure you want to request account deletion? This action is permanent and will notify the administrators to wipe all your profile details and applications.")) {
+      return;
+    }
+
+    try {
+      await api.patch('/auth/delete-request');
+      setSuccessMsg('Account deletion request submitted successfully!');
+      await restoreSession();
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to request account deletion.');
+    }
+  };
+
   return (
     <div className="mx-auto max-w-2xl font-body text-ink space-y-6">
-      <div className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm">
-        <h1 className="font-display text-2xl font-bold tracking-tight mb-1">Student Profile Setup</h1>
-        <p className="text-sm text-concrete">Manage your professional credentials, links, and contact parameters for applications.</p>
+      <div className="rounded-md border border-concrete/20 bg-paper p-6 shadow-sm flex items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-2xl font-bold tracking-tight">Student Profile Setup</h1>
+            {user?.studentType === 'nitk' && (
+              <span className="bg-blueprint/15 text-blueprint text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border border-blueprint/30">
+                NITK Verified
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-concrete mt-1">Manage your professional credentials, links, and contact parameters for applications.</p>
+        </div>
       </div>
 
       {successMsg && (
@@ -175,7 +199,9 @@ export const Profile = () => {
           <div className="flex flex-col gap-1">
             <label className="font-mono text-xs uppercase tracking-wider text-concrete flex items-center justify-between">
               <span>Cumulative CGPA</span>
-              <span className="text-[9px] text-concrete tracking-normal uppercase">cgpaSource: self_reported</span>
+              <span className="text-[9px] text-concrete tracking-normal uppercase">
+                cgpaSource: {user?.profile?.cgpaSource || 'self_reported'}
+              </span>
             </label>
             <input
               type="number"
@@ -257,6 +283,29 @@ export const Profile = () => {
           Save Profile Details
         </button>
       </form>
+
+      {/* DPDP Compliance Danger Zone */}
+      {user?.role === 'student' && (
+        <div className="rounded-md border border-signal/30 bg-signal/5 p-6 shadow-sm space-y-4">
+          <div>
+            <h3 className="font-display text-base font-bold text-signal">Danger Zone</h3>
+            <p className="text-xs text-concrete mt-1">Permanently request deletion of your PACE profile, credentials, and associated applications under DPDP compliance regulations.</p>
+          </div>
+          {user?.deletionRequested ? (
+            <div className="rounded bg-signal/15 border border-signal/30 p-4 text-xs text-signal font-mono font-medium">
+              Account deletion request pending review by Super Admin.
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={handleDeleteRequest}
+              className="rounded bg-signal px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-signal/90 transition-colors"
+            >
+              Request Account Deletion
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

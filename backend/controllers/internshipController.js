@@ -1,10 +1,32 @@
 const Internship = require('../models/Internship');
 const Application = require('../models/Application');
 const AuditLog = require('../models/AuditLog');
+const User = require('../models/User');
+const emailService = require('../services/emailService');
 
-// Stub notification for closing internship
+// Notify all pending/shortlisted applicants when an internship closes
 const notifyPendingApplicants = async (internshipId) => {
-  console.log(`[STUB] Notification: Notifying all pending/shortlisted applicants for internship ID ${internshipId} that the listing has been closed.`);
+  try {
+    const internship = await Internship.findById(internshipId);
+    if (!internship) return;
+
+    const pendingApps = await Application.find({
+      internshipId,
+      status: { $in: ['applied', 'shortlisted'] }
+    }).populate('studentId');
+
+    for (const app of pendingApps) {
+      if (app.studentId && app.studentId.email) {
+        await emailService.sendInternshipClosedEmail(
+          app.studentId.email,
+          app.studentId.name,
+          internship.title
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Failed to notify pending applicants on internship closure:', err);
+  }
 };
 
 /**

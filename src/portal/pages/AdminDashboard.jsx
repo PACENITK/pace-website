@@ -195,10 +195,32 @@ export const AdminDashboard = () => {
                           <div className="text-xs space-y-1">
                             <h4 className="font-bold text-ink text-sm">{p.name}</h4>
                             <p className="text-concrete font-mono">{p.email}</p>
-                            {p.profile?.department && (
-                              <span className="text-[10px] bg-concrete/10 px-1.5 py-0.5 rounded font-mono block w-max mt-1">
-                                Dept: {p.profile.department}
-                              </span>
+                            {p.profile?.college && (
+                              <p className="text-ink font-semibold mt-1">
+                                Institution: {p.profile.college}
+                              </p>
+                            )}
+                            {p.profile?.branch && (
+                              <p className="text-concrete mt-0.5">
+                                Department: {p.profile.branch}
+                              </p>
+                            )}
+                            {p.proofOfStatus && (
+                              <div className="mt-2 bg-concrete/5 border border-concrete/10 p-2 rounded text-[11px] max-w-full">
+                                <span className="font-bold text-concrete block uppercase tracking-wider text-[8px] font-mono mb-1">Proof of Faculty Status:</span>
+                                {/^(https?:\/\/)/i.test(p.proofOfStatus.trim()) ? (
+                                  <a 
+                                    href={p.proofOfStatus.trim()} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-blueprint hover:underline break-all block"
+                                  >
+                                    {p.proofOfStatus.trim()}
+                                  </a>
+                                ) : (
+                                  <p className="text-ink mt-0.5 whitespace-pre-wrap">{p.proofOfStatus}</p>
+                                )}
+                              </div>
                             )}
                           </div>
                           

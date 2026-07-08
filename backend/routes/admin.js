@@ -29,6 +29,10 @@ router.patch('/demote/:id', requireRole('super_admin'), logAudit('DEMOTE_USER', 
 // Maintenance Mode Kill Switch
 router.post('/kill-switch', requireRole('super_admin'), logAudit('TOGGLE_KILL_SWITCH', 'System'), adminController.toggleKillSwitch);
 
+// DPDP Deletion Queue Endpoints
+router.get('/delete-requests', requireRole('super_admin'), adminController.getDeletionRequests);
+router.delete('/delete-requests/:id', requireRole('super_admin'), logAudit('EXECUTE_DELETION', 'User'), adminController.executeDataDeletion);
+
 // Deprecated in favor of generic /faculty-list, but kept for compatibility
 router.post('/faculty', requireRole('super_admin'), logAudit('ADD_FACULTY', 'FacultyList'), adminController.addFaculty);
 

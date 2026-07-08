@@ -21,6 +21,9 @@ export const SuperAdminDashboard = () => {
   const [newFacultyName, setNewFacultyName] = useState('');
   const [newFacultyDept, setNewFacultyDept] = useState('Civil Engineering');
 
+  // Deletion Queue
+  const [deletionRequests, setDeletionRequests] = useState([]);
+
   // Loading & alerts
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,9 +45,11 @@ export const SuperAdminDashboard = () => {
       const logsRes = await api.get('/audit-log');
       setAuditLogs(logsRes.data.data || []);
 
-      // Check current maintenance state by querying active open proposals
-      // Super admins bypass maintenance interceptor, so this is safe.
-      // Alternatively, we can assume it starts false or toggle it based on config key
+      // 4. Fetch DPDP Deletion Queue
+      const delRes = await api.get('/admin/delete-requests');
+      setDeletionRequests(delRes.data.data || []);
+
+      // Check current maintenance state
       const match = logsRes.data.data?.find((log) => log.action === 'TOGGLE_KILL_SWITCH');
       if (match) {
         setMaintenanceActive(!!match.metadata?.active);
@@ -155,6 +160,30 @@ export const SuperAdminDashboard = () => {
       setTimeout(() => setToastMsg(''), 3000);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete faculty record.');
+    }
+  };
+
+  const executeWipe = async (userId, userName) => {
+    if (!window.confirm(`WARNING: You are about to permanently delete student profile ${userName} and all their internship applications. This action is DPDP-compliant and completely irreversible. Proceed?`)) {
+      return;
+    }
+
+    try {
+      setError('');
+      await api.delete(`/admin/delete-requests/${userId}`);
+      setToastMsg(`Successfully wiped all data associated with ${userName}!`);
+      
+      // Refresh states
+      const delRes = await api.get('/admin/delete-requests');
+      setDeletionRequests(delRes.data.data || []);
+      const usersRes = await api.get('/admin/users');
+      setUsers(usersRes.data.data || []);
+      const logsRes = await api.get('/audit-log');
+      setAuditLogs(logsRes.data.data || []);
+
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to execute account deletion.');
     }
   };
 
@@ -332,6 +361,34 @@ export const SuperAdminDashboard = () => {
             </div>
           </div>
         )
+      )}
+
+      {/* DPDP Compliance Deletion Queue */}
+      {!error && !loading && (
+        <div className="rounded-md border border-signal/20 bg-paper p-5 shadow-sm space-y-4">
+          <h3 className="font-display text-base font-bold text-signal border-b border-signal/10 pb-2 font-bold uppercase tracking-wider text-[11px] font-mono">DPDP Compliance Deletion Queue</h3>
+          {deletionRequests.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {deletionRequests.map((reqUser) => (
+                <div key={reqUser._id} className="p-4 border border-signal/15 rounded bg-signal/[0.02] flex flex-col justify-between gap-3 text-xs">
+                  <div>
+                    <span className="font-mono text-[9px] bg-signal/15 text-signal px-1.5 py-0.5 rounded uppercase font-bold block w-max mb-1">Pending Wipe</span>
+                    <h4 className="font-bold text-ink">{reqUser.name}</h4>
+                    <p className="text-concrete font-mono mt-0.5">{reqUser.email}</p>
+                  </div>
+                  <button
+                    onClick={() => executeWipe(reqUser._id, reqUser.name)}
+                    className="w-full rounded bg-signal px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white hover:bg-signal/90 transition-colors"
+                  >
+                    Confirm Wipe & Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-concrete italic py-4 text-center">No pending deletion requests.</p>
+          )}
+        </div>
       )}
 
       {/* Audit log viewer */}

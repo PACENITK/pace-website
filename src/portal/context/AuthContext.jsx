@@ -58,15 +58,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Sign up NITK student
+  // Sign up student
   const signupStudent = async (name, email, password) => {
     setIsLoading(true);
     try {
       const res = await api.post('/auth/signup', { name, email, password });
       if (res.data && res.data.success) {
-        setUser(res.data.user);
-        setAccessToken(res.data.accessToken);
-        return res.data.user;
+        if (res.data.accessToken) {
+          setUser(res.data.user);
+          setAccessToken(res.data.accessToken);
+        }
+        return res.data;
       }
     } catch (err) {
       setUser(null);
@@ -77,11 +79,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Sign up pending Professor
-  const signupProfessor = async (name, email, password, department) => {
+  // Sign up Professor
+  const signupProfessor = async (name, email, password, department, institution, proofOfStatus) => {
     setIsLoading(true);
     try {
-      const res = await api.post('/auth/professor/signup', { name, email, password, department });
+      const res = await api.post('/auth/professor/signup', { 
+        name, 
+        email, 
+        password, 
+        department,
+        institution,
+        proofOfStatus
+      });
       return res.data;
     } finally {
       setIsLoading(false);

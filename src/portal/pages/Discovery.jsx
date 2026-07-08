@@ -100,7 +100,7 @@ export const Discovery = () => {
           <p className="text-sm text-concrete max-w-2xl leading-relaxed">
             {isAuthenticated
               ? 'Explore active internships offered by professors across civil engineering fields. Click on any proposal plate to check criteria, questions, and submit your application.'
-              : 'Explore public listings for civil engineering internships. Sign in with your NITK IRIS account to view eligibility details, stipends, and custom field application parameters.'}
+              : 'Explore public listings for civil engineering internships. Sign in with your credentials to view eligibility details, stipends, and custom field application parameters.'}
           </p>
           {!isAuthenticated && (
             <button

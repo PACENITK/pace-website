@@ -12,7 +12,7 @@ const { clearMaintenanceCache } = require('../middleware/maintenance');
 const irisService = require('../services/irisService');
 
 // Define connection URI for tests
-const TEST_MONGO_URI = 'mongodb://127.0.0.1:27017/pace_test';
+const TEST_MONGO_URI = process.env.TEST_MONGO_URI || 'mongodb://127.0.0.1:27017/pace_test';
 
 beforeAll(async () => {
   // Override environment configuration for safety
@@ -110,36 +110,28 @@ describe('PACE Backend Integration Tests', () => {
   // 2. Professor Signup & Moderation Flow
   // ==========================================
   describe('Professor Registration & Moderation', () => {
-    it('should restrict professor email signup to NITK domains and set status to pending', async () => {
-      const badSignup = {
+    it('should allow professor email signup from any domain and set status to pending', async () => {
+      const externalSignup = {
         name: 'Prof. Alice',
         email: 'alice@gmail.com', // Non-NITK domain
         password: 'password123',
-        department: 'Civil Engineering'
-      };
-
-      const badRes = await request(app)
-        .post('/auth/professor/signup')
-        .send(badSignup);
-
-      expect(badRes.status).toBe(400);
-      expect(badRes.body.success).toBe(false);
-
-      const goodSignup = {
-        name: 'Prof. Alice',
-        email: 'alice@nitk.edu.in', // Correct domain
-        password: 'password123',
-        department: 'Civil Engineering'
+        department: 'Civil Engineering',
+        institution: 'IIT Bombay',
+        proofOfStatus: 'Link to profile page'
       };
 
       const res = await request(app)
         .post('/auth/professor/signup')
-        .send(goodSignup);
+        .send(externalSignup);
 
       expect(res.status).toBe(201);
       expect(res.body.user.role).toBe('professor');
-      expect(res.body.user.verified).toBe(false);
+      expect(res.body.user.verified).toBe(true); // auto-verified in test environment
       expect(res.body.user.status).toBe('pending');
+
+      const profInDb = await User.findOne({ email: 'alice@gmail.com' });
+      expect(profInDb.profile.college).toBe('IIT Bombay');
+      expect(profInDb.proofOfStatus).toBe('Link to profile page');
 
       // Check Audit Log
       const audit = await AuditLog.findOne({ action: 'CREATE_PROFESSOR_PENDING' });
@@ -186,7 +178,7 @@ describe('PACE Backend Integration Tests', () => {
       expect(res.body.message).toContain('pending admin approval');
     });
 
-    it('should allow admin to approve professor if email in FacultyList', async () => {
+    it('should allow admin to manually approve professor even if not in FacultyList', async () => {
       // 1. Setup seed users
       // Setup Super Admin
       const superAdmin = await User.create({
@@ -209,30 +201,11 @@ describe('PACE Backend Integration Tests', () => {
         role: 'professor',
         name: 'Prof. Bob',
         email: 'bob@nitk.ac.in',
-        verified: false,
+        verified: true,
         status: 'pending'
       });
 
-      // 3. Admin attempts approval (should fail because Bob is not on FacultyList)
-      const failApprove = await request(app)
-        .patch(`/admin/professors/${profBob._id}/approve`)
-        .set('Authorization', `Bearer ${saToken}`);
-
-      expect(failApprove.status).toBe(400);
-      expect(failApprove.body.message).toContain('not present in the pre-approved Faculty List');
-
-      // 4. Super Admin adds Bob to FacultyList
-      const addFacultyRes = await request(app)
-        .post('/admin/faculty')
-        .set('Authorization', `Bearer ${saToken}`)
-        .send({
-          name: 'Prof. Bob',
-          email: 'bob@nitk.ac.in',
-          department: 'Civil Engineering'
-        });
-      expect(addFacultyRes.status).toBe(201);
-
-      // 5. Admin approves Bob (should succeed now)
+      // 3. Admin approves Bob manually (succeeds directly without FacultyList matching)
       const approveRes = await request(app)
         .patch(`/admin/professors/${profBob._id}/approve`)
         .set('Authorization', `Bearer ${saToken}`);
@@ -270,81 +243,122 @@ describe('PACE Backend Integration Tests', () => {
   });
 
   // ==========================================
-  // 3. IRIS Authentication & Upgrades
+  // 3. Email Verification, Multi-Institution & Compliance Flow
   // ==========================================
-  describe('Sign in with IRIS (OAuth callback mock)', () => {
-    it('should create a verified student on IRIS callback', async () => {
-      // Spy on iris service methods
-      const mockToken = 'mock_access_token_123';
-      const mockProfile = {
-        name: 'Iris Student',
-        email: 'iris_stu@nitk.edu.in',
-        rollNumber: '21CO145'
-      };
-
-      jest.spyOn(irisService, 'exchangeCodeForToken').mockResolvedValue(mockToken);
-      jest.spyOn(irisService, 'getProfile').mockResolvedValue(mockProfile);
-
-      // Callback request with matching state cookie
+  describe('Email Verification, Multi-Institution & Compliance Flow', () => {
+    it('should assign NITK student badge automatically if domain matches NITK', async () => {
       const res = await request(app)
-        .get('/auth/iris/callback')
-        .set('Cookie', 'oauth_state=test_state')
-        .query({ code: 'oauth_code', state: 'test_state' });
+        .post('/auth/signup')
+        .send({
+          name: 'NITK Student Test',
+          email: 'nitk_student@nitk.edu.in',
+          password: 'password123',
+          profile: { college: 'Other', branch: 'Civil', year: 3, cgpa: 8.5 }
+        });
 
       expect(res.status).toBe(201);
-      expect(res.body.user.role).toBe('student');
-      expect(res.body.user.studentType).toBe('nitk');
-      expect(res.body.user.irisVerified).toBe(true);
-      expect(res.body.user.rollNumber).toBe('21CO145');
+      expect(res.body.success).toBe(true);
 
-      const userInDb = await User.findOne({ email: 'iris_stu@nitk.edu.in' });
-      expect(userInDb.profile.cgpaSource).toBe('iris_verified');
+      const student = await User.findOne({ email: 'nitk_student@nitk.edu.in' });
+      expect(student.studentType).toBe('nitk');
+      expect(student.profile.college).toBe('NITK Surathkal');
+      expect(student.profile.cgpaSource).toBe('iris_verified');
     });
 
-    it('should upgrade existing external student to nitk student if same email signs in via IRIS', async () => {
-      // 1. Create external student in DB
-      const externalStudent = await User.create({
+    it('should send verification token and restrict login until verified', async () => {
+      const token = 'verify_token_xyz_123';
+      const student = await User.create({
         role: 'student',
         studentType: 'external',
-        name: 'Iris Student',
-        email: 'iris_stu@nitk.edu.in',
-        irisVerified: false,
-        verified: true,
-        profile: {
-          college: 'External College',
-          cgpaSource: 'self_reported'
-        }
+        name: 'Unverified Student',
+        email: 'unverified@example.com',
+        passwordHash: 'password123',
+        verified: false,
+        verificationToken: token,
+        profile: { college: 'XYZ College', branch: 'Civil' }
       });
 
-      // 2. Setup mock profile return
-      const mockToken = 'mock_access_token_456';
-      const mockProfile = {
-        name: 'Iris Student upgraded',
-        email: 'iris_stu@nitk.edu.in',
-        rollNumber: '21CO145'
-      };
+      // Try login -> should fail with 403
+      const loginRes = await request(app)
+        .post('/auth/login')
+        .send({ email: 'unverified@example.com', password: 'password123' });
+      expect(loginRes.status).toBe(403);
+      expect(loginRes.body.message).toContain('verify your email');
 
-      jest.spyOn(irisService, 'exchangeCodeForToken').mockResolvedValue(mockToken);
-      jest.spyOn(irisService, 'getProfile').mockResolvedValue(mockProfile);
+      // Verify email via endpoint
+      const verifyRes = await request(app)
+        .get(`/auth/verify?token=${token}`);
+      expect(verifyRes.status).toBe(200);
+      expect(verifyRes.body.success).toBe(true);
 
-      // 3. Callback trigger
-      const res = await request(app)
-        .get('/auth/iris/callback')
-        .set('Cookie', 'oauth_state=test_state')
-        .query({ code: 'oauth_code', state: 'test_state' });
+      // Verify DB updated
+      const verifiedStudent = await User.findById(student._id);
+      expect(verifiedStudent.verified).toBe(true);
+      expect(verifiedStudent.verificationToken).toBeNull();
+    });
 
-      expect(res.status).toBe(200); // 200 for existing user upgrade/login
-      expect(res.body.user.studentType).toBe('nitk');
-      expect(res.body.user.irisVerified).toBe(true);
-      expect(res.body.user.rollNumber).toBe('21CO145');
+    it('should support student DPDP deletion request and Super Admin deletion queue', async () => {
+      // 1. Create a student with verified = true
+      const student = await User.create({
+        role: 'student',
+        studentType: 'external',
+        name: 'Delete Me',
+        email: 'deleteme@example.com',
+        passwordHash: 'password123',
+        verified: true,
+        profile: { college: 'Wipe College' }
+      });
 
-      // Verify DB updates
-      const updatedUser = await User.findById(externalStudent._id);
-      expect(updatedUser.studentType).toBe('nitk');
-      expect(updatedUser.irisVerified).toBe(true);
-      
-      const upgradeAudit = await AuditLog.findOne({ action: 'UPGRADE_EXTERNAL_TO_NITK' });
-      expect(upgradeAudit).toBeTruthy();
+      // Log in as student
+      const loginRes = await request(app)
+        .post('/auth/login')
+        .send({ email: 'deleteme@example.com', password: 'password123' });
+      const studentToken = loginRes.body.accessToken;
+
+      // 2. Request account deletion
+      const deleteReqRes = await request(app)
+        .patch('/auth/delete-request')
+        .set('Authorization', `Bearer ${studentToken}`);
+      expect(deleteReqRes.status).toBe(200);
+      expect(deleteReqRes.body.success).toBe(true);
+
+      // Verify in DB
+      const studentDb = await User.findById(student._id);
+      expect(studentDb.deletionRequested).toBe(true);
+
+      // 3. Super Admin fetches delete requests queue
+      // Create Super Admin in DB first
+      await User.create({
+        role: 'super_admin',
+        name: 'Super Admin',
+        email: 'super@nitk.edu.in',
+        passwordHash: 'admin123',
+        verified: true,
+        status: 'approved'
+      });
+
+      // Log in as Super Admin
+      const saLogin = await request(app)
+        .post('/auth/login')
+        .send({ email: 'super@nitk.edu.in', password: 'admin123' });
+      const saToken = saLogin.body.accessToken;
+
+      const getRequestsRes = await request(app)
+        .get('/admin/delete-requests')
+        .set('Authorization', `Bearer ${saToken}`);
+      expect(getRequestsRes.status).toBe(200);
+      expect(getRequestsRes.body.data.some(u => u._id.toString() === student._id.toString())).toBe(true);
+
+      // 4. Super Admin executes wiping
+      const wipeRes = await request(app)
+        .delete(`/admin/delete-requests/${student._id}`)
+        .set('Authorization', `Bearer ${saToken}`);
+      expect(wipeRes.status).toBe(200);
+      expect(wipeRes.body.success).toBe(true);
+
+      // Check DB - deleted
+      const checkDb = await User.findById(student._id);
+      expect(checkDb).toBeNull();
     });
   });
 

@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { RoleGuard, ROLE_DEFAULTS } from './components/RoleGuard';
 import { PortalLayout } from './components/PortalLayout';
 import Login from './pages/Login';
-import AuthComplete from './pages/AuthComplete';
 import Discovery from './pages/Discovery';
 import Detail from './pages/Detail';
 import Applications from './pages/Applications';
@@ -37,9 +36,6 @@ const PortalRouterContent = () => {
             </GuestOnlyRoute>
           } 
         />
-        
-        {/* IRIS Callback handoff landing page */}
-        <Route path="auth/complete" element={<AuthComplete />} />
         
         {/* Student default & Guest Discovery Board */}
         <Route 

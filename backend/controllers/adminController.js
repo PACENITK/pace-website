@@ -6,6 +6,7 @@ const Application = require('../models/Application');
 const Report = require('../models/Report');
 const Dispute = require('../models/Dispute');
 const SystemConfig = require('../models/SystemConfig');
+const emailService = require('../services/emailService');
 const { setMaintenanceCache } = require('../middleware/maintenance');
 
 exports.getPendingProfessors = async (req, res, next) => {
@@ -43,18 +44,15 @@ exports.approveProfessor = async (req, res, next) => {
       email: professor.email.toLowerCase()
     });
 
-    if (!onFacultyList) {
-      return res.status(400).json({
-        success: false,
-        message: 'Professor email is not present in the pre-approved Faculty List. Add them to the Faculty List first.'
-      });
-    }
-
     professor.status = 'approved';
     professor.verified = true;
     
-    if (!professor.profile.college) professor.profile.college = 'NITK Surathkal';
-    if (!professor.profile.branch) professor.profile.branch = onFacultyList.department;
+    if (onFacultyList) {
+      if (!professor.profile.college) professor.profile.college = 'NITK Surathkal';
+      if (!professor.profile.branch) professor.profile.branch = onFacultyList.department;
+    } else {
+      if (!professor.profile.college) professor.profile.college = 'Other / Non-NITK';
+    }
 
     await professor.save();
 
@@ -63,8 +61,14 @@ exports.approveProfessor = async (req, res, next) => {
       action: 'APPROVE_PROFESSOR',
       targetType: 'User',
       targetId: professor._id,
-      metadata: { email: professor.email, approvedFacultyName: onFacultyList.name }
+      metadata: { 
+        email: professor.email, 
+        approvedFacultyName: onFacultyList ? onFacultyList.name : 'Manual Override (Non-listed)' 
+      }
     });
+
+    // Send status notification email (async, do not block response)
+    emailService.sendProfessorStatusEmail(professor.email, professor.name, 'approved').catch(console.error);
 
     res.status(200).json({
       success: true,
@@ -108,6 +112,9 @@ exports.rejectProfessor = async (req, res, next) => {
       targetId: professor._id,
       metadata: { email: professor.email, reason: reason || 'No reason provided' }
     });
+
+    // Send status notification email (async, do not block response)
+    emailService.sendProfessorStatusEmail(professor.email, professor.name, 'rejected', reason || '').catch(console.error);
 
     res.status(200).json({
       success: true,
@@ -443,6 +450,43 @@ exports.getUsers = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: users
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDeletionRequests = async (req, res, next) => {
+  try {
+    const users = await User.find({ deletionRequested: true }).select('-passwordHash');
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.executeDataDeletion = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    // Wipe all student applications
+    await Application.deleteMany({ studentId: user._id });
+
+    // Wipe the user profile & details
+    await User.findByIdAndDelete(user._id);
+
+    res.status(200).json({
+      success: true,
+      message: `Account for ${user.name} and all associated applications have been permanently wiped.`
     });
   } catch (error) {
     next(error);

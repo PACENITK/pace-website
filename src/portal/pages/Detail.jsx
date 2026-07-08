@@ -290,7 +290,7 @@ export const Detail = () => {
       {!isAuthenticated ? (
         <div className="rounded-md border border-concrete/20 bg-blueprint/5 p-6 shadow-sm text-center">
           <h2 className="font-display text-lg font-bold mb-2">Apply for this Position</h2>
-          <p className="text-sm text-concrete mb-4">You must sign in with your NITK IRIS credentials to submit applications.</p>
+          <p className="text-sm text-concrete mb-4">You must sign in with your credentials to submit applications.</p>
           <button
             onClick={() => navigate('/portal/login')}
             className="rounded bg-blueprint px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-blueprint/90 transition-colors"

@@ -1,6 +1,8 @@
 const Application = require('../models/Application');
 const Internship = require('../models/Internship');
 const AuditLog = require('../models/AuditLog');
+const User = require('../models/User');
+const emailService = require('../services/emailService');
 
 // Helper to validate URLs
 const isValidUrl = (string) => {
@@ -12,9 +14,21 @@ const isValidUrl = (string) => {
   }
 };
 
-// Stubs for status changes
+// Hook notification to real emailService
 const notifyStatusChange = async (applicationId, status) => {
-  console.log(`[STUB] Notification: Application ID ${applicationId} status updated to ${status}. Sending notification to student.`);
+  try {
+    const application = await Application.findById(applicationId).populate('studentId internshipId');
+    if (application && application.studentId && application.internshipId) {
+      await emailService.sendApplicationStatusEmail(
+        application.studentId.email,
+        application.studentId.name,
+        application.internshipId.title,
+        status
+      );
+    }
+  } catch (err) {
+    console.error('Failed to send status change notification email:', err);
+  }
 };
 
 /**

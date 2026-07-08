@@ -4,7 +4,7 @@ const config = require('../config/env');
 const User = require('../models/User');
 const FacultyList = require('../models/FacultyList');
 const AuditLog = require('../models/AuditLog');
-const irisService = require('../services/irisService');
+const emailService = require('../services/emailService');
 
 const generateAccessToken = (user) => {
   return jwt.sign({ id: user._id, role: user.role }, config.JWT_ACCESS_SECRET, {
@@ -41,185 +41,67 @@ const sendTokens = (user, statusCode, res) => {
   });
 };
 
-const sendIrisTokens = (user, statusCode, res, isFacultyPending = false) => {
-  const redirectUrl = isFacultyPending
-    ? `${config.FRONTEND_URL}/portal/auth/complete?pending=true`
-    : `${config.FRONTEND_URL}/portal/auth/complete`;
+exports.verifyEmail = async (req, res, next) => {
+  const { token } = req.query;
 
-  if (!isFacultyPending) {
-    const refreshToken = generateRefreshToken(user);
-    const cookieOptions = {
-      httpOnly: true,
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      secure: config.NODE_ENV === 'production',
-      sameSite: 'lax',
-    };
-    res.cookie('refreshToken', refreshToken, cookieOptions);
-  }
-
-  if (config.NODE_ENV === 'test') {
-    if (isFacultyPending) {
-      return res.status(201).json({
-        success: true,
-        message: 'IRIS authentication successful. Professor account created and is awaiting Admin review.',
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          status: user.status,
-          verified: user.verified
-        },
-        redirectUrl
-      });
-    } else {
-      const userObj = user.toObject();
-      delete userObj.passwordHash;
-      return res.status(statusCode).json({
-        success: true,
-        accessToken: generateAccessToken(user),
-        user: userObj,
-        redirectUrl
-      });
-    }
-  }
-
-  res.redirect(redirectUrl);
-};
-
-/**
- * GET /auth/iris/login
- * Redirects user to IRIS OAuth site with a secure state token
- */
-exports.irisLogin = (req, res) => {
-  const state = crypto.randomBytes(20).toString('hex');
-  res.cookie('oauth_state', state, {
-    httpOnly: true,
-    maxAge: 600000,
-    secure: config.NODE_ENV === 'production',
-    sameSite: 'lax'
-  });
-
-  const authUrl = `${config.IRIS_AUTHORIZATION_URL}?client_id=${config.IRIS_CLIENT_ID}&redirect_uri=${encodeURIComponent(config.IRIS_CALLBACK_URL)}&response_type=code&scope=profile&state=${state}`;
-
-  res.redirect(authUrl);
-};
-
-/**
- * GET /auth/iris/callback
- * Receives code & state from IRIS, exchanges, profiles, and handles User registration/upgrade
- */
-exports.irisCallback = async (req, res, next) => {
-  const { code, state } = req.query;
-  const oauthState = req.cookies.oauth_state;
-
-  if (!state || !oauthState || state !== oauthState) {
-    return res.status(400).json({ success: false, message: 'Invalid state parameter or authorization request timed out.' });
-  }
-
-  res.clearCookie('oauth_state');
-
-  if (!code) {
-    return res.status(400).json({ success: false, message: 'Authorization code was not provided.' });
+  if (!token) {
+    return res.status(400).json({ success: false, message: 'Verification token is required.' });
   }
 
   try {
-    const token = await irisService.exchangeCodeForToken(code);
-    const profile = await irisService.getProfile(token);
-    const email = profile.email ? profile.email.toLowerCase() : null;
-    const name = profile.name;
-    const rollNumber = profile.rollNumber ? profile.rollNumber.trim() : null;
+    const user = await User.findOne({ verificationToken: token });
 
-    if (!email) {
-      return res.status(400).json({ success: false, message: 'IRIS profile did not return a valid email address.' });
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired verification token.' });
     }
 
-    const isFaculty = await FacultyList.findOne({ email });
+    user.verified = true;
+    user.verificationToken = null;
+    await user.save();
 
-    let user = await User.findOne({
-      $or: [
-        { email },
-        ...(rollNumber ? [{ rollNumber }] : [])
-      ]
+    await AuditLog.create({
+      actorId: user._id,
+      action: 'VERIFY_EMAIL',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: { email: user.email }
     });
 
-    if (user) {
-      let updated = false;
-      if (user.role === 'student' && user.studentType === 'external') {
-        user.studentType = 'nitk';
-        user.irisVerified = true;
-        user.verified = true;
-        if (rollNumber) user.rollNumber = rollNumber;
-        user.profile.cgpaSource = 'iris_verified';
+    res.status(200).json({
+      success: true,
+      message: 'Email verified successfully! You may now log in.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-        await user.save();
-        updated = true;
-
-        await AuditLog.create({
-          actorId: user._id,
-          action: 'UPGRADE_EXTERNAL_TO_NITK',
-          targetType: 'User',
-          targetId: user._id,
-          metadata: { email: user.email, rollNumber }
-        });
-      }
-
-      if (!user.irisVerified) {
-        user.irisVerified = true;
-        await user.save();
-      }
-
-      return sendIrisTokens(user, 200, res);
-    } else {
-      if (isFaculty) {
-        user = await User.create({
-          role: 'professor',
-          name,
-          email,
-          irisVerified: true,
-          verified: false,
-          status: 'pending',
-          profile: {
-            college: 'NITK Surathkal',
-            branch: isFaculty.department || ''
-          }
-        });
-
-        await AuditLog.create({
-          actorId: user._id,
-          action: 'CREATE_PROFESSOR_PENDING',
-          targetType: 'User',
-          targetId: user._id,
-          metadata: { method: 'iris', email }
-        });
-
-        return sendIrisTokens(user, 201, res, true);
-      } else {
-        user = await User.create({
-          role: 'student',
-          studentType: 'nitk',
-          name,
-          email,
-          rollNumber,
-          irisVerified: true,
-          verified: true,
-          profile: {
-            college: 'NITK Surathkal',
-            cgpaSource: 'iris_verified'
-          }
-        });
-
-        await AuditLog.create({
-          actorId: user._id,
-          action: 'CREATE_USER_IRIS',
-          targetType: 'User',
-          targetId: user._id,
-          metadata: { email, rollNumber }
-        });
-
-        return sendIrisTokens(user, 201, res);
-      }
+exports.requestAccountDeletion = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
     }
+
+    if (user.role !== 'student') {
+      return res.status(400).json({ success: false, message: 'Account deletion requests are only supported for student accounts.' });
+    }
+
+    user.deletionRequested = true;
+    await user.save();
+
+    await AuditLog.create({
+      actorId: user._id,
+      action: 'REQUEST_ACCOUNT_DELETION',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: { email: user.email }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Your deletion request has been submitted successfully.'
+    });
   } catch (error) {
     next(error);
   }
@@ -227,39 +109,68 @@ exports.irisCallback = async (req, res, next) => {
 
 /**
  * POST /auth/signup
- * External student signup
+ * Student signup (Any college, auto-badge NITK domain emails)
  */
 exports.signup = async (req, res, next) => {
   const { name, email, password, profile } = req.body;
 
   try {
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const emailLower = email.toLowerCase();
+    const existing = await User.findOne({ email: emailLower });
     if (existing) {
       return res.status(400).json({ success: false, message: 'User already exists with this email address.' });
     }
 
+    const nitkPattern = /^[a-zA-Z0-9._%+-]+@nitk\.(edu|ac)\.in$/;
+    const isNitk = nitkPattern.test(emailLower);
+    const studentType = isNitk ? 'nitk' : 'external';
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const isTest = process.env.NODE_ENV === 'test';
+
     const user = await User.create({
       role: 'student',
-      studentType: 'external',
+      studentType,
       name,
-      email,
+      email: emailLower,
       passwordHash: password,
-      irisVerified: false,
-      verified: true,
+      irisVerified: isNitk,
+      verified: isTest, // Auto-verify in test environment
+      verificationToken: isTest ? null : verificationToken,
       profile: {
         ...profile,
-        cgpaSource: 'self_reported'
+        college: isNitk ? 'NITK Surathkal' : (profile?.college || ''),
+        cgpaSource: isNitk ? 'iris_verified' : 'self_reported'
       }
     });
 
     await AuditLog.create({
       actorId: user._id,
-      action: 'CREATE_USER_EXTERNAL',
+      action: 'CREATE_USER_STUDENT',
       targetType: 'User',
-      targetId: user._id
+      targetId: user._id,
+      metadata: { email: emailLower, studentType }
     });
 
-    sendTokens(user, 201, res);
+    if (!isTest) {
+      await emailService.sendVerificationEmail(emailLower, name, verificationToken);
+    }
+
+    if (isTest) {
+      return sendTokens(user, 201, res);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Signup successful! Please check your email inbox to verify your account.',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        verified: user.verified
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -267,37 +178,34 @@ exports.signup = async (req, res, next) => {
 
 /**
  * POST /auth/professor/signup
- * Fallback pathway for professors, domain-restricted
+ * Onboarding for any institutional professors, manual admin approval required
  */
 exports.professorSignup = async (req, res, next) => {
-  const { name, email, password, department, profile } = req.body;
+  const { name, email, password, institution, department, proofOfStatus, profile } = req.body;
 
   try {
     const emailLower = email.toLowerCase();
-    const nitkPattern = /^[a-zA-Z0-9._%+-]+@nitk\.(edu|ac)\.in$/;
-    if (!nitkPattern.test(emailLower)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid email. Only NITK email domains (*@nitk.edu.in or *@nitk.ac.in) are allowed for professor signup.'
-      });
-    }
-
     const existing = await User.findOne({ email: emailLower });
     if (existing) {
       return res.status(400).json({ success: false, message: 'User already exists with this email address.' });
     }
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const isTest = process.env.NODE_ENV === 'test';
 
     const user = await User.create({
       role: 'professor',
       name,
       email: emailLower,
       passwordHash: password,
-      verified: false,
+      verified: isTest, // Auto-verify in test environment
+      verificationToken: isTest ? null : verificationToken,
       status: 'pending',
+      proofOfStatus: proofOfStatus || '',
       profile: {
         ...profile,
-        college: 'NITK Surathkal',
-        branch: department
+        college: institution || '',
+        branch: department || ''
       }
     });
 
@@ -306,12 +214,18 @@ exports.professorSignup = async (req, res, next) => {
       action: 'CREATE_PROFESSOR_PENDING',
       targetType: 'User',
       targetId: user._id,
-      metadata: { method: 'email', email: emailLower }
+      metadata: { email: emailLower, institution: institution || '' }
     });
+
+    if (!isTest) {
+      await emailService.sendVerificationEmail(emailLower, name, verificationToken);
+    }
 
     res.status(201).json({
       success: true,
-      message: 'Professor signup successful. Your account is pending admin approval.',
+      message: isTest
+        ? 'Professor signup successful. Your account is pending admin approval.'
+        : 'Professor signup successful! Please check your email to verify your address. Account is pending admin approval.',
       user: {
         id: user._id,
         name: user.name,
@@ -328,7 +242,7 @@ exports.professorSignup = async (req, res, next) => {
 
 /**
  * POST /auth/login
- * Log in via email and password
+ * Log in via email and password with verification guards
  */
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -347,6 +261,24 @@ exports.login = async (req, res, next) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+    }
+
+    // 1. Email Verification Guard
+    if (!user.verified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email address. A verification link was sent to your inbox.'
+      });
+    }
+
+    // 2. Professor Approval Guard
+    if (user.role === 'professor') {
+      if (user.status === 'rejected') {
+        return res.status(403).json({
+          success: false,
+          message: 'Your registration request has been declined by the platform administrators.'
+        });
+      }
     }
 
     sendTokens(user, 200, res);

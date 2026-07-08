@@ -62,6 +62,18 @@ const userSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
   },
+  verificationToken: {
+    type: String,
+    default: null,
+  },
+  deletionRequested: {
+    type: Boolean,
+    default: false,
+  },
+  proofOfStatus: {
+    type: String,
+    default: "",
+  },
 }, {
   timestamps: true,
 });

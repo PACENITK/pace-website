@@ -17,15 +17,12 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [dept, setDept] = useState('Civil Engineering');
+  const [institution, setInstitution] = useState('');
+  const [proofOfStatus, setProofOfStatus] = useState('');
 
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleIrisLogin = () => {
-    console.log('[OAUTH] Initiating full page navigation to backend IRIS OAuth endpoint');
-    window.location.href = `${API_URL}/auth/iris/login`;
-  };
 
   const handleSignInSubmit = async (e) => {
     e.preventDefault();
@@ -53,23 +50,28 @@ export const Login = () => {
 
     try {
       if (signupRole === 'student') {
-        const user = await signupStudent(name, email, password);
-        setSuccessMsg('Student registration successful! Logging in...');
-        setTimeout(() => {
-          const dest = ROLE_DEFAULTS[user.role] || '/portal';
-          navigate(dest);
-        }, 1500);
+        const res = await signupStudent(name, email, password);
+        if (res.accessToken) {
+          setSuccessMsg('Student registration successful! Logging in...');
+          setTimeout(() => {
+            const dest = ROLE_DEFAULTS[res.user.role] || '/portal';
+            navigate(dest);
+          }, 1500);
+        } else {
+          setSuccessMsg(res.message || 'Student registration successful! Please verify your email address via the link sent to your inbox.');
+          setName('');
+          setEmail('');
+          setPassword('');
+        }
       } else {
         // Professor signup
-        const res = await signupProfessor(name, email, password, dept);
-        setSuccessMsg(res.message || 'Registration submitted! Awaiting administrator approval.');
+        const res = await signupProfessor(name, email, password, dept, institution, proofOfStatus);
+        setSuccessMsg(res.message || 'Registration submitted! Please verify your email and await administrator approval.');
         setName('');
         setEmail('');
         setPassword('');
-        setTimeout(() => {
-          setActiveTab('signin');
-          setSuccessMsg('');
-        }, 5000);
+        setInstitution('');
+        setProofOfStatus('');
       }
     } catch (err) {
       console.error('Signup error:', err);
@@ -98,21 +100,8 @@ export const Login = () => {
         </div>
       )}
 
-      {/* Primary: Sign in with IRIS */}
-      <div className="mb-6">
-        <button
-          onClick={handleIrisLogin}
-          className="w-full flex items-center justify-center gap-3 rounded bg-blueprint px-5 py-2.5 font-display text-xs font-bold tracking-wide uppercase text-white hover:bg-blueprint/90 transition-all hover:shadow-sm"
-        >
-          <span className="font-mono bg-white text-blueprint px-1.5 py-0.5 rounded text-[10px] font-black">IRIS</span>
-          Sign In with IRIS (NITK ID)
-        </button>
-        
-        <div className="relative my-5 text-center">
-          <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-concrete/20" />
-          <span className="relative z-10 bg-paper px-3 font-mono text-[10px] uppercase text-concrete">Or Email credentials</span>
-        </div>
-      </div>
+      {/* Space divider */}
+      <div className="mb-2"></div>
 
       {/* Tabs Selector */}
       <div className="flex border-b border-concrete/25 mb-4 text-xs font-mono">
@@ -182,8 +171,8 @@ export const Login = () => {
               onChange={(e) => setSignupRole(e.target.value)}
               className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
             >
-              <option value="student">Student (External Student)</option>
-              <option value="professor">Professor (NITK Domain)</option>
+              <option value="student">Student Account</option>
+              <option value="professor">Professor / Faculty Account</option>
             </select>
           </div>
 
@@ -208,7 +197,7 @@ export const Login = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={signupRole === 'professor' ? 'must-be-name@nitk.edu.in' : 'name@example.com'}
+              placeholder="e.g. name@university.edu"
               className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
             />
           </div>
@@ -226,20 +215,46 @@ export const Login = () => {
             />
           </div>
 
-          {/* Department (Conditional Professor field) */}
+          {/* Professor specific onboarding details */}
           {signupRole === 'professor' && (
-            <div className="flex flex-col gap-1">
-              <label className="font-mono uppercase tracking-wider text-concrete text-[10px]">Faculty Department</label>
-              <select
-                value={dept}
-                onChange={(e) => setDept(e.target.value)}
-                className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
-              >
-                <option value="Civil Engineering">Civil Engineering</option>
-                <option value="Mining Engineering">Mining Engineering</option>
-                <option value="Computer Science">Computer Science</option>
-              </select>
-            </div>
+            <>
+              <div className="flex flex-col gap-1">
+                <label className="font-mono uppercase tracking-wider text-concrete text-[10px]">Institution / College</label>
+                <input
+                  type="text"
+                  required
+                  value={institution}
+                  onChange={(e) => setInstitution(e.target.value)}
+                  placeholder="e.g. NITK Surathkal"
+                  className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono uppercase tracking-wider text-concrete text-[10px]">Faculty Department</label>
+                <select
+                  value={dept}
+                  onChange={(e) => setDept(e.target.value)}
+                  className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
+                >
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Mining Engineering">Mining Engineering</option>
+                  <option value="Computer Science">Computer Science</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono uppercase tracking-wider text-concrete text-[10px]">Proof of Faculty Status</label>
+                <textarea
+                  rows="2"
+                  required
+                  value={proofOfStatus}
+                  onChange={(e) => setProofOfStatus(e.target.value)}
+                  placeholder="e.g. Link to institutional profile page or statement of credentials..."
+                  className="rounded border border-concrete/30 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blueprint"
+                />
+              </div>
+            </>
           )}
 
           <button
