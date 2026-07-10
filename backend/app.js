@@ -20,7 +20,8 @@ const app = express();
 
 app.use(helmet());
 
-const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const config = require('./config/env');
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', config.FRONTEND_URL];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);

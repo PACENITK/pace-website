@@ -67,6 +67,7 @@ docker compose exec backend npm run seed
 *   **View live logs for a specific service**:
     ```bash
     docker compose logs -f backend
+    docker compose logs -f frontend
     docker compose logs -f mongo
     ```
 *   **Check container health status and mapped ports**:

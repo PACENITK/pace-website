@@ -24,8 +24,8 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 # Copy application source files
 COPY . .
 
-# Run container process under non-root node user for security
-USER node
+# Commented out for unprivileged LXC/Proxmox sysctl compatibility
+# USER node
 
 # Expose server port
 EXPOSE 5000
