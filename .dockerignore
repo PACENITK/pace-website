@@ -1,0 +1,10 @@
+node_modules/
+backend/
+.git
+.github
+docs/
+dist/
+*.log
+.env
+.env.*
+README.md

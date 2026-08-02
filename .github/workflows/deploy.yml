@@ -12,6 +12,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect backend changes
+        id: changes
+        run: |
+          if git rev-parse "${{ github.event.before }}" >/dev/null 2>&1; then
+            if git diff --quiet "${{ github.event.before }}" "${{ github.sha }}" -- backend/ docker-compose.yml .github/workflows/deploy.yml; then
+              echo "backend_changed=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "backend_changed=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            # No usable "before" ref (e.g. force-push, new branch) - rebuild to be safe
+            echo "backend_changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install Node dependencies
         run: npm install
@@ -23,6 +39,7 @@ jobs:
         run: cp -r dist/* /var/www/pace/
 
       - name: Write backend production env file
+        if: steps.changes.outputs.backend_changed == 'true'
         run: |
           cat > backend/.env.production <<'EOF'
           PORT=5000
@@ -45,4 +62,5 @@ jobs:
           chmod 600 backend/.env.production
 
       - name: Build and restart backend container stack
+        if: steps.changes.outputs.backend_changed == 'true'
         run: docker compose up -d --build backend mongo

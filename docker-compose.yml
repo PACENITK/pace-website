@@ -26,18 +26,6 @@ services:
       mongo:
         condition: service_healthy
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: pace-frontend
-    restart: unless-stopped
-    network_mode: "host"
-    environment:
-      - VITE_API_URL=${VITE_API_URL:-http://localhost:5000}
-    depends_on:
-      - backend
-
 volumes:
   mongo-data:
     driver: local
