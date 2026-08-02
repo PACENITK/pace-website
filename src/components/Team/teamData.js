@@ -23,6 +23,10 @@ import tanush from '../../assets/Team/admincore2/tanush.jpg';
 import amarnath from '../../assets/Team/admincore2/amarnath.png';
 import prakhyath from '../../assets/Team/admincore2/prakhyath.jpg';
 import vaishmi from '../../assets/Team/admincore2/vaishmi.jpeg';
+import nirupama from '../../assets/Team/admincore2/nirupama.jpeg';
+import shailesh from '../../assets/Team/admincore2/shailesh.jpeg';
+import shivam from '../../assets/Team/admincore2/shivam.jpeg';
+import vismaya from '../../assets/Team/admincore2/vismaya.jpeg';
 
 const teamData = {
   leadership: [
@@ -172,7 +176,47 @@ const teamData = {
       },
       imageSrc: vaishmi
     },
-    
+
+    {
+      name: "Nirupama",
+      role: "",
+      socialLinks: {
+        linkedin: "",
+        email: ""
+      },
+      imageSrc: nirupama
+    },
+
+    {
+      name: "Shailesh",
+      role: "",
+      socialLinks: {
+        linkedin: "",
+        email: ""
+      },
+      imageSrc: shailesh
+    },
+
+    {
+      name: "Shivam",
+      role: "",
+      socialLinks: {
+        linkedin: "",
+        email: ""
+      },
+      imageSrc: shivam
+    },
+
+    {
+      name: "Vismaya",
+      role: "",
+      socialLinks: {
+        linkedin: "",
+        email: ""
+      },
+      imageSrc: vismaya
+    },
+
   ],
 
   // old admin core and core team details
@@ -182,7 +226,7 @@ const teamData = {
       name: "Riya Aji",
       role: "Convenor",
       socialLinks: {
-         linkedin: "http://linkedin.com/in/riya-aji-965780256",
+        linkedin: "http://linkedin.com/in/riya-aji-965780256",
         email: "riyaajiputhiyamadomvarghese.221cv139@nitk.edu.in"
       },
       imageSrc: riya
