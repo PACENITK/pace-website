@@ -22,5 +22,27 @@ jobs:
       - name: Copy files to the live folder
         run: cp -r dist/* /var/www/pace/
 
+      - name: Write backend production env file
+        run: |
+          cat > backend/.env.production <<'EOF'
+          PORT=5000
+          NODE_ENV=production
+          MONGO_URI=mongodb://mongo:27017/pace
+          JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+          JWT_ACCESS_EXPIRY=15m
+          JWT_REFRESH_EXPIRY=7d
+          IRIS_CLIENT_ID=${{ secrets.IRIS_CLIENT_ID }}
+          IRIS_CLIENT_SECRET=${{ secrets.IRIS_CLIENT_SECRET }}
+          IRIS_CALLBACK_URL=https://pace.nitk.ac.in/auth/iris/callback
+          IRIS_AUTHORIZATION_URL=https://iris.nitk.ac.in/oauth/authorize
+          IRIS_TOKEN_URL=https://iris.nitk.ac.in/oauth/token
+          IRIS_PROFILE_URL=https://iris.nitk.ac.in/api/v1/profile
+          FRONTEND_URL=https://pace.nitk.ac.in
+          SUPER_ADMIN_EMAIL=${{ secrets.SUPER_ADMIN_EMAIL }}
+          SUPER_ADMIN_NAME=${{ secrets.SUPER_ADMIN_NAME }}
+          EOF
+          chmod 600 backend/.env.production
+
       - name: Build and restart backend container stack
         run: docker compose up -d --build backend mongo
