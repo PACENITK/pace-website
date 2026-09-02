@@ -10,6 +10,7 @@ import HostedProjectDetail from './pages/projects/hosted-projects/[id]';
 import Nirmaan from './components/Nirmaan/Nirmaan';
 import TeamPage from './components/Team/Team';
 import PortalRoutes from './portal/PortalRoutes';
+import CivilWars from './pages/civil-wars/CivilWars';
 import { useEffect } from "react";
 import AOS from "aos";
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/projects/hosted-projects/:id" element={<HostedProjectDetail />} />
         <Route path="/nirmaan" element={<Nirmaan />} />
         <Route path="/team" element={<TeamPage />} />
+        <Route path="/civil-wars" element={<CivilWars />} />
         
         {/* Scaffolding Portal Routes */}
         <Route path="/portal/*" element={<PortalRoutes />} />

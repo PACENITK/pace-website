@@ -1,0 +1,14 @@
+{
+  "width": 10,
+  "height": 8,
+  "tiles": [
+    ["lowland","lowland","lowland","lowland","empty","empty","empty","empty","empty","empty"],
+    ["lowland","lowland","lowland","lowland","empty","colony","colony","empty","empty","empty"],
+    ["empty","empty","empty","empty","colony","colony","colony","empty","empty","empty"],
+    ["empty","empty","empty","empty","colony","empty","empty","empty","empty","empty"],
+    ["empty","empty","slum","slum","empty","empty","empty","empty","empty","factory"],
+    ["empty","empty","empty","empty","empty","empty","empty","empty","empty","empty"],
+    ["empty","empty","empty","empty","empty","empty","empty","empty","empty","empty"],
+    ["empty","empty","empty","empty","empty","empty","empty","empty","empty","empty"]
+  ]
+}
