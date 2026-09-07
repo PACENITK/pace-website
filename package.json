@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "npm run test --prefix backend"
+    "test": "npm run test --prefix backend",
+    "sim": "node simulation/run.js",
+    "sim:sweep": "node simulation/sweep.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
