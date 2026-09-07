@@ -11,6 +11,8 @@ import Nirmaan from './components/Nirmaan/Nirmaan';
 import TeamPage from './components/Team/Team';
 import PortalRoutes from './portal/PortalRoutes';
 import CivilWars from './pages/civil-wars/CivilWars';
+import CivilWarsV3 from './pages/civil-wars/v3/CivilWarsV3';
+import OrganizerConsole from './pages/civil-wars/v3/organizer/OrganizerConsole';
 import { useEffect } from "react";
 import AOS from "aos";
 
@@ -38,7 +40,9 @@ function App() {
         <Route path="/nirmaan" element={<Nirmaan />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/civil-wars" element={<CivilWars />} />
-        
+        <Route path="/civil-wars/v3" element={<CivilWarsV3 />} />
+        <Route path="/civil-wars/v3/organizer" element={<OrganizerConsole />} />
+
         {/* Scaffolding Portal Routes */}
         <Route path="/portal/*" element={<PortalRoutes />} />
       </Routes>
