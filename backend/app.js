@@ -15,6 +15,7 @@ const adminRoutes = require('./routes/admin');
 const internshipRoutes = require('./routes/internships');
 const applicationRoutes = require('./routes/applications');
 const reportRoutes = require('./routes/report');
+const urbanMayhemRoutes = require('./routes/urbanMayhem');
 
 const app = express();
 
@@ -56,6 +57,13 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Civil Wars III "Urban Mayhem" -- self-contained event feature, kept
+// off the internship portal's maintenance-mode gate on purpose (a
+// maintenance window for that system has nothing to do with a live
+// game running in a lab). Mount/unmount is just this one line plus the
+// require() above; delete both after the event.
+app.use('/api/urban-mayhem', urbanMayhemRoutes);
 
 // Global Maintenance Mode check
 app.use(checkMaintenance);
