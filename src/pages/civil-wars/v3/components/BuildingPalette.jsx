@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { CaretDown, LockSimple, HandGrabbing, DotsSixVertical, TrendUp } from "@phosphor-icons/react";
+import { CaretDown, CaretLeft, CaretRight, LockSimple, HandGrabbing, DotsSixVertical, TrendUp } from "@phosphor-icons/react";
 import useGameStore from "../store/useGameStore.js";
 import { buildingsById, CATEGORY, config } from "../engine.js";
 import { BUILDING_ICON } from "../data/buildingMeta.js";
@@ -98,7 +98,7 @@ function BuildingCard({ def, cash, locked, selectedBuilding, onSelect, onBeginDr
   );
 }
 
-function BuildingPalette() {
+function BuildingPalette({ collapsed, onToggleCollapse }) {
   const year = useGameStore((s) => s.year);
   const cash = useGameStore((s) => s.cash);
   const placed = useGameStore((s) => s.placed);
@@ -107,6 +107,19 @@ function BuildingPalette() {
   const beginDrag = useGameStore((s) => s.beginDrag);
   const lastError = useGameStore((s) => s.lastError);
   const { grossIncome, buckets, totalSpend } = useTreasury(placed);
+
+  if (collapsed) {
+    return (
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        title="Expand building palette"
+        className="cw3-panel bg-[color:var(--game-paper)] border border-[color:var(--game-rule)] flex flex-col items-center pt-3 gap-2 cursor-pointer text-[color:var(--game-mute)] hover:text-[color:var(--game-ink)]"
+      >
+        <CaretRight size={14} weight="duotone" />
+      </button>
+    );
+  }
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-2.5 min-h-0 min-w-0">
@@ -149,11 +162,19 @@ function BuildingPalette() {
       </div>
 
       <div className="cw3-panel bg-[color:var(--game-paper)] border border-[color:var(--game-rule)] overflow-y-auto min-h-0">
-        <div className="sticky top-0 z-[2] flex items-center justify-between px-3 pt-[9px] pb-2 bg-[color:var(--game-paper)] border-b border-[color:var(--game-rule)]">
-          <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-[color:var(--game-mute)]">
+        <div className="sticky top-0 z-[2] flex items-center justify-between gap-2 px-3 pt-[9px] pb-2 bg-[color:var(--game-paper)] border-b border-[color:var(--game-rule)]">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title="Collapse building palette"
+            className="text-[color:var(--game-mute)] hover:text-[color:var(--game-ink)] flex shrink-0 cursor-pointer"
+          >
+            <CaretLeft size={12} weight="duotone" />
+          </button>
+          <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-[color:var(--game-mute)] flex-1">
             Building palette
           </span>
-          <span className="flex items-center gap-1 text-[9.5px] text-[color:var(--game-rust)]">
+          <span className="flex items-center gap-1 text-[9.5px] text-[color:var(--game-rust)] shrink-0">
             <HandGrabbing size={13} weight="duotone" />
             drag to place
           </span>

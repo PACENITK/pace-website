@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { CaretDown, CaretUp, WarningDiamond, ArrowFatLinesUp } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, CaretLeft, CaretRight, WarningDiamond, ArrowFatLinesUp } from "@phosphor-icons/react";
 import useGameStore from "../store/useGameStore.js";
 import useCityStats from "../store/useCityStats.js";
 import { SERVICES, SERVICE_LABEL, SERVICE_ICON } from "../data/serviceMeta.js";
@@ -28,7 +28,7 @@ function nf(n) {
 // is that teams see population/service/needs status, never the live
 // score ("scoring sealed until Year 5"); the score itself still exists
 // under the hood for the Organizer Console, untouched by this screen.
-function CityStatusPanel() {
+function CityStatusPanel({ collapsed, onToggleCollapse }) {
   const placed = useGameStore((s) => s.placed);
   const map = useGameStore((s) => s.map);
   const slumUpgraded = useGameStore((s) => s.slumUpgraded);
@@ -53,12 +53,35 @@ function CityStatusPanel() {
   const inheritedSlumPop = Object.values(stats.tileStats).reduce((sum, t) => sum + (t.isSlum ? t.pop : 0), 0);
   const missingPop = stats.totalPop - stats.fullyServedPop;
 
+  if (collapsed) {
+    return (
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        title="Expand city status"
+        className="cw3-panel bg-[color:var(--game-paper)] border border-[color:var(--game-rule)] flex flex-col items-center pt-3 gap-2 cursor-pointer text-[color:var(--game-mute)] hover:text-[color:var(--game-ink)]"
+      >
+        <CaretLeft size={14} weight="duotone" />
+      </button>
+    );
+  }
+
   return (
     <div className="cw3-panel bg-[color:var(--game-paper)] border border-[color:var(--game-rule)] overflow-y-auto min-h-0">
       <div className="sticky top-0 z-[2] px-3.5 pt-2.5 pb-2 bg-[color:var(--game-paper)] border-b-2 border-[color:var(--game-ink)]">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[13px] font-bold tracking-[0.02em]">City status</span>
-          <span className="text-[10px] text-[color:var(--game-mute)] text-right">scoring sealed until Year 5</span>
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title="Collapse city status"
+            className="text-[color:var(--game-mute)] hover:text-[color:var(--game-ink)] flex shrink-0 cursor-pointer mr-0.5"
+          >
+            <CaretRight size={12} weight="duotone" />
+          </button>
+          <span className="text-[13px] font-bold tracking-[0.02em] flex-1">City status</span>
+          <span className="text-[10px] text-[color:var(--game-mute)] text-right shrink-0">
+            scoring sealed until Year 5
+          </span>
         </div>
       </div>
 

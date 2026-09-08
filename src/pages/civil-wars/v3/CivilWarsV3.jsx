@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Buildings, UsersThree, BookmarkSimple, ArrowCounterClockwise, Sliders } from "@phosphor-icons/react";
 import useGameStore from "./store/useGameStore.js";
 import { MID_GAME_CHECKPOINT } from "./data/mockGameState.js";
@@ -8,6 +8,8 @@ import CityStatusPanel from "./components/CityStatusPanel.jsx";
 import TwistModal from "./components/TwistModal.jsx";
 import PlacementConfirmModal from "./components/PlacementConfirmModal.jsx";
 import UndoBanner from "./components/UndoBanner.jsx";
+import UnsupportedDeviceScreen from "./components/UnsupportedDeviceScreen.jsx";
+import useIsSmallViewport from "./useIsSmallViewport.js";
 import "./civil-wars-v3.css";
 
 const YEARS = [0, 1, 2, 3, 4, 5];
@@ -24,6 +26,11 @@ function CivilWarsV3() {
   const year = useGameStore((s) => s.year);
   const resetGame = useGameStore((s) => s.resetGame);
   const loadCheckpoint = useGameStore((s) => s.loadCheckpoint);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [rightCollapsed, setRightCollapsed] = useState(false);
+  const isSmallViewport = useIsSmallViewport();
+
+  if (isSmallViewport) return <UnsupportedDeviceScreen />;
 
   return (
     <div className="cw3-root">
@@ -97,10 +104,17 @@ function CivilWarsV3() {
         </div>
       </header>
 
-      <main className="grid grid-cols-[minmax(238px,296px)_minmax(0,1fr)_minmax(262px,340px)] gap-3 p-3 min-h-0">
-        <BuildingPalette />
+      <main
+        className="grid gap-3 p-3 min-h-0"
+        style={{
+          gridTemplateColumns: `${leftCollapsed ? "36px" : "minmax(238px,296px)"} minmax(0,1fr) ${
+            rightCollapsed ? "36px" : "minmax(262px,340px)"
+          }`,
+        }}
+      >
+        <BuildingPalette collapsed={leftCollapsed} onToggleCollapse={() => setLeftCollapsed((c) => !c)} />
         <CityGridV3 />
-        <CityStatusPanel />
+        <CityStatusPanel collapsed={rightCollapsed} onToggleCollapse={() => setRightCollapsed((c) => !c)} />
       </main>
 
       <TwistModal />
