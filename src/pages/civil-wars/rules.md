@@ -171,7 +171,7 @@ Bus stands are cheap but need placing near people. A railway station covers ever
 | Market | ₹30 Cr | **+₹10 Cr** | 3 | 5,000 population in radius |
 | Restaurant | ₹15 Cr | **+₹8 Cr** | 2 | 2,500 population in radius |
 | Hotel | ₹40 Cr | **+₹18 Cr** | 2 | 1 transport building |
-| Mall | ₹60 Cr | **+₹22 Cr** | 3 | 10,000 population in radius |
+| Mall | ₹45 Cr | **+₹22 Cr** | 3 | 10,000 population in radius |
 | Stadium | ₹100 Cr | **+₹20 Cr** | — | Power, 1 transport building |
 | Industry — Small | ₹40 Cr | **+₹15 Cr** | pollutes 1 | Power, water, 1 transport |
 | Industry — Medium | ₹80 Cr | **+₹35 Cr** | pollutes 2 | Power, water, 1 transport |

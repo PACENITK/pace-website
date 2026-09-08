@@ -367,7 +367,17 @@ export function fillService(state, map, service, budget, remaining, buildableTil
     const legal = candidateIds.filter((b) => canPlace(b.id, gateCtx).ok);
     const affordable = legal.filter((b) => b.cost <= budget && b.cost <= state.cash);
     if (affordable.length === 0) break;
-    const def = affordable.sort((a, b) => a.cost - b.cost)[0];
+    // Cost-per-capacity, not sticker price: always grabbing the cheapest
+    // affordable tier (e.g. a water tank over a treatment plant) never
+    // lets a locally-better-value bigger building get picked, even when
+    // it's strictly cheaper per unit served (see sim-report.md's
+    // water-treatment-plant dead-building finding). Ties keep the
+    // cheaper sticker price so this doesn't change single-tier services.
+    const def = affordable.sort((a, b) => {
+      const ea = a.cost / (a.capacity || 1);
+      const eb = b.cost / (b.capacity || 1);
+      return ea - eb || a.cost - b.cost;
+    })[0];
 
     if (buildableTiles.length === 0) break;
 

@@ -327,7 +327,7 @@ lines.push("");
 lines.push("1. **9 services, not 8.** Part D's own table and the inherited-city cost table both list Power/Water/Health/Education/Environment/Safety/Sanitation/Transport/Food -- 9 rows. Only the player brief and the Part I worked example say \"eight.\" This engine implements 9; a fully-served Residential Large scores 5x9x10 = **450**, not the 400 in the doc.");
 lines.push("2. **Slum upgrade** is a per-tile flag (2,000->2,500 pop, 2->3 demand units, drops the slum penalty and sanitation clause), not a placed building.");
 lines.push("3. **Residential demand** uses the same demand grid as inherited slums/colonies -- one mechanism for both.");
-lines.push("4. **Industry consumes power/water in the same nearest-first allocation ring as citizens** -- no built-in favouritism either way. See \"Industry vs. citizen contention\" below for how often this actually costs citizens capacity.");
+lines.push("4. **Citizens get strict priority over industry for shared power/water capacity** -- each service is allocated to citizen demand first (full capacity), then whatever's left over goes to industry. See \"Industry vs. citizen contention\" below for how much this actually protects citizens.");
 lines.push("5. **Pandemic requirement**: `ceil((non-slum pop + 2 x slum pop) / 2500)` hospitals, i.e. slums count double toward the requirement, read literally.");
 lines.push("6. **Twist pool** is exactly {flood, pandemic, immigration} for years 1-3 (pool size == slot count), so every run gets all three, only the order varies. Olympics is always year 4, treasure year 5.");
 lines.push("");
@@ -341,7 +341,7 @@ Object.entries(inheritedCost.counts).forEach(([id, count]) => {
   lines.push(`| ${buildingsById[id].name} | ${count} (₹${count * buildingsById[id].cost} Cr) |`);
 });
 lines.push("");
-lines.push(`That leaves **₹${config.startingBudget - inheritedCost.total} Cr** of genuine choice, against the organiser notes' target of ₹1,000-1,500 Cr. The gap from ₹845 Cr is mostly the heuristic reaching for the cheapest per-unit building first (5 water tanks instead of 1-2 treatment plants) and real geographic spread costing more hospitals/schools than pure demand/capacity division assumes (rules.md's own caveat: "corner placement wastes money") -- so ₹1,090 Cr is itself an upper bound, not a proven minimum.`);
+lines.push(`That leaves **₹${config.startingBudget - inheritedCost.total} Cr** of genuine choice, against the organiser notes' target of ₹1,000-1,500 Cr. The gap from ₹845 Cr is mostly real geographic spread costing more hospitals/schools than pure demand/capacity division assumes (rules.md's own caveat: "corner placement wastes money") -- so this total is itself an upper bound, not a proven minimum.`);
 lines.push("");
 
 lines.push("## Q1 -- Does skill beat luck?");
@@ -432,13 +432,13 @@ lines.push(
     : "Land and money bind at similar rates -- roughly the target the organiser notes aimed for."
 );
 lines.push(
-  "Caveat: the placement heuristic always buys the cheapest affordable building for a service before a bigger one (e.g. a ₹25 Cr water tank over an ₹80 Cr treatment plant), so it places more, smaller buildings than an efficiency-minded human would. This likely inflates the tiles-used fraction above -- treat it as an upper bound on how binding land actually is, not a precise estimate."
+  "Caveat: the placement heuristic picks the most cost-efficient affordable tier for a service (by cost/capacity) rather than doing true multi-building lookahead, and most services only have one tier to begin with -- so it still places somewhat more, smaller buildings than an optimising human would. This likely inflates the tiles-used fraction above -- treat it as an upper bound on how binding land actually is, not a precise estimate."
 );
 lines.push("");
 
 lines.push("## Industry vs. citizen contention (power/water)");
 lines.push("");
-lines.push("Industry and citizens draw from the same power/water capacity in the same nearest-first allocation ring, with no built-in tie-break favouring homes. This tracks how often that actually costs citizens capacity.");
+lines.push("Citizens are allocated power/water first, against full capacity; industry only claims what's left over. \"Industry's share of built capacity used\" should now stay small -- if it doesn't, the priority isn't working. \"Citizen shortfall\" is citizens' own unserved demand regardless of cause -- once industry's share is near zero, a high citizen-shortfall number means capacity is simply under-built for the population, not that industry is competing for it.");
 lines.push("");
 lines.push("| | Industry's share of built capacity used | Citizen shortfall (% of citizen demand unserved) |");
 lines.push("|---|---|---|");
@@ -447,10 +447,17 @@ lines.push(`| Power, top 10% | ${fmt(contentionTop10.power.industryShareOfCapaci
 lines.push(`| Water, all runs | ${fmt(contentionAll.water.industryShareOfCapacity * 100, 1)}% | ${fmt(contentionAll.water.citizenShortfallShare * 100, 1)}% |`);
 lines.push(`| Water, top 10% | ${fmt(contentionTop10.water.industryShareOfCapacity * 100, 1)}% | ${fmt(contentionTop10.water.citizenShortfallShare * 100, 1)}% |`);
 lines.push("");
+// Under citizen-priority allocation, industry only ever gets leftover
+// spare capacity -- so any nonzero share here is expected, not a sign of
+// citizens losing out. Only flag it if industry is eating an implausibly
+// large slice of top-strategy capacity, which would suggest the priority
+// isn't actually being applied (a bug), not a tuning question.
+const industryStillCompeting =
+  contentionTop10.power.industryShareOfCapacity > 0.15 || contentionTop10.water.industryShareOfCapacity > 0.15;
 lines.push(
-  contentionTop10.power.citizenShortfallShare > 0.1 || contentionTop10.water.citizenShortfallShare > 0.1
-    ? "**Citizen shortfall in top strategies is meaningful -- add a tie-break favouring homes at equal distance before the event.**"
-    : "Citizen shortfall attributable to industry contention is small even in top strategies -- the no-favouritism rule as written does not appear to need a tie-break."
+  industryStillCompeting
+    ? "**Industry is claiming an implausibly large share of top-strategy capacity given citizens are supposed to be served first -- check the allocation priority is actually being applied.**"
+    : "Industry's share of top-strategy capacity is small and consistent with citizens being served first (it's leftover capacity, not contested capacity). Any remaining citizen shortfall reflects overall power/water capacity relative to population, not industry contention, and needs a different fix (more capacity, not a different allocation rule)."
 );
 lines.push("");
 

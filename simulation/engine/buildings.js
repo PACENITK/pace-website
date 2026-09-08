@@ -239,7 +239,7 @@ const buildings = {
     id: "mall",
     name: "Mall",
     category: CATEGORY.ECONOMY,
-    cost: 60,
+    cost: 45,
     yearly: 22,
     radius: 3,
     requires: ["popInRadius:10000"],

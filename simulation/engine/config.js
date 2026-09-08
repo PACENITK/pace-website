@@ -31,7 +31,6 @@ const config = {
   pandemicShort2PlusScorePenalty: 100,
 
   floodDrainageRadius: 2,
-  floodDrainageRepairFraction: 0.3,
   damDownstreamRadius: 4,
 
   immigrationPeople: 5000,

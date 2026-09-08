@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<link rel="stylesheet" href="_ds/broadsheet-0f358048-1a6f-4d22-8f5c-e2e509cab03c/styles.css">
+<script src="_ds/broadsheet-0f358048-1a6f-4d22-8f5c-e2e509cab03c/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+/* Broadsheet tokens, re-inked for the commissioned earth-tone city art:
+   the process cyan becomes the slate blue of the illustrations, the magenta
+   becomes their rust orange, and the paper warms. Ramp steps, radii, spacing
+   and the serif all stay Broadsheet's. */
+:root{
+  --color-accent:#2b4c6f;--color-accent-600:#22405f;--color-accent-700:#1d3550;
+  --color-accent-2:#a8442a;--color-accent-2-700:#7d2f1c;
+  --game-paper:#f4f1ea;--game-paper-2:#faf8f3;--game-rule:#d9d3c6;
+  --game-slate:#2b4c6f;--game-slate-dk:#1d3550;--game-rust:#a8442a;
+  --game-ok:#2e7d32;--game-bad:#b3261e;--game-mute:#8a8172;
+}
+body{margin:0;background:#e9e5db;font-family:var(--font-body);color:var(--color-text);-webkit-font-smoothing:antialiased}
+.btn{font-family:var(--font-body)}
+*{box-sizing:border-box}
+a{color:var(--game-slate);text-decoration:none}
+a:hover{color:var(--game-slate-dk)}
+::selection{background:#c9d6e2}
+i.ph-duotone{line-height:1}
+.pal::-webkit-scrollbar,.sts::-webkit-scrollbar{width:8px}
+.pal::-webkit-scrollbar-thumb,.sts::-webkit-scrollbar-thumb{background:#cfc7b4;border-radius:4px}
+.pal::-webkit-scrollbar-track,.sts::-webkit-scrollbar-track{background:transparent}
+@keyframes pulseG{0%,100%{box-shadow:inset 0 0 0 2px var(--game-ok),0 0 0 3px rgba(46,125,50,.28)}50%{box-shadow:inset 0 0 0 2px var(--game-ok),0 0 0 7px rgba(46,125,50,.12)}}
+@keyframes pulseR{0%,100%{box-shadow:inset 0 0 0 2px var(--game-bad),0 0 0 3px rgba(179,38,30,.28)}50%{box-shadow:inset 0 0 0 2px var(--game-bad),0 0 0 7px rgba(179,38,30,.12)}}
+</style>
+</helmet>
+
+<div style="height:100vh;min-height:640px;display:grid;grid-template-rows:auto minmax(0,1fr);background:#e9e5db;background-image:radial-gradient(circle at 12% 8%,rgba(255,255,255,.6),transparent 42%),radial-gradient(circle at 88% 92%,rgba(43,76,111,.05),transparent 46%);overflow:hidden">
+
+  <header style="display:flex;align-items:stretch;gap:0;height:56px;background:var(--game-paper);border-bottom:2px solid #201e1d;box-shadow:0 1px 0 #fffdf6 inset,0 2px 8px rgba(32,28,26,.08)">
+    <div style="display:flex;align-items:center;gap:14px;padding:0 18px;border-right:1px solid var(--game-rule)">
+      <div style="width:26px;height:26px;border:1.5px solid #201e1d;border-radius:2px;background:var(--game-slate);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.28)">
+        <i class="ph-duotone ph-buildings" style="font-size:15px;color:var(--game-paper)"></i>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <div style="font:700 17px/1 var(--font-body);letter-spacing:.02em">Urban Mayhem</div>
+        <div style="font:600 8.5px/1 var(--font-body);letter-spacing:.2em;text-transform:uppercase;color:var(--game-mute)">Civil Wars III</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;padding:0 18px;border-right:1px solid var(--game-rule)">
+      <div style="display:flex;align-items:baseline;gap:9px">
+        <span style="font:700 26px/1 var(--font-body);color:var(--game-slate);font-variant-numeric:tabular-nums">{{ yearLabel }}</span>
+        <span style="font:600 9px/1 var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:var(--game-mute)">{{ phaseLabel }}</span>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center">
+        <sc-for list="{{ yearDots }}" as="d" hint-placeholder-count="6">
+          <span style="{{ d.style }}"></span>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;padding:0 18px;border-right:1px solid var(--game-rule)">
+      <i class="ph-duotone ph-users-three" style="font-size:16px;color:var(--game-mute)"></i>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <div style="font:600 8.5px/1 var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:var(--game-mute)">Team 07</div>
+        <div style="font:600 12px/1 var(--font-body)">Spandan Engineers</div>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <div style="display:flex;align-items:center;gap:8px;padding:0 16px">
+      <button class="btn btn-secondary" style="display:flex;align-items:center;gap:6px;height:30px;padding:0 11px;font-size:12px">
+        <i class="ph-duotone ph-bookmark-simple" style="font-size:14px"></i>Checkpoint
+      </button>
+      <button class="btn btn-ghost" style="display:flex;align-items:center;gap:6px;height:30px;padding:0 11px;font-size:12px">
+        <i class="ph-duotone ph-arrow-counter-clockwise" style="font-size:14px"></i>Reset
+      </button>
+      <a class="btn btn-primary" href="#organizer" style="display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;font-size:12px;text-decoration:none;color:var(--game-paper)">
+        <i class="ph-duotone ph-sliders" style="font-size:14px"></i>Organizer console
+      </a>
+    </div>
+  </header>
+
+  <main style="display:grid;grid-template-columns:minmax(238px,296px) minmax(0,1fr) minmax(262px,340px);gap:12px;padding:12px;min-height:0">
+
+    <!-- ══ LEFT: TREASURY + PALETTE ══ -->
+    <section style="display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;min-height:0;min-width:0">
+
+      <div style="background:var(--game-slate);border:1px solid #16283c;border-radius:3px;padding:12px 14px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 10px rgba(32,28,26,.16);background-image:radial-gradient(circle at 88% 10%,rgba(255,255,255,.10),transparent 55%)">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px">
+          <span style="font:600 9px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:#a9bccd">Treasury</span>
+          <span style="font:400 10px/1 var(--font-body);color:#a9bccd;font-variant-numeric:tabular-nums">of ₹3,000 Cr</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <span style="font:400 22px/1 var(--font-body);color:#c9d6e2">₹</span>
+          <span style="font:700 40px/.92 var(--font-body);color:#fffdf6;font-variant-numeric:tabular-nums;letter-spacing:-.01em">115</span>
+          <span style="font:600 14px/1 var(--font-body);color:#c9d6e2">Cr</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:4px;font:600 12px/1 var(--font-body);color:#8fd694;font-variant-numeric:tabular-nums">
+            <i class="ph-duotone ph-trend-up" style="font-size:14px"></i>+43 / yr
+          </span>
+        </div>
+        <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin:10px 0 6px;background:rgba(255,255,255,.16)">
+          <span style="width:34%;background:#c9d6e2"></span>
+          <span style="width:22%;background:#a9bccd"></span>
+          <span style="width:18%;background:#8fa8bd"></span>
+          <span style="width:22%;background:#6b8aa3"></span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:2px 12px;font:400 10px/1.4 var(--font-body);color:#c9d6e2;font-variant-numeric:tabular-nums">
+          <span>Essentials ₹980</span><span>Housing ₹640</span><span>Transport ₹520</span><span>Economy &amp; industry ₹745</span>
+        </div>
+      </div>
+
+      <div class="pal" style="background:var(--game-paper);border:1px solid var(--game-rule);border-radius:3px;box-shadow:inset 0 1px 0 #fffdf6,0 1px 0 #cfc7b4,0 3px 10px rgba(32,28,26,.10);overflow-y:auto;min-height:0">
+        <div style="position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:9px 12px 8px;background:var(--game-paper);border-bottom:1px solid var(--game-rule)">
+          <span style="font:600 9px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--game-mute)">Building palette</span>
+          <span style="display:flex;align-items:center;gap:4px;font:400 9.5px/1 var(--font-body);color:var(--game-rust)"><i class="ph-duotone ph-hand-grabbing" style="font-size:13px"></i>drag to place</span>
+        </div>
+
+        <div style="padding:4px 10px 12px;display:flex;flex-direction:column;gap:2px">
+
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 2px 5px">
+            <i class="ph-duotone ph-caret-down" style="font-size:12px;color:var(--game-mute)"></i>
+            <span style="font:700 11px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase">Essentials</span>
+            <span style="flex:1;height:1px;background:var(--game-rule)"></span>
+            <span style="font:400 9.5px/1 var(--font-body);color:#a09684">9</span>
+          </div>
+          <sc-for list="{{ essentials }}" as="b" hint-placeholder-count="9">
+            <div draggable="true" style="{{ b.card }}" style-hover="{{ b.hover }}">
+              <span style="{{ b.grip }}"><i class="ph-duotone ph-dots-six-vertical" style="font-size:13px"></i></span>
+              <span style="{{ b.thumb }}"><i class="{{ b.icon }}" style="{{ b.iconStyle }}"></i></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+                <span style="{{ b.nameStyle }}">{{ b.name }}</span>
+                <span style="{{ b.noteStyle }}">{{ b.note }}</span>
+              </span>
+              <span style="{{ b.costStyle }}">{{ b.cost }}</span>
+            </div>
+          </sc-for>
+
+          <div style="display:flex;align-items:center;gap:8px;padding:13px 2px 5px">
+            <i class="ph-duotone ph-caret-down" style="font-size:12px;color:var(--game-mute)"></i>
+            <span style="font:700 11px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase">Residential</span>
+            <span style="flex:1;height:1px;background:var(--game-rule)"></span>
+            <span style="font:400 9.5px/1 var(--font-body);color:#a09684">3</span>
+          </div>
+          <sc-for list="{{ residential }}" as="b" hint-placeholder-count="3">
+            <div draggable="true" style="{{ b.card }}" style-hover="{{ b.hover }}">
+              <span style="{{ b.grip }}"><i class="ph-duotone ph-dots-six-vertical" style="font-size:13px"></i></span>
+              <span style="{{ b.thumb }}"><i class="{{ b.icon }}" style="{{ b.iconStyle }}"></i></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+                <span style="{{ b.nameStyle }}">{{ b.name }}</span>
+                <span style="{{ b.noteStyle }}">{{ b.note }}</span>
+              </span>
+              <span style="{{ b.costStyle }}">{{ b.cost }}</span>
+            </div>
+          </sc-for>
+
+          <div style="{{ protHead }}">
+            <i class="{{ protCaret }}" style="font-size:12px;color:var(--game-mute)"></i>
+            <span style="font:700 11px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase">Protection</span>
+            <span style="flex:1;height:1px;background:var(--game-rule)"></span>
+            <span style="{{ protTag }}">{{ protTagText }}</span>
+          </div>
+          <sc-for list="{{ protection }}" as="b" hint-placeholder-count="2">
+            <div draggable="true" style="{{ b.card }}" style-hover="{{ b.hover }}">
+              <span style="{{ b.grip }}"><i class="ph-duotone ph-dots-six-vertical" style="font-size:13px"></i></span>
+              <span style="{{ b.thumb }}"><i class="{{ b.icon }}" style="{{ b.iconStyle }}"></i></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+                <span style="{{ b.nameStyle }}">{{ b.name }}</span>
+                <span style="{{ b.noteStyle }}">{{ b.note }}</span>
+              </span>
+              <span style="{{ b.costStyle }}">{{ b.cost }}</span>
+            </div>
+          </sc-for>
+
+          <div style="{{ protHead }}">
+            <i class="{{ protCaret }}" style="font-size:12px;color:var(--game-mute)"></i>
+            <span style="font:700 11px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase">Transport</span>
+            <span style="flex:1;height:1px;background:var(--game-rule)"></span>
+            <span style="{{ protTag }}">{{ protTagText }}</span>
+          </div>
+          <sc-for list="{{ transport }}" as="b" hint-placeholder-count="4">
+            <div draggable="true" style="{{ b.card }}" style-hover="{{ b.hover }}">
+              <span style="{{ b.grip }}"><i class="ph-duotone ph-dots-six-vertical" style="font-size:13px"></i></span>
+              <span style="{{ b.thumb }}"><i class="{{ b.icon }}" style="{{ b.iconStyle }}"></i></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+                <span style="{{ b.nameStyle }}">{{ b.name }}</span>
+                <span style="{{ b.noteStyle }}">{{ b.note }}</span>
+              </span>
+              <span style="{{ b.costStyle }}">{{ b.cost }}</span>
+            </div>
+          </sc-for>
+
+          <div style="{{ protHead }}">
+            <i class="{{ protCaret }}" style="font-size:12px;color:var(--game-mute)"></i>
+            <span style="font:700 11px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase">Economy</span>
+            <span style="flex:1;height:1px;background:var(--game-rule)"></span>
+            <span style="{{ protTag }}">{{ protTagText }}</span>
+          </div>
+          <sc-for list="{{ economy }}" as="b" hint-placeholder-count="5">
+            <div draggable="true" style="{{ b.card }}" style-hover="{{ b.hover }}">
+              <span style="{{ b.grip }}"><i class="ph-duotone ph-dots-six-vertical" style="font-size:13px"></i></span>
+              <span style="{{ b.thumb }}"><i class="{{ b.icon }}" style="{{ b.iconStyle }}"></i></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+                <span style="{{ b.nameStyle }}">{{ b.name }}</span>
+                <span style="{{ b.noteStyle }}">{{ b.note }}</span>
+              </span>
+              <span style="{{ b.costStyle }}">{{ b.cost }}</span>
+            </div>
+          </sc-for>
+
+          <div style="{{ protHead }}">
+            <i class="{{ protCaret }}" style="font-size:12px;color:var(--game-mute)"></i>
+            <span style="font:700 11px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase">Industry</span>
+            <span style="flex:1;height:1px;background:var(--game-rule)"></span>
+            <span style="{{ protTag }}">{{ protTagText }}</span>
+          </div>
+          <sc-for list="{{ industry }}" as="b" hint-placeholder-count="3">
+            <div draggable="true" style="{{ b.card }}" style-hover="{{ b.hover }}">
+              <span style="{{ b.grip }}"><i class="ph-duotone ph-dots-six-vertical" style="font-size:13px"></i></span>
+              <span style="{{ b.thumb }}"><i class="{{ b.icon }}" style="{{ b.iconStyle }}"></i></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+                <span style="{{ b.nameStyle }}">{{ b.name }}</span>
+                <span style="{{ b.noteStyle }}">{{ b.note }}</span>
+              </span>
+              <span style="{{ b.costStyle }}">{{ b.cost }}</span>
+            </div>
+          </sc-for>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CENTER: CITY GRID ══ -->
+    <section style="display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:8px;min-height:0;min-width:0">
+
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:0 2px;min-width:0">
+        <span style="font:600 9px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--game-mute)">City grid — 16 × 12</span>
+        <span style="width:1px;height:12px;background:var(--game-rule)"></span>
+        <span style="display:flex;align-items:center;gap:5px;font:400 11px/1 var(--font-body);color:#3f3a33"><span style="width:9px;height:9px;border-radius:1px;background:var(--game-ok)"></span>legal placement</span>
+        <span style="display:flex;align-items:center;gap:5px;font:400 11px/1 var(--font-body);color:#3f3a33"><span style="width:9px;height:9px;border-radius:1px;background:var(--game-bad)"></span>blocked</span>
+        <span style="display:flex;align-items:center;gap:5px;font:400 11px/1 var(--font-body);color:#3f3a33"><span style="width:9px;height:9px;border-radius:1px;background:#c9d6e2;border:1px solid #6b8aa3"></span>service radius</span>
+        <span style="flex:1"></span>
+        <span style="display:flex;align-items:center;gap:5px;padding:3px 8px;background:#f4e9c9;border:1px solid #d8c48c;border-radius:2px;font:600 10px/1 var(--font-body);color:#6b5a1e"><i class="ph-duotone ph-cursor-click" style="font-size:12px"></i>Placing: Water treatment plant</span>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;min-height:0;min-width:0;container-type:size">
+        <div style="position:relative;width:min(100cqw,133.333cqh);aspect-ratio:4/3;container-type:size;border:2px solid #201e1d;border-radius:3px;overflow:hidden;background:#7f8f4e;background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.10),transparent 40%),radial-gradient(circle at 78% 72%,rgba(0,0,0,.10),transparent 45%);box-shadow:0 6px 22px rgba(32,28,26,.22),inset 0 0 0 1px rgba(255,255,255,.12)">
+
+          <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(12,1fr)">
+            <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="192">
+              <div style="{{ t.style }}" onMouseEnter="{{ t.onEnter }}" onMouseLeave="{{ t.onLeave }}">
+                <sc-if value="{{ t.hasSlot }}" hint-placeholder-val="{{ false }}">
+                  <image-slot id="{{ t.slotId }}" shape="rect" fit="cover" placeholder=""></image-slot>
+                </sc-if>
+                <sc-if value="{{ t.showIcon }}" hint-placeholder-val="{{ false }}">
+                  <i class="{{ t.icon }}" style="{{ t.iconStyle }}"></i>
+                </sc-if>
+                <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ t.badgeStyle }}"><i class="{{ t.badgeIcon }}" style="font-size:2.1cqw"></i></span>
+                </sc-if>
+                <sc-if value="{{ t.populated }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;left:0;right:0;bottom:.35cqw;display:flex;justify-content:center;gap:.28cqw;pointer-events:none">
+                    <sc-for list="{{ t.pips }}" as="p" hint-placeholder-count="9">
+                      <span style="{{ p.style }}"></span>
+                    </sc-for>
+                  </span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- service-radius ghost preview around the hovered tile -->
+          <div style="position:absolute;left:37.5%;top:50%;width:31.25%;height:41.667%;background:rgba(201,214,226,.30);border:1.5px dashed #4a6f8f;border-radius:3px;pointer-events:none;box-shadow:0 0 0 100vmax rgba(32,28,26,.06)"></div>
+          <div style="position:absolute;left:37.5%;top:50%;transform:translateY(-1.9cqw);font:600 1.5cqw/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--game-paper);background:var(--game-slate);padding:.35cqw .7cqw;border-radius:2px;pointer-events:none">covers 5 × 5 · 12,000 people</div>
+
+          <!-- LEGAL drop target -->
+          <div style="position:absolute;left:50%;top:66.667%;width:6.25%;height:8.333%;border-radius:2px;background:rgba(46,125,50,.30);animation:pulseG 1.6s ease-in-out infinite;pointer-events:none"></div>
+          <div style="position:absolute;left:57%;top:63%;display:flex;align-items:center;gap:.5cqw;padding:.4cqw .7cqw;background:var(--game-ok);border:1px solid #1d5720;border-radius:2px;font:600 1.5cqw/1 var(--font-body);color:#fff;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.25)">
+            <i class="ph-duotone ph-check-circle" style="font-size:1.9cqw"></i>Buildable — I-9
+          </div>
+          <div style="position:absolute;left:47.4%;top:62%;width:9.5cqw;transform:rotate(-7deg);pointer-events:none;filter:drop-shadow(0 6px 12px rgba(32,28,26,.4))">
+            <div style="display:flex;align-items:center;gap:.6cqw;padding:.7cqw .8cqw;background:#f8f6f0;border:1px solid var(--game-slate);border-radius:2px">
+              <i class="ph-duotone ph-drop-half" style="font-size:2.6cqw;color:var(--game-slate)"></i>
+              <span style="display:flex;flex-direction:column;gap:.15cqw;min-width:0">
+                <span style="font:600 1.55cqw/1.1 var(--font-body);white-space:nowrap">Water treatment</span>
+                <span style="font:400 1.35cqw/1 var(--font-body);color:var(--game-rust)">₹80 Cr</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- ILLEGAL drop target -->
+          <div style="position:absolute;left:18.75%;top:50%;width:6.25%;height:8.333%;border-radius:2px;background:rgba(179,38,30,.30);animation:pulseR 1.6s ease-in-out infinite;pointer-events:none"></div>
+          <div style="position:absolute;left:2%;top:43.6%;display:flex;align-items:center;gap:.5cqw;padding:.4cqw .7cqw;background:var(--game-bad);border:1px solid #8f1e18;border-radius:2px;font:600 1.5cqw/1 var(--font-body);color:#fff;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.25)">
+            <i class="ph-duotone ph-prohibit" style="font-size:1.9cqw"></i>Road tile — never buildable
+          </div>
+
+          <!-- unmet-service tooltip — hover only -->
+          <sc-if value="{{ showTip }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ tipStyle }}">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:.6cqw;padding:.7cqw .9cqw;background:#eae6da;border-bottom:1px solid var(--game-rule)">
+                <span style="font:700 1.7cqw/1 var(--font-body)">{{ tipTitle }}</span>
+                <span style="font:400 1.45cqw/1 var(--font-body);color:#3f3a33;font-variant-numeric:tabular-nums">{{ tipPop }}</span>
+              </div>
+              <div style="padding:.7cqw .9cqw;display:flex;flex-direction:column;gap:.5cqw">
+                <sc-for list="{{ tipUnmet }}" as="u" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:.5cqw;font:400 1.45cqw/1.15 var(--font-body);color:#8f1e18">
+                    <i class="{{ u.icon }}" style="font-size:1.9cqw"></i><span style="font-weight:600">{{ u.name }}</span><span style="color:#3f3a33">{{ u.reason }}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ tipHasMet }}" hint-placeholder-val="{{ true }}">
+                  <div style="height:1px;background:var(--game-rule);margin:.15cqw 0"></div>
+                  <div style="display:flex;align-items:center;gap:.5cqw;font:400 1.4cqw/1.15 var(--font-body);color:#4a6f38">
+                    <i class="ph-duotone ph-check" style="font-size:1.8cqw;flex:none"></i>{{ tipMet }}
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- slum upgrade affordance -->
+          <div style="position:absolute;left:1.4%;top:76%;display:flex;align-items:center;gap:.45cqw;padding:.4cqw .65cqw;background:var(--game-rust);border:1px solid #7d2f1c;border-radius:2px;font:600 1.45cqw/1 var(--font-body);color:#fff;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.25)">
+            <i class="ph-duotone ph-arrow-fat-lines-up" style="font-size:1.8cqw"></i>Rehouse slum — ₹40 Cr
+          </div>
+
+          <!-- registration mark, press furniture -->
+          <div style="position:absolute;right:.7cqw;bottom:.7cqw;display:flex;align-items:center;gap:.6cqw;pointer-events:none;opacity:.5">
+            <span style="font:600 1.3cqw/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--game-paper)">Y2 · plate</span>
+            <span style="position:relative;width:2.2cqw;height:2.2cqw;border:1px solid var(--game-paper);border-radius:50%"><span style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--game-paper)"></span><span style="position:absolute;top:50%;left:0;right:0;height:1px;background:var(--game-paper)"></span></span>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px 14px;padding:0 2px;min-width:0">
+        <span style="display:flex;align-items:center;gap:6px;font:400 11px/1 var(--font-body);color:#6b6459">
+          <i class="ph-duotone ph-image" style="font-size:14px;color:var(--game-rust)"></i>Every built tile is an art drop target — drag the generated illustration onto it.
+        </span>
+        <span style="flex:1"></span>
+        <span style="display:flex;align-items:center;gap:6px;font:400 11px/1 var(--font-body);color:#6b6459">
+          <span style="display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:var(--game-ok)"></span><span style="width:5px;height:5px;border-radius:50%;background:var(--game-ok)"></span><span style="width:5px;height:5px;border-radius:50%;background:var(--game-ok)"></span><span style="width:5px;height:5px;border-radius:50%;border:1px solid var(--game-paper);background:rgba(255,255,255,.25)"></span></span>
+          service pips under each home — filled = served
+        </span>
+        <span style="display:flex;align-items:center;gap:6px;font:400 11px/1 var(--font-body);color:#6b6459">
+          <span style="width:12px;height:12px;border-radius:2px;background:repeating-linear-gradient(135deg,#5f7a6a 0 3px,#4e6a5c 3px 6px)"></span>low-lying / flood risk
+        </span>
+      </div>
+    </section>
+
+    <!-- ══ RIGHT: CITY STATUS ══ -->
+    <section class="sts" style="background:var(--game-paper);border:1px solid var(--game-rule);border-radius:3px;box-shadow:inset 0 1px 0 #fffdf6,0 1px 0 #cfc7b4,0 3px 10px rgba(32,28,26,.10);overflow-y:auto;min-height:0">
+
+      <div style="position:sticky;top:0;z-index:2;padding:10px 14px 9px;background:var(--game-paper);border-bottom:2px solid #201e1d">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <span style="font:700 13px/1 var(--font-body);letter-spacing:.02em">City status</span>
+          <span style="font:400 10px/1 var(--font-body);color:var(--game-mute)">scoring sealed until Year 5</span>
+        </div>
+      </div>
+
+      <div style="padding:12px 14px 16px;display:flex;flex-direction:column;gap:16px">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="padding:8px 10px;background:var(--game-paper-2);border:1px solid #e2ddd0;border-radius:2px">
+            <div style="font:600 8.5px/1 var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:var(--game-mute);margin-bottom:4px">Population</div>
+            <div style="font:700 19px/1 var(--font-body);font-variant-numeric:tabular-nums">23,500</div>
+            <div style="font:400 10px/1.3 var(--font-body);color:#6b6459;margin-top:2px">9,000 inherited slum</div>
+          </div>
+          <div style="padding:8px 10px;background:var(--game-paper-2);border:1px solid #e2ddd0;border-radius:2px">
+            <div style="font:600 8.5px/1 var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:var(--game-mute);margin-bottom:4px">Fully served</div>
+            <div style="display:flex;align-items:baseline;gap:3px"><span style="font:700 19px/1 var(--font-body);font-variant-numeric:tabular-nums;color:var(--game-ok)">6,500</span><span style="font:400 11px/1 var(--font-body);color:var(--game-mute)">/ 23,500</span></div>
+            <div style="font:400 10px/1.3 var(--font-body);color:var(--game-rust);margin-top:2px">17,000 missing ≥1 service</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px">
+            <span style="font:600 9px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--game-mute)">Service ledger</span>
+            <span style="font:400 9.5px/1 var(--font-body);color:#a09684">served / demand · spare capacity</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <sc-for list="{{ services }}" as="s" hint-placeholder-count="9">
+              <div style="display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:8px">
+                <i class="{{ s.icon }}" style="{{ s.iconStyle }}"></i>
+                <span style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                  <span style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">
+                    <span style="font:400 11.5px/1 var(--font-body)">{{ s.name }}</span>
+                    <span style="{{ s.numStyle }}">{{ s.served }} <span style="color:#a09684">/ {{ s.demand }}</span></span>
+                  </span>
+                  <span style="position:relative;height:5px;background:#e2ddd0;border-radius:3px;overflow:hidden">
+                    <span style="{{ s.barStyle }}"></span>
+                    <span style="{{ s.capStyle }}"></span>
+                  </span>
+                </span>
+                <span style="{{ s.tagStyle }}">{{ s.tag }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:9px;font:400 9.5px/1 var(--font-body);color:var(--game-mute)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:5px;border-radius:3px;background:var(--game-slate)"></span>served</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:5px;border-radius:3px;background:repeating-linear-gradient(135deg,#a9bccd 0 2px,#c9d6e2 2px 4px)"></span>spare capacity, out of range</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font:600 9px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--game-mute)">Open needs</span>
+            <span style="display:flex;align-items:center;gap:4px;padding:2px 7px;background:#f8ecea;border:1px solid #d9a9a4;border-radius:2px;font:600 9.5px/1 var(--font-body);color:#8f1e18">5 unresolved</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:1px">
+            <sc-for list="{{ needs }}" as="n" hint-placeholder-count="5">
+              <div style="{{ n.rowStyle }}" style-hover="background:#f2f6f9;border-color:#a9bccd" onMouseEnter="{{ n.onEnter }}" onMouseLeave="{{ n.onLeave }}">
+                <i class="{{ n.icon }}" style="{{ n.iconStyle }}"></i>
+                <span style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                  <span style="display:flex;align-items:baseline;gap:6px">
+                    <span style="font:600 11.5px/1.2 var(--font-body)">{{ n.where }}</span>
+                    <span style="font:400 10px/1 var(--font-body);color:var(--game-mute);font-variant-numeric:tabular-nums">{{ n.pop }}</span>
+                    <span style="flex:1"></span>
+                    <i class="{{ n.caret }}" style="font-size:12px;color:#a09684;flex:none"></i>
+                  </span>
+                  <sc-if value="{{ n.open }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                      <span style="font:400 11px/1.35 var(--font-body);color:#5c5548;text-wrap:pretty">{{ n.why }}</span>
+                      <span style="{{ n.fixStyle }}">{{ n.fix }}</span>
+                    </span>
+                  </sc-if>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div>
+          <div style="font:600 9px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--game-mute);margin-bottom:8px">Built this far</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <sc-for list="{{ built }}" as="b" hint-placeholder-count="8">
+              <span style="display:flex;align-items:center;gap:4px;padding:3px 7px;background:#eae6da;border:1px solid var(--game-rule);border-radius:2px;font:400 10.5px/1 var(--font-body);color:#3f3a33">
+                <i class="{{ b.icon }}" style="font-size:12px;color:var(--game-slate)"></i>{{ b.label }}
+              </span>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding:10px 11px;background:#eef1e4;border:1px solid #cdd4b8;border-radius:2px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+            <i class="ph-duotone ph-warning-diamond" style="font-size:15px;color:var(--game-rust)"></i>
+            <span style="font:600 11px/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:#5c5548">Risk watch</span>
+          </div>
+          <div style="font:400 11.5px/1.45 var(--font-body);color:#3f3a33;text-wrap:pretty">6 tiles sit on low-lying ground; 1 storm drain built. Industry O-12 pollutes within 2 tiles of Park H-8.</div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;currentYear&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:2,&quot;min&quot;:0,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Game state&quot;,&quot;label&quot;:&quot;Current year&quot;}}">
+class Component extends DCLogic {
+  state = { hoverTile: null, hoverNeed: null };
+
+  // ── static game data ─────────────────────────────────────────────
+  get year() { return this.props.currentYear ?? 2; }
+
+  static SERVICES = [
+    ["Power",       "ph-lightning",    "\u2014 power plant at capacity"],
+    ["Water",       "ph-drop",         "\u2014 no supplier in range"],
+    ["Health",      "ph-heartbeat",    "\u2014 no hospital in range"],
+    ["Education",   "ph-book-open",    "\u2014 no school in range"],
+    ["Environment", "ph-tree",         "\u2014 no park in range"],
+    ["Safety",      "ph-shield-check", "\u2014 no safety station in range"],
+    ["Sanitation",  "ph-recycle",      "\u2014 sewage plant at capacity"],
+    ["Transport",   "ph-bus",          "\u2014 no supplier in range"],
+    ["Food",        "ph-bowl-food",    "\u2014 no farm in range"]
+  ];
+
+  fmtCost(n) { return "\u20B9" + n; }
+
+  mkGroup(list, locked) {
+    const cash = 115;
+    return list.map(b => {
+      const poor = !locked && b.cost > cash;
+      const dim = locked || poor;
+      const base = "position:relative;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 2px;border:1px solid " +
+        (dim ? "#e2ddd0" : "var(--game-rule)") + ";border-radius:2px;background:" + (dim ? "#f0ede4" : "var(--game-paper-2)") +
+        ";box-shadow:" + (dim ? "none" : "inset 0 1px 0 #fffdf6,0 1px 0 #e2ddd0") +
+        ";cursor:" + (dim ? "not-allowed" : "grab") + ";opacity:" + (dim ? ".52" : "1") + ";transition:transform .12s,box-shadow .12s";
+      return {
+        name: b.name,
+        cost: this.fmtCost(b.cost) + " Cr",
+        note: locked ? "Unlocks Year 1" : (poor ? "Short \u20B9" + (b.cost - cash) + " Cr" : b.note),
+        icon: "ph-duotone " + b.icon,
+        card: base,
+        hover: dim ? base : base + ";transform:translateY(-1px);border-color:var(--game-slate);box-shadow:inset 0 1px 0 #fffdf6,0 3px 8px rgba(43,76,111,.20)",
+        grip: "display:flex;align-items:center;justify-content:center;width:12px;color:" + (dim ? "#c4bdaa" : "#a09684") + ";flex:none",
+        thumb: "flex:none;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:2px;background:" +
+          (dim ? "#e6e2d6" : "#eef2f6") + ";border:1px solid " + (dim ? "#dcd7c9" : "#dae3ea"),
+        iconStyle: "font-size:17px;color:" + (locked ? "#a09684" : (poor ? "var(--game-mute)" : "var(--game-slate)")),
+        nameStyle: "font:600 11.5px/1.15 var(--font-body);color:" + (dim ? "#6b6459" : "#201e1d") + ";white-space:nowrap;overflow:hidden;text-overflow:ellipsis",
+        noteStyle: "font:400 9.5px/1 var(--font-body);color:" + (poor ? "var(--game-rust)" : "var(--game-mute)") + ";white-space:nowrap;overflow:hidden;text-overflow:ellipsis",
+        costStyle: "flex:none;font:600 11px/1 var(--font-body);font-variant-numeric:tabular-nums;color:" + (poor ? "var(--game-rust)" : (locked ? "#a09684" : "#3f3a33"))
+      };
+    });
+  }
+
+  // ── board ────────────────────────────────────────────────────────
+  buildTiles() {
+    const COLS = 16, ROWS = 12;
+    const key = (r, c) => r + "," + c;
+    const S = new Set(), road = new Set(), river = new Set(), low = new Set();
+    [[0,13],[1,13],[2,13],[3,13],[4,12],[5,12],[6,12],[7,12],[8,11],[9,11],[10,11],[11,11]].forEach(p => river.add(key(p[0],p[1])));
+    for (let c = 0; c <= 10; c++) road.add(key(6,c));
+    for (let r = 0; r < ROWS; r++) road.add(key(r,4));
+    for (let r = 6; r < ROWS; r++) road.add(key(r,9));
+    [[8,12],[9,12],[10,12],[10,13],[11,12],[11,14],[7,13]].forEach(p => low.add(key(p[0],p[1])));
+
+    const slum = { "8,1":1, "8,2":1, "9,1":1, "9,2":1, "9,3":2, "10,1":2, "10,2":1 }; // 2 = upgraded
+    const colony = new Set(["2,6","2,7","3,6","3,7"]);
+
+    const B = {
+      "1,1":  { n:"Power plant", i:"ph-lightning", s:"power-1" },
+      "3,2":  { n:"Hospital", i:"ph-first-aid-kit", s:"hospital-1" },
+      "4,7":  { n:"School", i:"ph-graduation-cap", s:"school-1" },
+      "7,7":  { n:"Park", i:"ph-tree", s:"park-1" },
+      "10,14":{ n:"Sewage plant", i:"ph-recycle", s:"sewage-1" },
+      "9,12": { n:"Storm drainage", i:"ph-waves", s:"stormdrain-1" },
+      "8,5":  { n:"Water tank", i:"ph-drop", s:"watertank-1" },
+      "5,13": { n:"Water treatment", i:"ph-drop-half", s:"wtp-1" },
+      "5,8":  { n:"Market", i:"ph-storefront", s:"market-1" },
+      "11,6": { n:"Farm", i:"ph-plant", s:"farm-1" },
+      "1,9":  { n:"Safety station", i:"ph-shield-check", s:"safety-1" },
+      "5,5":  { n:"Bus stand", i:"ph-bus", s:"busstand-1" },
+      "11,14":{ n:"Industry", i:"ph-factory", s:"industry-1" },
+      "7,2":  { n:"Residential M", i:"ph-house", s:"res-med-1", pop:[1,1,1,1,0,1,0,1,1] },
+      "7,3":  { n:"Residential S", i:"ph-house-line", s:"res-small-1", pop:[1,1,1,1,0,1,0,1,1] },
+      "2,10": { n:"Residential L", i:"ph-buildings", s:"res-large-1", pop:[0,0,1,1,0,1,0,1,1] }
+    };
+
+    const tiles = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const k = key(r, c);
+      const isRiver = river.has(k), isRoad = road.has(k), isLow = low.has(k);
+      const sl = slum[k], isColony = colony.has(k), b = B[k];
+
+      let bg = "background:#7f8f4e;background-image:radial-gradient(circle at 30% 35%,rgba(255,255,255,.07) .8px,transparent 1.2px),radial-gradient(circle at 72% 70%,rgba(0,0,0,.09) .9px,transparent 1.3px)";
+      if (isRiver) bg = "background:#4a6f8f;background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.16) 0 2px,transparent 2px 6px)";
+      else if (isRoad) bg = "background:#9d968a;background-image:linear-gradient(90deg,transparent 46%,rgba(255,255,255,.35) 46% 54%,transparent 54%)";
+      else if (sl) bg = "background:#a8845c;background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 1.5px,transparent 1.5px 4px)";
+      else if (isColony) bg = "background:#c2a578;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 3px,transparent 3px 7px)";
+      if (isLow) bg += ",repeating-linear-gradient(135deg,rgba(60,90,75,.55) 0 3px,rgba(40,70,58,.55) 3px 6px)";
+
+      let pop = null;
+      if (sl) pop = sl === 2 ? [1,1,1,1,0,1,1,1,1] : [1,0,1,0,0,0,0,0,1];
+      else if (isColony) pop = [1,0,1,1,1,1,0,0,1];
+      else if (b && b.pop) pop = b.pop;
+
+      const hasArt = !!b || !!sl || isColony;
+      const t = {
+        style: "position:relative;overflow:hidden;box-shadow:inset 0 0 0 .5px rgba(32,28,26,.14);" + bg,
+        hasSlot: hasArt,
+        slotId: "tile-" + (b ? b.s : (sl ? "slum" : "colony") + "-" + r + "-" + c),
+        slotLabel: b ? b.n : (sl ? "slum" : "colony"),
+        showIcon: !!b,
+        icon: b ? "ph-duotone " + b.i : "",
+        iconStyle: "position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:3.4cqw;color:#f7f4ec;text-shadow:0 1px 2px rgba(32,28,26,.55);pointer-events:none",
+        populated: !!pop,
+        pips: (pop || []).map(m => ({
+          style: "width:.55cqw;height:.55cqw;border-radius:50%;flex:none;background:" + (m ? "#3fa14a" : "rgba(255,255,255,.30)") + (m ? "" : ";box-shadow:inset 0 0 0 .35px rgba(255,255,255,.75)")
+        })),
+        badge: sl === 2 || sl === 1,
+        badgeIcon: sl === 2 ? "ph-duotone ph-check" : "ph-duotone ph-arrow-fat-lines-up",
+        badgeStyle: "position:absolute;right:.3cqw;top:.3cqw;display:flex;align-items:center;justify-content:center;width:2.6cqw;height:2.6cqw;border-radius:50%;color:#fff;pointer-events:none;background:" +
+          (sl === 2 ? "var(--game-ok)" : "var(--game-rust)") + ";box-shadow:0 1px 3px rgba(0,0,0,.35)"
+      };
+
+      if (pop) {
+        const coord = String.fromCharCode(65 + c) + "-" + (r + 1);
+        const title = b ? b.n + " \u00b7 " + coord
+          : (sl ? (sl === 2 ? "Rehoused slum \u00b7 " : "Slum \u00b7 ") + coord : "Colony \u00b7 " + coord);
+        const count = b ? (b.n.slice(-1) === "L" ? 5000 : b.n.slice(-1) === "M" ? 2500 : 1000)
+          : (sl ? 1300 : 1500);
+        const SV = Component.SERVICES;
+        t.tip = {
+          title: title,
+          pop: count.toLocaleString("en-IN") + " residents",
+          unmet: pop.map((m, i) => m ? null : { icon: "ph-duotone " + SV[i][1], name: SV[i][0], reason: SV[i][2] }).filter(Boolean),
+          met: pop.map((m, i) => m ? SV[i][0] : null).filter(Boolean).join(" \u00b7 "),
+          r: r, c: c
+        };
+      }
+      const idx = tiles.length;
+      t.onEnter = () => this.setState({ hoverTile: idx });
+      t.onLeave = () => this.setState({ hoverTile: null });
+      tiles.push(t);
+    }
+    return tiles;
+  }
+
+  renderVals() {
+    const locked = this.year < 1;
+    this._tiles = this._tiles || this.buildTiles();
+
+    // hover-only tile tooltip
+    const ht = this.state.hoverTile;
+    const tip = (ht != null && this._tiles[ht]) ? this._tiles[ht].tip : null;
+    let tipStyle = "";
+    if (tip) {
+      const side = tip.c < 9
+        ? "left:" + ((tip.c + 1) / 16 * 100).toFixed(2) + "%"
+        : "right:" + ((16 - tip.c) / 16 * 100).toFixed(2) + "%";
+      tipStyle = "position:absolute;" + side + ";top:" + (Math.min(tip.r, 6) / 12 * 100).toFixed(2) +
+        "%;width:20cqw;z-index:6;background:#f8f6f0;border:1px solid #201e1d;border-radius:3px;" +
+        "box-shadow:0 8px 20px rgba(32,28,26,.30);pointer-events:none;overflow:hidden";
+    }
+
+    const services = [
+      { name:"Power",       icon:"ph-lightning",    served:18500, demand:23500, cap:20000, tag:"at cap" },
+      { name:"Water",       icon:"ph-drop",         served:11000, demand:23500, cap:15000, tag:"short" },
+      { name:"Health",      icon:"ph-heartbeat",    served:14000, demand:23500, cap:16000, tag:"short" },
+      { name:"Education",   icon:"ph-book-open",    served:16500, demand:23500, cap:18000, tag:"short" },
+      { name:"Environment", icon:"ph-tree",         served:8500,  demand:23500, cap:9000,  tag:"critical" },
+      { name:"Safety",      icon:"ph-shield-check", served:12000, demand:23500, cap:14000, tag:"short" },
+      { name:"Sanitation",  icon:"ph-recycle",      served:9000,  demand:23500, cap:9000,  tag:"at cap" },
+      { name:"Transport",   icon:"ph-bus",          served:13500, demand:23500, cap:17000, tag:"short" },
+      { name:"Food",        icon:"ph-bowl-food",    served:17000, demand:23500, cap:22000, tag:"ok" }
+    ];
+    const tagPaint = {
+      "ok":       ["#e7f0e2","#b9cfae","#2e5c22"],
+      "short":    ["#f7efdc","#dfcb9a","#7a5c14"],
+      "at cap":   ["#eef2f6","#bacbd8","var(--game-slate-dk)"],
+      "critical": ["#f8ecea","#d9a9a4","#8f1e18"]
+    };
+    const nf = n => n.toLocaleString("en-IN");
+
+    return {
+      yearLabel: "Year " + this.year,
+      phaseLabel: this.year === 0 ? "Planning" : "Build phase",
+      yearDots: [0,1,2,3,4,5].map(i => ({
+        style: "width:" + (i === this.year ? "16px" : "7px") + ";height:7px;border-radius:4px;background:" +
+          (i < this.year ? "#6b8aa3" : i === this.year ? "var(--game-slate)" : "var(--game-rule)")
+      })),
+
+      essentials: this.mkGroup([
+        { name:"Power plant", cost:100, icon:"ph-lightning", note:"Power · 20,000 cap" },
+        { name:"Water tank", cost:25, icon:"ph-drop", note:"Water · small" },
+        { name:"Water treatment plant", cost:80, icon:"ph-drop-half", note:"Water · large" },
+        { name:"Hospital", cost:50, icon:"ph-first-aid-kit", note:"Health" },
+        { name:"School", cost:30, icon:"ph-graduation-cap", note:"Education" },
+        { name:"Park", cost:10, icon:"ph-tree", note:"Environment" },
+        { name:"Safety station", cost:25, icon:"ph-shield-check", note:"Safety" },
+        { name:"Sewage plant", cost:40, icon:"ph-recycle", note:"Sanitation" },
+        { name:"Farm", cost:20, icon:"ph-plant", note:"Food" }
+      ], false),
+
+      residential: this.mkGroup([
+        { name:"Residential \u2013 Small", cost:30, icon:"ph-house-line", note:"houses 1,000" },
+        { name:"Residential \u2013 Medium", cost:50, icon:"ph-house", note:"houses 2,500" },
+        { name:"Residential \u2013 Large", cost:70, icon:"ph-buildings", note:"houses 5,000" }
+      ], false),
+
+      protection: this.mkGroup([
+        { name:"Storm drainage", cost:15, icon:"ph-waves", note:"flood mitigation" },
+        { name:"Dam", cost:100, icon:"ph-wall", note:"river tiles only" }
+      ], locked),
+
+      transport: this.mkGroup([
+        { name:"Bus stand", cost:30, icon:"ph-bus", note:"Transport" },
+        { name:"Railway station", cost:100, icon:"ph-train", note:"Transport · +\u20B920/yr" },
+        { name:"Metro", cost:120, icon:"ph-train-simple", note:"Transport · +\u20B915/yr" },
+        { name:"Airport", cost:150, icon:"ph-airplane-tilt", note:"Transport · +\u20B925/yr" }
+      ], locked),
+
+      economy: this.mkGroup([
+        { name:"Market", cost:30, icon:"ph-storefront", note:"+\u20B910/yr" },
+        { name:"Restaurant", cost:15, icon:"ph-fork-knife", note:"+\u20B98/yr" },
+        { name:"Hotel", cost:40, icon:"ph-bed", note:"+\u20B918/yr" },
+        { name:"Mall", cost:45, icon:"ph-shopping-bag", note:"+\u20B922/yr" },
+        { name:"Stadium", cost:100, icon:"ph-trophy", note:"+\u20B920/yr" }
+      ], locked),
+
+      industry: this.mkGroup([
+        { name:"Industry \u2013 Small", cost:40, icon:"ph-factory", note:"+\u20B915/yr · pollutes" },
+        { name:"Industry \u2013 Medium", cost:80, icon:"ph-factory", note:"+\u20B935/yr · pollutes more" },
+        { name:"Industry \u2013 Large", cost:140, icon:"ph-factory", note:"+\u20B960/yr · pollutes most" }
+      ], locked),
+
+      protHead: "display:flex;align-items:center;gap:8px;padding:13px 2px 5px" + (locked ? ";opacity:.7" : ""),
+      protCaret: locked ? "ph-duotone ph-lock-simple" : "ph-duotone ph-caret-down",
+      protTag: locked
+        ? "padding:2px 6px;background:#eae6da;border:1px solid var(--game-rule);border-radius:2px;font:600 8.5px/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--game-mute)"
+        : "font:400 9.5px/1 var(--font-body);color:#a09684",
+      protTagText: locked ? "Unlocks Y1" : "open",
+
+      tiles: this._tiles,
+      showTip: !!tip,
+      tipStyle: tipStyle,
+      tipTitle: tip ? tip.title : "",
+      tipPop: tip ? tip.pop : "",
+      tipUnmet: tip ? tip.unmet : [],
+      tipHasMet: !!(tip && tip.met),
+      tipMet: tip ? tip.met : "",
+
+      services: services.map(s => {
+        const p = tagPaint[s.tag];
+        const servedPct = Math.round(s.served / s.demand * 100);
+        const capPct = Math.round((s.cap - s.served) / s.demand * 100);
+        return {
+          name: s.name,
+          icon: "ph-duotone " + s.icon,
+          iconStyle: "font-size:15px;color:" + (s.tag === "critical" ? "var(--game-rust)" : "var(--game-slate)"),
+          served: nf(s.served),
+          demand: nf(s.demand),
+          numStyle: "font:600 11px/1 var(--font-body);font-variant-numeric:tabular-nums;white-space:nowrap;color:" +
+            (s.tag === "critical" ? "#8f1e18" : "#201e1d"),
+          barStyle: "position:absolute;left:0;top:0;bottom:0;width:" + servedPct + "%;border-radius:3px;background:" +
+            (s.tag === "critical" ? "var(--game-rust)" : "var(--game-slate)"),
+          capStyle: "position:absolute;top:0;bottom:0;left:" + servedPct + "%;width:" + capPct +
+            "%;background:repeating-linear-gradient(135deg,#a9bccd 0 2px,#c9d6e2 2px 4px)",
+          tag: s.tag,
+          tagStyle: "flex:none;min-width:52px;text-align:center;padding:2px 5px;border-radius:2px;font:600 9px/1.3 var(--font-body);letter-spacing:.06em;text-transform:uppercase;background:" +
+            p[0] + ";border:1px solid " + p[1] + ";color:" + p[2]
+        };
+      }),
+
+      needs: [
+        { icon:"ph-drop", where:"Colony H-3", pop:"1,500 people", why:"No water supplier within range. Nearest is the water treatment plant at N-6 \u2014 7 tiles away.", fix:"Place a water tank around J-4" },
+        { icon:"ph-recycle", where:"Slum B-9 \u2192 D-11", pop:"4,500 people", why:"Sewage plant O-11 is at capacity (9,000 / 9,000) and out of range of the western slum belt.", fix:"Second sewage plant, \u20B940 Cr" },
+        { icon:"ph-lightning", where:"Residential \u2013 Large K-3", pop:"5,000 people", why:"Power plant A-2 is fully subscribed at 20,000 people. New homes draw nothing.", fix:"Second power plant, \u20B9100 Cr" },
+        { icon:"ph-arrow-fat-lines-up", where:"Slum C-10", pop:"1,200 people", why:"Not yet rehoused. Unserved on 5 of 9 services and carrying the slum sanitation penalty.", fix:"Rehouse, \u20B940 Cr" },
+        { icon:"ph-tree", where:"Industry \u2013 Small O-12", pop:"pollution", why:"Sits 2 tiles from Park H-8. Environment coverage is the weakest service on the board.", fix:"Add parks, or relocate industry" }
+      ].map((n, i) => ({
+        where: n.where, pop: n.pop, why: n.why, fix: n.fix,
+        icon: "ph-duotone " + n.icon,
+        iconStyle: "font-size:16px;color:var(--game-rust);margin-top:1px",
+        open: this.state.hoverNeed === i,
+        caret: this.state.hoverNeed === i ? "ph-duotone ph-caret-up" : "ph-duotone ph-caret-down",
+        rowStyle: "display:grid;grid-template-columns:18px 1fr;gap:8px;padding:8px 9px;border-radius:2px;cursor:pointer;background:" +
+          (this.state.hoverNeed === i ? "#f2f6f9" : "var(--game-paper-2)") + ";border:1px solid " +
+          (this.state.hoverNeed === i ? "#a9bccd" : "#e2ddd0"),
+        onEnter: () => this.setState({ hoverNeed: i }),
+        onLeave: () => this.setState({ hoverNeed: null }),
+        fixStyle: "display:inline-flex;align-items:center;align-self:flex-start;gap:4px;margin-top:2px;padding:2px 6px;background:#eef2f6;border:1px solid #cddbe5;border-radius:2px;font:600 10px/1.3 var(--font-body);color:var(--game-slate-dk)"
+      })),
+
+      built: [
+        { icon:"ph-duotone ph-lightning", label:"Power \u00d7 1" },
+        { icon:"ph-duotone ph-drop", label:"Water \u00d7 2" },
+        { icon:"ph-duotone ph-first-aid-kit", label:"Hospital \u00d7 1" },
+        { icon:"ph-duotone ph-graduation-cap", label:"School \u00d7 1" },
+        { icon:"ph-duotone ph-tree", label:"Park \u00d7 1" },
+        { icon:"ph-duotone ph-shield-check", label:"Safety \u00d7 1" },
+        { icon:"ph-duotone ph-recycle", label:"Sewage \u00d7 1" },
+        { icon:"ph-duotone ph-plant", label:"Farm \u00d7 1" },
+        { icon:"ph-duotone ph-bus", label:"Bus \u00d7 1" },
+        { icon:"ph-duotone ph-storefront", label:"Market \u00d7 1" },
+        { icon:"ph-duotone ph-factory", label:"Industry \u00d7 1" },
+        { icon:"ph-duotone ph-waves", label:"Storm drain \u00d7 1" },
+        { icon:"ph-duotone ph-house", label:"Homes \u00d7 3" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

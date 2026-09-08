@@ -59,28 +59,50 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
         industryDemand[row][col] += def.consumes[service] || 0;
       });
     }
-    const totalDemand = citizenDemand.map((row, r) => row.map((d, c) => d + industryDemand[r][c]));
 
     const servers = placedList
       .filter((b) => b.def.serves === service)
       .map((b) => ({ key: b.key, row: b.row, col: b.col, capacity: b.def.capacity, radius: b.def.radius }));
 
-    const result = allocate(totalDemand, servers, width, height);
-    perService[service] = result;
+    // Citizens get strict priority over industry for shared power/water
+    // capacity: allocate citizen demand first against full capacity,
+    // then let industry claim only what's left over. Plain nearest-first
+    // over a merged demand grid let industry -- which sits close to
+    // essentials by its own prerequisites -- starve distant homes (see
+    // sim-report.md's "Industry vs. citizen contention" finding: up to
+    // 48% citizen power shortfall in top-scoring runs). Every other
+    // service has no industry demand, so this is a no-op there.
+    const citizenResult = allocate(citizenDemand, servers, width, height);
+    let result = citizenResult;
 
     if (service === "power" || service === "water") {
+      const serversAfterCitizens = servers.map((s) => ({
+        ...s,
+        capacity: Math.max(0, s.capacity - (citizenResult.buildingUsed[s.key] || 0)),
+      }));
+      const industryResult = allocate(industryDemand, serversAfterCitizens, width, height);
+
+      const served = citizenResult.served.map((row, r) => row.map((v, c) => v + industryResult.served[r][c]));
+      const servedBy = citizenResult.servedBy.map((row, r) =>
+        row.map((list, c) => list.concat(industryResult.servedBy[r][c]))
+      );
+      const buildingUsed = {};
+      servers.forEach((s) => {
+        buildingUsed[s.key] = (citizenResult.buildingUsed[s.key] || 0) + (industryResult.buildingUsed[s.key] || 0);
+      });
+      result = { served, servedBy, buildingUsed };
+
       let citizenServed = 0;
       let citizenDemandTotal = 0;
       let industryServed = 0;
       let industryDemandTotal = 0;
       for (let r = 0; r < height; r++) {
         for (let c = 0; c < width; c++) {
-          const servedHere = result.served[r][c];
           if (industryDemand[r][c] > 0) {
-            industryServed += servedHere;
+            industryServed += industryResult.served[r][c];
             industryDemandTotal += industryDemand[r][c];
           } else if (citizenDemand[r][c] > 0) {
-            citizenServed += Math.min(servedHere, citizenDemand[r][c]);
+            citizenServed += Math.min(citizenResult.served[r][c], citizenDemand[r][c]);
             citizenDemandTotal += citizenDemand[r][c];
           }
         }
@@ -96,6 +118,8 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
         industryShareOfCapacity: totalCapacity > 0 ? industryServed / totalCapacity : 0,
       };
     }
+
+    perService[service] = result;
   });
 
   const tileStats = {};

@@ -62,26 +62,26 @@ export function computeDrainageProtectedTiles(placed, map, config) {
   return protectedTiles;
 }
 
+// Simplified flood outcome: a low-lying building is either protected --
+// by a dam's downstream reach or a storm drain's radius, either counts
+// equally -- or it isn't. Protected survives for free; unprotected is
+// destroyed. No partial/repair-cost tier: that math was real-time-hard
+// to explain live at an event for a distinction (dam-only vs.
+// drainage-only) that didn't change the strategic choice, only the
+// arithmetic.
 export function applyFlood(state, map, config) {
   const damProtected = computeDamProtectedTiles(state.placed, map, config);
   const drainageProtected = computeDrainageProtectedTiles(state.placed, map, config);
 
   const destroyed = [];
-  let repairCost = 0;
-  for (const [key, buildingId] of Object.entries(state.placed)) {
+  for (const [key] of Object.entries(state.placed)) {
     const [r, c] = key.split(",").map(Number);
     if (!map.tiles[r][c].lowLying) continue;
-    if (damProtected.has(key)) continue;
-    const def = buildingsById[buildingId];
-    if (drainageProtected.has(key)) {
-      repairCost += def.cost * config.floodDrainageRepairFraction;
-    } else {
-      destroyed.push(key);
-    }
+    if (damProtected.has(key) || drainageProtected.has(key)) continue;
+    destroyed.push(key);
   }
   destroyed.forEach((key) => delete state.placed[key]);
-  state.cash = Math.max(0, state.cash - repairCost);
-  return { destroyed, repairCost };
+  return { destroyed };
 }
 
 // "1 hospital required per 2,500 people. Slums count double." Read
