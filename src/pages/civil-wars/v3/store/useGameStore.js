@@ -245,6 +245,12 @@ const useGameStore = create((set, get) => ({
     const mutable = {
       cash: state.cash,
       placed: { ...state.placed },
+      // applyPandemic() reads state.slumUpgraded.has(...) via
+      // computeCityStats -- omitting it here crashed any pandemic year
+      // with "Cannot read properties of undefined (reading 'has')".
+      // Caught by the backend port of this same function, which hit
+      // the identical bug against real integration tests.
+      slumUpgraded: new Set(state.slumUpgraded),
       residentialDemandMultiplier: state.residentialDemandMultiplier,
       immigrationOverflow: state.immigrationOverflow,
     };
