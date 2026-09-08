@@ -4,7 +4,7 @@ import useGameStore from "./store/useGameStore.js";
 import { MID_GAME_CHECKPOINT } from "./data/mockGameState.js";
 import BuildingPalette from "./components/BuildingPalette.jsx";
 import CityGridV3 from "./components/CityGridV3.jsx";
-import ScorePanel from "./components/ScorePanel.jsx";
+import CityStatusPanel from "./components/CityStatusPanel.jsx";
 import TwistModal from "./components/TwistModal.jsx";
 import "./civil-wars-v3.css";
 
@@ -98,7 +98,7 @@ function CivilWarsV3() {
       <main className="grid grid-cols-[minmax(238px,296px)_minmax(0,1fr)_minmax(262px,340px)] gap-3 p-3 min-h-0">
         <BuildingPalette />
         <CityGridV3 />
-        <ScorePanel />
+        <CityStatusPanel />
       </main>
 
       <TwistModal />
