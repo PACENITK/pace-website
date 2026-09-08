@@ -29,9 +29,9 @@ function randomTreasureTile() {
   return tileKey(Math.floor(Math.random() * map.height), Math.floor(Math.random() * map.width));
 }
 
-// Shared by placeBuilding (mutating) and previewPlacement (read-only, used
-// while dragging) so the drop-preview highlight can never drift from what
-// actually happens on drop.
+// Shared by proposePlacement (mutating, via confirmPendingAction) and
+// previewPlacement (read-only, used while dragging) so the drop-preview
+// highlight can never drift from what actually happens on confirm.
 function evaluatePlacement(buildingId, row, col, state) {
   const { placed, cash, slumUpgraded, residentialDemandMultiplier } = state;
   const key = tileKey(row, col);
@@ -74,6 +74,14 @@ function initialState() {
     hoveredTile: null,
     activeModal: null,
     lastError: null,
+    // pendingAction: a placement/rehouse proposed by a click or drop,
+    // awaiting the confirmation modal -- nothing here has touched cash
+    // or the board yet. undoable: the most recently *confirmed* action,
+    // reversible for a 5s window (UndoBanner owns the timer and calls
+    // clearUndoable() when it lapses) -- a safety net for a fast-paced
+    // in-person event where a mis-tap costs real budget.
+    pendingAction: null,
+    undoable: null,
   };
 }
 
@@ -102,28 +110,23 @@ const useGameStore = create((set, get) => ({
     return evaluatePlacement(state.selectedBuilding, row, col, state);
   },
 
-  // Mirrors the validation a real backend would run server-side
-  // (Phase 2): builds the same `ctx` shape buildings.js's canPlace()
-  // expects, using the live board instead of a simulated one.
-  placeBuilding: (row, col) => {
+  // Validates a placement (same `ctx` shape buildings.js's canPlace()
+  // expects, mirroring what a real backend would run server-side in
+  // Phase 2) and, if legal, opens the confirmation modal instead of
+  // touching the board -- nothing is spent until confirmPendingAction().
+  proposePlacement: (row, col) => {
     const state = get();
-    const { selectedBuilding, placed, cash } = state;
+    const { selectedBuilding } = state;
     if (!selectedBuilding) return;
     const result = evaluatePlacement(selectedBuilding, row, col, state);
     if (!result.ok) {
       set({ lastError: result.reason });
       return;
     }
-    const def = buildingsById[selectedBuilding];
-    set({
-      placed: { ...placed, [tileKey(row, col)]: selectedBuilding },
-      cash: cash - def.cost,
-      selectedBuilding: null,
-      lastError: null,
-    });
+    set({ pendingAction: { type: "place", row, col, buildingId: selectedBuilding }, lastError: null });
   },
 
-  upgradeSlum: (row, col) => {
+  proposeRehouse: (row, col) => {
     const state = get();
     const key = tileKey(row, col);
     if (state.map.tiles[row][col].type !== "slum") return;
@@ -132,10 +135,80 @@ const useGameStore = create((set, get) => ({
       set({ lastError: "Not enough cash to upgrade this slum" });
       return;
     }
-    const next = new Set(state.slumUpgraded);
-    next.add(key);
-    set({ slumUpgraded: next, cash: state.cash - config.slumUpgradeCost, lastError: null });
+    set({ pendingAction: { type: "rehouse", row, col }, lastError: null });
   },
+
+  cancelPendingAction: () => set({ pendingAction: null }),
+
+  // Commits whatever proposePlacement/proposeRehouse staged, and opens
+  // the 5s undo window. Re-validates placement (board state can't have
+  // changed since propose in this single-player client, but this keeps
+  // the invariant that nothing reaches `placed`/`cash` without passing
+  // canPlace() immediately beforehand).
+  confirmPendingAction: () => {
+    const state = get();
+    const { pendingAction } = state;
+    if (!pendingAction) return;
+
+    if (pendingAction.type === "place") {
+      const { row, col, buildingId } = pendingAction;
+      const result = evaluatePlacement(buildingId, row, col, state);
+      if (!result.ok) {
+        set({ pendingAction: null, lastError: result.reason });
+        return;
+      }
+      const def = buildingsById[buildingId];
+      set({
+        placed: { ...state.placed, [tileKey(row, col)]: buildingId },
+        cash: state.cash - def.cost,
+        selectedBuilding: null,
+        pendingAction: null,
+        lastError: null,
+        undoable: { type: "place", row, col, buildingId, refund: def.cost },
+      });
+    } else if (pendingAction.type === "rehouse") {
+      const { row, col } = pendingAction;
+      const key = tileKey(row, col);
+      if (state.map.tiles[row][col].type !== "slum" || state.slumUpgraded.has(key) || state.cash < config.slumUpgradeCost) {
+        set({ pendingAction: null });
+        return;
+      }
+      const next = new Set(state.slumUpgraded);
+      next.add(key);
+      set({
+        slumUpgraded: next,
+        cash: state.cash - config.slumUpgradeCost,
+        pendingAction: null,
+        lastError: null,
+        undoable: { type: "rehouse", row, col, refund: config.slumUpgradeCost },
+      });
+    }
+  },
+
+  // Reverses the last confirmed action within its 5s window (called by
+  // UndoBanner's click handler) -- refunds cash and removes exactly what
+  // confirmPendingAction added, nothing else.
+  undoLastAction: () => {
+    const state = get();
+    const { undoable } = state;
+    if (!undoable) return;
+
+    if (undoable.type === "place") {
+      const key = tileKey(undoable.row, undoable.col);
+      const nextPlaced = { ...state.placed };
+      delete nextPlaced[key];
+      set({ placed: nextPlaced, cash: state.cash + undoable.refund, undoable: null });
+    } else if (undoable.type === "rehouse") {
+      const key = tileKey(undoable.row, undoable.col);
+      const next = new Set(state.slumUpgraded);
+      next.delete(key);
+      set({ slumUpgraded: next, cash: state.cash + undoable.refund, undoable: null });
+    }
+  },
+
+  // Called by UndoBanner when its 5s countdown lapses -- the action
+  // simply stops being reversible, nothing about the board changes.
+  clearUndoable: () => set({ undoable: null }),
 
   // Organizer action. Mirrors simulation/engine/simulate.js's per-year
   // loop exactly (unified income model, Part F) so this store's numbers

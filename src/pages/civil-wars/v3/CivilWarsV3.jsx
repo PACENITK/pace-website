@@ -6,6 +6,8 @@ import BuildingPalette from "./components/BuildingPalette.jsx";
 import CityGridV3 from "./components/CityGridV3.jsx";
 import CityStatusPanel from "./components/CityStatusPanel.jsx";
 import TwistModal from "./components/TwistModal.jsx";
+import PlacementConfirmModal from "./components/PlacementConfirmModal.jsx";
+import UndoBanner from "./components/UndoBanner.jsx";
 import "./civil-wars-v3.css";
 
 const YEARS = [0, 1, 2, 3, 4, 5];
@@ -102,6 +104,8 @@ function CivilWarsV3() {
       </main>
 
       <TwistModal />
+      <PlacementConfirmModal />
+      <UndoBanner />
     </div>
   );
 }

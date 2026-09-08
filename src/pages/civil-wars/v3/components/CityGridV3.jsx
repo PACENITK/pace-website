@@ -84,8 +84,8 @@ function CityGridV3() {
   const hoveredTile = useGameStore((s) => s.hoveredTile);
   const hoverTile = useGameStore((s) => s.hoverTile);
   const clearHover = useGameStore((s) => s.clearHover);
-  const placeBuilding = useGameStore((s) => s.placeBuilding);
-  const upgradeSlum = useGameStore((s) => s.upgradeSlum);
+  const proposePlacement = useGameStore((s) => s.proposePlacement);
+  const proposeRehouse = useGameStore((s) => s.proposeRehouse);
   const previewPlacement = useGameStore((s) => s.previewPlacement);
   const stats = useCityStats();
 
@@ -126,16 +126,16 @@ function CityGridV3() {
     const type = map.tiles[row][col].type;
 
     if (!selectedBuilding && type === "slum" && !slumUpgraded.has(key)) {
-      upgradeSlum(row, col);
+      proposeRehouse(row, col);
       return;
     }
     if (selectedBuilding && !placed[key]) {
-      placeBuilding(row, col);
+      proposePlacement(row, col);
     }
   }
 
   // Live validation while dragging/hovering with a building selected --
-  // runs the exact canPlace() check placeBuilding will make on drop,
+  // runs the exact canPlace() check proposePlacement will make on drop,
   // so the green/red overlay never promises something the drop can't do.
   const dropPreview =
     selectedBuilding && hoveredTile ? previewPlacement(...hoveredTile.split(",").map(Number)) : null;
@@ -149,7 +149,7 @@ function CityGridV3() {
 
   function handleDrop(row, col, e) {
     e.preventDefault();
-    if (selectedBuilding) placeBuilding(row, col);
+    if (selectedBuilding) proposePlacement(row, col);
     clearHover();
   }
 
