@@ -1,22 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap");
+
+/* Hybrid styling approach: Tailwind utility classes (in JSX) handle
+   layout/spacing/color/typography everywhere they can. What's left here
+   is only what Tailwind can't express as a clean single utility --
+   design tokens, multi-layer composite backgrounds/shadows, keyframe
+   animations, cqw/container-query board sizing, and the repeating-
+   gradient tile textures. */
+
 .cw3-root {
+  /* Legacy tokens -- still used by Organizer Console / Twist Modal, which
+     are out of scope for the Team View redesign (design_handoff_team_view). */
   --cw3-accent: #2b4c6f;
   --cw3-panel-bg: #faf8f3;
   --cw3-ink: #1a1a1a;
   --cw3-hairline: #dedad0;
-  /* rules.md Part L: "Render at 56px per tile -- 896 x 672 px". */
   --cw3-tile-size: 56px;
   --cw3-red: #b3261e;
   --cw3-green: #2e7d32;
+
+  /* Broadsheet tokens re-inked for the commissioned city art, per
+     design_handoff_team_view/README.md's token table -- referenced both
+     by the custom classes below and by Tailwind arbitrary values
+     (e.g. text-[color:var(--game-mute)]) in the component JSX. */
+  --game-paper: #f4f1ea;
+  --game-paper-2: #faf8f3;
+  --game-rule: #d9d3c6;
+  --game-slate: #2b4c6f;
+  --game-slate-dk: #1d3550;
+  --game-rust: #a8442a;
+  --game-ok: #2e7d32;
+  --game-bad: #b3261e;
+  --game-mute: #8a8172;
+  --game-ink: #201e1d;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
 
   position: fixed;
   inset: 0;
   z-index: 1000;
   box-sizing: border-box;
-  background: var(--cw3-panel-bg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: var(--cw3-ink);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+  background: #e9e5db;
+  background-image: radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.6), transparent 42%),
+    radial-gradient(circle at 88% 92%, rgba(43, 76, 111, 0.05), transparent 46%);
+  font-family: var(--font-body);
+  color: var(--game-ink);
+  -webkit-font-smoothing: antialiased;
 }
 
 .cw3-root *,
@@ -25,305 +57,244 @@
   box-sizing: border-box;
 }
 
-/* ---------- Topbar ---------- */
-
-.cw3-topbar {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--cw3-hairline);
-  background: #fff;
-}
-
-.cw3-topbar-title {
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.cw3-topbar-year {
-  font-size: 13px;
-  opacity: 0.75;
-}
-
-.cw3-topbar-links {
-  margin-left: auto;
-  display: flex;
-  gap: 8px;
-}
-
-.cw3-topbar-btn {
-  font: inherit;
-  font-size: 12px;
-  padding: 6px 10px;
-  background: var(--cw3-panel-bg);
-  border: 1px solid var(--cw3-hairline);
-  color: var(--cw3-ink);
-  cursor: pointer;
+/* No default anchor color here -- the topbar's Organizer-console link
+   is styled as a button via Tailwind utility classes, and a `.cw3-root a`
+   rule would out-specificity those (class+element beats a single
+   utility class), silently overriding its text color. Only reset the
+   underline; every link sets its own color explicitly. */
+.cw3-root a {
   text-decoration: none;
 }
-
-.cw3-topbar-btn:hover {
-  border-color: var(--cw3-accent);
+.cw3-root ::selection {
+  background: #c9d6e2;
 }
 
-/* ---------- Layout ---------- */
-
-.cw3-layout {
-  flex: 1 1 auto;
-  display: flex;
-  min-height: 0;
+@keyframes cw3PulseG {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 2px var(--game-ok), 0 0 0 3px rgba(46, 125, 50, 0.28);
+  }
+  50% {
+    box-shadow: inset 0 0 0 2px var(--game-ok), 0 0 0 7px rgba(46, 125, 50, 0.12);
+  }
+}
+@keyframes cw3PulseR {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 2px var(--game-bad), 0 0 0 3px rgba(179, 38, 30, 0.28);
+  }
+  50% {
+    box-shadow: inset 0 0 0 2px var(--game-bad), 0 0 0 7px rgba(179, 38, 30, 0.12);
+  }
 }
 
-/* ---------- Palette (left) ---------- */
-
-.cw3-palette {
-  width: 240px;
-  flex: 0 0 240px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  background: var(--cw3-panel-bg);
-  border-right: 1px solid var(--cw3-hairline);
-  overflow-y: auto;
+/* Shared "printed card" bevel -- the one composite box-shadow reused by
+   the treasury card, palette panel and status panel, so it isn't
+   repeated as a giant arbitrary Tailwind value three times over. */
+.cw3-panel {
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 #fffdf6, 0 1px 0 #cfc7b4, 0 3px 10px rgba(32, 28, 26, 0.1);
+}
+.cw3-panel::-webkit-scrollbar {
+  width: 8px;
+}
+.cw3-panel::-webkit-scrollbar-thumb {
+  background: #cfc7b4;
+  border-radius: 4px;
+}
+.cw3-panel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.cw3-palette-cash {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 8px;
+.cw3-treasury-bg {
+  background: var(--game-slate);
+  background-image: radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.1), transparent 55%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 3px 10px rgba(32, 28, 26, 0.16);
 }
 
-.cw3-palette-error {
-  font-size: 12px;
-  color: var(--cw3-red);
-  background: #fdeceb;
-  padding: 6px 8px;
-  margin-bottom: 8px;
-}
+/* ---------- Palette building card (grip/thumb/name/note/cost, with
+   layered dim/hover/selected states) -- kept as one component class
+   rather than Tailwind conditionals, since the states compose. ---------- */
 
-.cw3-palette-group {
-  margin-bottom: 14px;
-}
-
-.cw3-palette-group-label {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0.7;
+.cw3-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.cw3-palette-locked {
-  font-size: 11px;
-  opacity: 0.55;
-  font-style: italic;
-}
-
-.cw3-palette-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cw3-building-btn {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 6px 8px;
-  background: #fff;
-  border: 1px solid var(--cw3-hairline);
-  font: inherit;
-  font-size: 12px;
-  color: var(--cw3-ink);
-  cursor: pointer;
-  text-align: left;
-}
-
-.cw3-building-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.cw3-building-btn--selected {
-  background: var(--cw3-accent);
-  border-color: var(--cw3-accent);
-  color: #fff;
-}
-
-.cw3-building-btn-cost {
-  opacity: 0.75;
-  font-variant-numeric: tabular-nums;
-}
-
-.cw3-building-btn-name {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.cw3-building-btn-drag {
-  opacity: 0.45;
-  flex: none;
-}
-
-.cw3-building-btn[draggable="true"] {
+  gap: 8px;
+  padding: 6px 8px 6px 2px;
+  border: 1px solid var(--game-rule);
+  border-radius: 2px;
+  background: var(--game-paper-2);
+  box-shadow: inset 0 1px 0 #fffdf6, 0 1px 0 #e2ddd0;
   cursor: grab;
+  transition: transform 0.12s, box-shadow 0.12s;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  width: 100%;
 }
-
-.cw3-palette-hint {
-  margin-top: auto;
-  font-size: 11px;
-  opacity: 0.7;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.cw3-card:hover:not(.cw3-card--dim) {
+  transform: translateY(-1px);
+  border-color: var(--game-slate);
+  box-shadow: inset 0 1px 0 #fffdf6, 0 3px 8px rgba(43, 76, 111, 0.2);
 }
-
-/* ---------- Grid (centre) ---------- */
-
-.cw3-grid-column {
-  flex: 1;
-  height: 100%;
+.cw3-card--selected {
+  border-color: var(--game-slate);
+  box-shadow: inset 0 1px 0 #fffdf6, 0 0 0 2px rgba(43, 76, 111, 0.35);
+}
+.cw3-card--dim {
+  border-color: #e2ddd0;
+  background: #f0ede4;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+.cw3-card-grip {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
-}
-
-.cw3-grid {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(var(--cols), var(--cw3-tile-size));
-  grid-template-rows: repeat(var(--rows), var(--cw3-tile-size));
-  gap: 0;
+  width: 12px;
+  color: #a09684;
   flex: none;
 }
-
-.cw3-grid-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  background-image: repeating-linear-gradient(
-      to right,
-      rgba(43, 76, 111, 0.15) 0,
-      rgba(43, 76, 111, 0.15) 1px,
-      transparent 1px,
-      transparent var(--cw3-tile-size)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(43, 76, 111, 0.15) 0,
-      rgba(43, 76, 111, 0.15) 1px,
-      transparent 1px,
-      transparent var(--cw3-tile-size)
-    );
+.cw3-card--dim .cw3-card-grip {
+  color: #c4bdaa;
+}
+.cw3-card-thumb {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 2px;
+  background: #eef2f6;
+  border: 1px solid #dae3ea;
+  color: var(--game-slate);
+}
+.cw3-card--dim .cw3-card-thumb {
+  background: #e6e2d6;
+  border-color: #dcd7c9;
+}
+.cw3-card--dim.cw3-card--unaffordable .cw3-card-thumb {
+  color: var(--game-mute);
+}
+.cw3-card--locked .cw3-card-thumb {
+  color: #a09684;
+}
+.cw3-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.cw3-card-name {
+  font: 600 11.5px/1.15 var(--font-body);
+  color: var(--game-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cw3-card--dim .cw3-card-name {
+  color: #6b6459;
+}
+.cw3-card-note {
+  font: 400 9.5px/1 var(--font-body);
+  color: var(--game-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cw3-card-note--rust {
+  color: var(--game-rust);
+}
+.cw3-card-cost {
+  flex: none;
+  font: 600 11px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  color: #3f3a33;
+}
+.cw3-card-cost--rust {
+  color: var(--game-rust);
+}
+.cw3-card-cost--locked {
+  color: #a09684;
 }
 
-.cw3-radius-overlay {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-  background: rgba(43, 76, 111, 0.14);
-  box-shadow: inset 0 0 0 2px rgba(43, 76, 111, 0.55);
+/* ---------- Board: container-query sizing + tile textures + overlays.
+   All fundamentally graphic/animated, kept out of Tailwind. ---------- */
+
+.cw3-board-wrap {
+  container-type: size;
+}
+.cw3-board {
+  width: min(100cqw, 133.333cqh);
+  aspect-ratio: 4 / 3;
+  container-type: size;
+  background: #7f8f4e;
+  background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1), transparent 40%),
+    radial-gradient(circle at 78% 72%, rgba(0, 0, 0, 0.1), transparent 45%);
+  box-shadow: 0 6px 22px rgba(32, 28, 26, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .cw3-tile {
   position: relative;
-  width: var(--cw3-tile-size);
-  height: var(--cw3-tile-size);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
   cursor: pointer;
-  background: #eef1e8;
+  box-shadow: inset 0 0 0 0.5px rgba(32, 28, 26, 0.14);
+  background: #7f8f4e;
   background-size: cover;
   background-position: center;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  background-image: radial-gradient(circle at 30% 35%, rgba(255, 255, 255, 0.07) 0.8px, transparent 1.2px),
+    radial-gradient(circle at 72% 70%, rgba(0, 0, 0, 0.09) 0.9px, transparent 1.3px);
 }
-
 .cw3-tile:hover {
-  box-shadow: inset 0 0 0 2px var(--cw3-accent);
+  box-shadow: inset 0 0 0 1px rgba(32, 28, 26, 0.3);
   z-index: 4;
 }
-
-.cw3-tile--empty {
-  background: #eef1e8;
-}
-
 .cw3-tile--river {
-  background: #a9cbe8;
+  background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.16) 0 2px, transparent 2px 6px);
+  background-color: #4a6f8f;
 }
-
 .cw3-tile--road {
-  background: #c9c4b8;
+  background-image: linear-gradient(90deg, transparent 46%, rgba(255, 255, 255, 0.35) 46% 54%, transparent 54%);
+  background-color: #9d968a;
 }
-
 .cw3-tile--slum {
-  background: #f0c48a;
+  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.14) 0 1.5px, transparent 1.5px 4px);
+  background-color: #a8845c;
 }
-
 .cw3-tile--colony {
-  background: #f0e08a;
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.14) 0 3px, transparent 3px 7px);
+  background-color: #c2a578;
 }
-
 .cw3-tile--lowlying::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(43, 76, 111, 0.12) 0,
-    rgba(43, 76, 111, 0.12) 3px,
-    transparent 3px,
-    transparent 8px
-  );
+  background-image: repeating-linear-gradient(135deg, rgba(60, 90, 75, 0.55) 0 3px, rgba(40, 70, 58, 0.55) 3px 6px);
 }
-
 .cw3-tile--polluted {
   box-shadow: inset 0 0 0 2px #8a6d3b;
 }
-
 .cw3-tile--sewage-nuisance {
   box-shadow: inset 0 0 0 2px #7a5c00;
 }
 
-.cw3-tile--drop-valid {
-  box-shadow: inset 0 0 0 3px var(--cw3-green);
-  background-color: rgba(46, 125, 50, 0.18);
-}
-
-.cw3-tile--drop-invalid {
-  box-shadow: inset 0 0 0 3px var(--cw3-red);
-  background-color: rgba(179, 38, 30, 0.18);
-}
-
-.cw3-tile-upgraded-badge {
+.cw3-tile-building-icon {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 10px;
-  color: var(--cw3-green);
-  font-weight: 700;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
+  color: #f7f4ec;
+  filter: drop-shadow(0 1px 2px rgba(32, 28, 26, 0.55));
+  pointer-events: none;
 }
-
-.cw3-tile-building {
-  color: var(--cw3-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.cw3-tile-building-icon--preview {
+  opacity: 0.55;
 }
-
-.cw3-tile-building--preview {
-  opacity: 0.45;
-}
-
 .cw3-tile-building-art {
   position: absolute;
   inset: 6%;
@@ -331,124 +302,268 @@
   background-position: center;
   pointer-events: none;
 }
+.cw3-tile-building-art--preview {
+  opacity: 0.55;
+}
 
-.cw3-tile-services {
+.cw3-tile-pips {
   position: absolute;
-  bottom: 2px;
-  left: 2px;
-  right: 2px;
+  left: 0;
+  right: 0;
+  bottom: 0.35cqw;
   display: flex;
   justify-content: center;
-  gap: 1px;
-  flex-wrap: wrap;
+  gap: 0.28cqw;
+  pointer-events: none;
+}
+.cw3-pip {
+  border-radius: 50%;
+  flex: none;
+}
+.cw3-pip--filled {
+  background: #3fa14a;
+}
+.cw3-pip--hollow {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 0 0.35px rgba(255, 255, 255, 0.75);
 }
 
-.cw3-svc-filled {
-  color: var(--cw3-green);
+.cw3-slum-badge {
+  position: absolute;
+  right: 0.3cqw;
+  top: 0.3cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.cw3-slum-badge--pending {
+  background: var(--game-rust);
+}
+.cw3-slum-badge--done {
+  background: var(--game-ok);
 }
 
-.cw3-svc-hollow {
-  color: rgba(0, 0, 0, 0.22);
+.cw3-radius-ghost {
+  position: absolute;
+  background: rgba(201, 214, 226, 0.3);
+  border: 1.5px dashed #4a6f8f;
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow: 0 0 0 100vmax rgba(32, 28, 26, 0.06);
+  z-index: 1;
+}
+.cw3-radius-caption {
+  position: absolute;
+  transform: translateY(-1.9cqw);
+  font: 600 1.5cqw/1 var(--font-body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--game-paper);
+  background: var(--game-slate);
+  padding: 0.35cqw 0.7cqw;
+  border-radius: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.cw3-drop-target {
+  position: absolute;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2;
+}
+.cw3-drop-target--legal {
+  animation: cw3PulseG 1.6s ease-in-out infinite;
+}
+.cw3-drop-target--illegal {
+  animation: cw3PulseR 1.6s ease-in-out infinite;
+}
+.cw3-drop-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5cqw;
+  padding: 0.4cqw 0.7cqw;
+  border-radius: 2px;
+  font: 600 1.5cqw/1 var(--font-body);
+  color: #fff;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  z-index: 3;
+}
+.cw3-drop-chip--legal {
+  background: var(--game-ok);
+  border: 1px solid #1d5720;
+}
+.cw3-drop-chip--illegal {
+  background: var(--game-bad);
+  border: 1px solid #8f1e18;
+}
+
+.cw3-rehouse-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.45cqw;
+  padding: 0.4cqw 0.65cqw;
+  background: var(--game-rust);
+  border: 1px solid #7d2f1c;
+  border-radius: 2px;
+  font: 600 1.45cqw/1 var(--font-body);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 3;
+  white-space: nowrap;
 }
 
 .cw3-tile-tooltip {
-  display: none;
   position: absolute;
-  bottom: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1a1a1a;
-  color: #fff;
-  font-size: 11px;
-  line-height: 1.4;
-  padding: 8px 10px;
-  min-width: 180px;
-  z-index: 5;
+  z-index: 6;
+  width: 20cqw;
+  background: #f8f6f0;
+  border: 1px solid var(--game-ink);
+  border-radius: 3px;
+  box-shadow: 0 8px 20px rgba(32, 28, 26, 0.3);
   pointer-events: none;
+  overflow: hidden;
 }
-
-.cw3-tile:hover .cw3-tile-tooltip {
-  display: block;
-}
-
-.cw3-tooltip-unmet {
-  color: #ffb4a8;
-}
-
-/* ---------- Score panel (right) ---------- */
-
-.cw3-score {
-  width: 320px;
-  flex: 0 0 320px;
-  height: 100%;
-  padding: 16px;
-  background: var(--cw3-panel-bg);
-  border-left: 1px solid var(--cw3-hairline);
-  overflow-y: auto;
-}
-
-.cw3-score-year {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.cw3-score-total {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.cw3-score-section-label {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0.7;
-  padding-top: 10px;
-  border-top: 1px solid var(--cw3-hairline);
-  margin-bottom: 6px;
-}
-
-.cw3-score-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-
-.cw3-score-table td {
-  padding: 2px 0;
-}
-
-.cw3-score-table td:last-child {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.cw3-coverage-row {
-  margin-bottom: 6px;
-}
-
-.cw3-coverage-row-label {
+.cw3-tile-tooltip-head {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  margin-bottom: 2px;
+  gap: 0.6cqw;
+  padding: 0.7cqw 0.9cqw;
+  background: #eae6da;
+  border-bottom: 1px solid var(--game-rule);
 }
-
-.cw3-coverage-row-label span:first-child {
+.cw3-tile-tooltip-title {
+  font: 700 1.7cqw/1 var(--font-body);
+}
+.cw3-tile-tooltip-pop {
+  font: 400 1.45cqw/1 var(--font-body);
+  color: #3f3a33;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cw3-tile-tooltip-body {
+  padding: 0.7cqw 0.9cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5cqw;
+}
+.cw3-tile-tooltip-unmet {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.5cqw;
+  font: 400 1.45cqw/1.15 var(--font-body);
+  color: #8f1e18;
+}
+.cw3-tile-tooltip-unmet strong {
+  font-weight: 600;
+}
+.cw3-tile-tooltip-reason {
+  color: #3f3a33;
+}
+.cw3-tile-tooltip-rule {
+  height: 1px;
+  background: var(--game-rule);
+  margin: 0.15cqw 0;
+}
+.cw3-tile-tooltip-met {
+  display: flex;
+  align-items: center;
+  gap: 0.5cqw;
+  font: 400 1.4cqw/1.15 var(--font-body);
+  color: #4a6f38;
 }
 
-.cw3-coverage-bar-track {
+.cw3-plate {
+  position: absolute;
+  right: 0.7cqw;
+  bottom: 0.7cqw;
+  display: flex;
+  align-items: center;
+  gap: 0.6cqw;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 1;
+}
+.cw3-plate-text {
+  font: 600 1.3cqw/1 var(--font-body);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--game-paper);
+}
+.cw3-plate-mark {
+  position: relative;
+  width: 2.2cqw;
+  height: 2.2cqw;
+  border: 1px solid var(--game-paper);
+  border-radius: 50%;
+}
+.cw3-plate-mark::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--game-paper);
+}
+.cw3-plate-mark::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--game-paper);
+}
+
+.cw3-caption-lowlying-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background-image: repeating-linear-gradient(135deg, #5f7a6a 0 3px, #4e6a5c 3px 6px);
+}
+
+/* ---------- Service ledger bar: solid "served" fill + hatched "spare
+   capacity" segment -- a composited two-layer bar Tailwind can't do as
+   a single utility. ---------- */
+
+.cw3-ledger-track {
+  position: relative;
   height: 5px;
-  background: var(--cw3-hairline);
+  background: #e2ddd0;
+  border-radius: 3px;
+  overflow: hidden;
 }
-
-.cw3-coverage-bar-fill {
-  height: 100%;
-  background: var(--cw3-accent);
+.cw3-ledger-served {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+  background: var(--game-slate);
+}
+.cw3-ledger-served--critical {
+  background: var(--game-rust);
+}
+.cw3-ledger-cap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(135deg, #a9bccd 0 2px, #c9d6e2 2px 4px);
+}
+.cw3-ledger-legend-swatch--cap {
+  background-image: repeating-linear-gradient(135deg, #a9bccd 0 2px, #c9d6e2 2px 4px);
 }
 
 /* ---------- Twist modal ---------- */

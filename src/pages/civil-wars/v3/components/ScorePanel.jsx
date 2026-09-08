@@ -2,7 +2,7 @@ import React from "react";
 import useGameStore from "../store/useGameStore.js";
 import useCityStats from "../store/useCityStats.js";
 import { SERVICES, config } from "../engine.js";
-import { SERVICE_ICON } from "./TileV3.jsx";
+import { SERVICE_ICON } from "../data/serviceMeta.js";
 
 const SERVICE_LABEL = {
   power: "Power",
