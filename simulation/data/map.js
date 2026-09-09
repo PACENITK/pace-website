@@ -2,12 +2,16 @@ import config from "../engine/config.js";
 
 // Hand-authored 16x12 grid (Part B): a river band with graded flood
 // zones on each side (v4 Part C: Zone A at +-1 row = Severe, Zone B at
-// +-2 rows = Moderate -- 16 cols x 2 rows each = 32 tiles per zone), a
-// short existing-road segment, 4 slum tiles (2 of them in a flood
-// zone, per "two of the four slums sit on low-lying land"), and 2
-// colony tiles. Everything else is empty/buildable -- 192 - 16 (river)
-// - 6 (road) - 4 (slum) - 2 (colony) = 164 buildable tiles, matching
-// "roughly 160."
+// +-2 rows = Moderate), 4 slum tiles (2 of them in a flood zone, per
+// "two of the four slums sit in Zone A"), and 2 colony tiles.
+// Everything else is empty/buildable -- 192 - 16 (river) - 4 (slum) -
+// 2 (colony) = 170 buildable tiles, matching "roughly 170."
+//
+// The flood band is asymmetric on purpose: `skipBelowZoneB` drops the
+// Zone B row on the far side of the river from Zone A's own two rows,
+// leaving 3 low-lying rows total (one Zone B + two Zone A) instead of
+// the fully symmetric 4. Sweep's own alternate-size maps don't pass
+// this, so they stay symmetric unless asked otherwise.
 //
 // `lowLying` is kept as a plain derived boolean (floodZone !== null)
 // for any consumer that only cares "is this tile flood-risk at all"
@@ -16,7 +20,16 @@ import config from "../engine/config.js";
 // buildMap() is parametric so sweep.js can generate proportionally
 // similar maps at other grid sizes (Part L's 12x9/15x10 alternatives)
 // and with more inherited settlements, without duplicating this logic.
-export function buildMap({ width, height, slumTiles, lowlandSlumKeys, colonyTiles, roadTiles, riverRow }) {
+export function buildMap({
+  width,
+  height,
+  slumTiles,
+  lowlandSlumKeys,
+  colonyTiles,
+  roadTiles = [],
+  riverRow,
+  skipBelowZoneB = false,
+}) {
   const tiles = [];
   for (let r = 0; r < height; r++) {
     const row = [];
@@ -38,7 +51,7 @@ export function buildMap({ width, height, slumTiles, lowlandSlumKeys, colonyTile
   setZone(riverRow - config.floodZoneARows, "A");
   setZone(riverRow + config.floodZoneARows, "A");
   setZone(riverRow - config.floodZoneBRows, "B");
-  setZone(riverRow + config.floodZoneBRows, "B");
+  if (!skipBelowZoneB) setZone(riverRow + config.floodZoneBRows, "B");
 
   roadTiles.forEach(({ row, col }) => {
     tiles[row][col] = { type: "road", lowLying: false, floodZone: null };
@@ -72,14 +85,12 @@ const map = buildMap({
     { row: 1, col: 8 },
     { row: 10, col: 3 },
   ],
-  roadTiles: [
-    { row: 11, col: 0 },
-    { row: 11, col: 1 },
-    { row: 11, col: 2 },
-    { row: 11, col: 3 },
-    { row: 11, col: 4 },
-    { row: 11, col: 5 },
-  ],
+  // No road tiles on the live map -- the "existing roads" strip along
+  // the bottom-left last row read as a rendering glitch in practice
+  // (a plain grey stripe with no building on it, no explanation on
+  // screen) rather than a legible feature, so those 6 tiles are just
+  // ordinary buildable land now.
+  skipBelowZoneB: true,
 });
 
 export default map;

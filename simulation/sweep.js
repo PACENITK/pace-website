@@ -40,10 +40,9 @@ function baseMap() {
       { row: 1, col: 8 },
       { row: 10, col: 3 },
     ],
-    roadTiles: [
-      { row: 11, col: 0 }, { row: 11, col: 1 }, { row: 11, col: 2 },
-      { row: 11, col: 3 }, { row: 11, col: 4 }, { row: 11, col: 5 },
-    ],
+    // Mirrors data/map.js's live map exactly: no road tiles, asymmetric
+    // 3-row flood band.
+    skipBelowZoneB: true,
   });
 }
 

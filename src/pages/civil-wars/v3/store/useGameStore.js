@@ -12,6 +12,7 @@ import {
   twists,
   map,
 } from "../engine.js";
+import { floodExtras, evaluatePlacement } from "./evaluatePlacement.js";
 
 function tileKey(r, c) {
   return `${r},${c}`;
@@ -30,34 +31,60 @@ function randomTreasureTile() {
   return tileKey(Math.floor(Math.random() * map.height), Math.floor(Math.random() * map.width));
 }
 
-function floodExtras(state) {
-  return { extraSlums: state.extraSlums, damagedTiles: state.damagedTiles, pollutionSpillTiles: state.pollutionSpillTiles };
+function moveFee(buildingId) {
+  return buildingsById[buildingId].cost * config.moveCostRate;
 }
 
-// Shared by proposePlacement (mutating, via confirmPendingAction) and
-// previewPlacement (read-only, used while dragging) so the drop-preview
-// highlight can never drift from what actually happens on confirm.
-function evaluatePlacement(buildingId, row, col, state) {
-  const { placed, cash, slumUpgraded, residentialDemandMultiplier } = state;
-  const key = tileKey(row, col);
-  if (placed[key]) return { ok: false, reason: "That tile already has a building" };
-  if (state.extraSlums && state.extraSlums[key]) return { ok: false, reason: "tile not buildable" };
-  const tileType = map.tiles[row][col].type;
-  const stats = computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier, floodExtras(state));
+// Shared by proposeMove (mutating) and previewMove (read-only, for the
+// drag-style drop preview while a move is in progress). Reuses
+// canPlace() exactly like evaluatePlacement does, but against the
+// board with the building already picked up off its origin tile --
+// so a hydro station moving next to a *different* dam, or a dam
+// moving to a new river tile, is checked against the board it would
+// actually land on, not the one it's leaving. Affordability is
+// checked separately against the 10% move fee, not canPlace's own
+// full-cost gate (ctx.cash is set to Infinity so that gate never
+// fires here).
+function evaluateMove(buildingId, fromRow, fromCol, toRow, toCol, state) {
+  const fromKey = tileKey(fromRow, fromCol);
+  const toKey = tileKey(toRow, toCol);
+  if (fromKey === toKey) return { ok: false, reason: "pick a different tile to move to" };
+  if (state.damagedTiles[fromKey]) return { ok: false, reason: "repair this building before moving it" };
+
+  const placedWithoutSource = { ...state.placed };
+  delete placedWithoutSource[fromKey];
+  if (placedWithoutSource[toKey]) return { ok: false, reason: "That tile already has a building" };
+  if (state.extraSlums && state.extraSlums[toKey]) return { ok: false, reason: "tile not buildable" };
+
+  const tileType = map.tiles[toRow][toCol].type;
+  const stats = computeCityStats(
+    map,
+    placedWithoutSource,
+    state.slumUpgraded,
+    config,
+    state.residentialDemandMultiplier,
+    floodExtras(state)
+  );
   const ctx = {
     tile: { type: tileType, buildable: isBuildable(tileType) },
-    cash,
-    hasService: (svc) => Object.values(placed).some((id) => buildingsById[id].serves === svc),
-    countById: (id) => Object.values(placed).filter((v) => v === id).length,
-    transportCount: Object.values(placed).filter((id) => buildingsById[id].category === CATEGORY.TRANSPORT).length,
+    cash: Infinity,
+    hasService: (svc) => Object.values(placedWithoutSource).some((id) => buildingsById[id].serves === svc),
+    countById: (id) => Object.values(placedWithoutSource).filter((v) => v === id).length,
+    transportCount: Object.values(placedWithoutSource).filter((id) => buildingsById[id].category === CATEGORY.TRANSPORT)
+      .length,
     popInRadius: (radius) =>
       Object.values(stats.tileStats).reduce(
-        (sum, t) => (t.pop > 0 && chebyshev(row, col, t.row, t.col) <= radius ? sum + t.pop : sum),
+        (sum, t) => (t.pop > 0 && chebyshev(toRow, toCol, t.row, t.col) <= radius ? sum + t.pop : sum),
         0
       ),
-    hasAdjacentDamWithCapacity: hasAdjacentDamWithCapacity(row, col, placed, config, chebyshev),
+    hasAdjacentDamWithCapacity: hasAdjacentDamWithCapacity(toRow, toCol, placedWithoutSource, config, chebyshev),
   };
-  return canPlace(buildingId, ctx);
+  const result = canPlace(buildingId, ctx);
+  if (!result.ok) return result;
+
+  const fee = moveFee(buildingId);
+  if (state.cash < fee) return { ok: false, reason: "insufficient cash for the move fee" };
+  return { ok: true, fee };
 }
 
 // Twist order and the treasure tile are drawn once here, the same way
@@ -83,15 +110,21 @@ function initialState() {
     twistLog: [],
     cumulativeScoreAdjustment: 0,
     selectedBuilding: null,
+    // A building picked up off the board (click a placed building, not
+    // the palette) and awaiting a destination tile -- see beginMove().
+    // Mutually exclusive with selectedBuilding: starting one clears the
+    // other.
+    moveFrom: null,
     hoveredTile: null,
     activeModal: null,
     lastError: null,
-    // pendingAction: a placement/rehouse/repair proposed by a click or
-    // drop, awaiting the confirmation modal -- nothing here has touched
-    // cash or the board yet. undoable: the most recently *confirmed*
-    // action, reversible for a 5s window (UndoBanner owns the timer and
-    // calls clearUndoable() when it lapses) -- a safety net for a
-    // fast-paced in-person event where a mis-tap costs real budget.
+    // pendingAction: a placement/rehouse/repair/move proposed by a click
+    // or drop, awaiting the confirmation modal -- nothing here has
+    // touched cash or the board yet. undoable: the most recently
+    // *confirmed* action, reversible for a 5s window (UndoBanner owns
+    // the timer and calls clearUndoable() when it lapses) -- a safety
+    // net for a fast-paced in-person event where a mis-tap costs real
+    // budget.
     pendingAction: null,
     undoable: null,
   };
@@ -103,12 +136,13 @@ const useGameStore = create((set, get) => ({
   selectBuilding: (id) =>
     set((state) => ({
       selectedBuilding: state.selectedBuilding === id ? null : id,
+      moveFrom: null,
       lastError: null,
     })),
 
   // Always selects (never toggles) -- used by the palette's drag start so
   // grabbing a building for a drag never accidentally deselects it.
-  beginDrag: (id) => set({ selectedBuilding: id, lastError: null }),
+  beginDrag: (id) => set({ selectedBuilding: id, moveFrom: null, lastError: null }),
 
   hoverTile: (key) => set({ hoveredTile: key }),
   clearHover: () => set({ hoveredTile: null }),
@@ -120,6 +154,55 @@ const useGameStore = create((set, get) => ({
     const state = get();
     if (!state.selectedBuilding) return null;
     return evaluatePlacement(state.selectedBuilding, row, col, state);
+  },
+
+  // Picks up an already-placed building for relocation -- click a tile
+  // that has a building (and no palette building is selected) to start
+  // a move; the next tile click proposes moving it there. Clicking the
+  // same source tile again cancels (see CityGridV3's handleTileClick).
+  beginMove: (row, col) => {
+    const state = get();
+    const key = tileKey(row, col);
+    const buildingId = state.placed[key];
+    if (!buildingId) return;
+    if (state.damagedTiles[key]) {
+      set({ lastError: "Repair this building before moving it" });
+      return;
+    }
+    set({ moveFrom: { row, col, buildingId }, selectedBuilding: null, lastError: null });
+  },
+
+  cancelMove: () => set({ moveFrom: null, lastError: null }),
+
+  // Read-only counterpart to evaluateMove, for the live drop preview
+  // while a move is in progress -- same idea as previewPlacement.
+  previewMove: (row, col) => {
+    const state = get();
+    if (!state.moveFrom) return null;
+    return evaluateMove(state.moveFrom.buildingId, state.moveFrom.row, state.moveFrom.col, row, col, state);
+  },
+
+  proposeMove: (row, col) => {
+    const state = get();
+    const { moveFrom } = state;
+    if (!moveFrom) return;
+    const result = evaluateMove(moveFrom.buildingId, moveFrom.row, moveFrom.col, row, col, state);
+    if (!result.ok) {
+      set({ lastError: result.reason });
+      return;
+    }
+    set({
+      pendingAction: {
+        type: "move",
+        fromRow: moveFrom.row,
+        fromCol: moveFrom.col,
+        toRow: row,
+        toCol: col,
+        buildingId: moveFrom.buildingId,
+        fee: result.fee,
+      },
+      lastError: null,
+    });
   },
 
   // Validates a placement (same `ctx` shape buildings.js's canPlace()
@@ -224,6 +307,26 @@ const useGameStore = create((set, get) => ({
         lastError: null,
         undoable: { type: "repair", row, col, refund: entry.repairCost, repairEntry: entry },
       });
+    } else if (pendingAction.type === "move") {
+      const { fromRow, fromCol, toRow, toCol, buildingId } = pendingAction;
+      const result = evaluateMove(buildingId, fromRow, fromCol, toRow, toCol, state);
+      if (!result.ok) {
+        set({ pendingAction: null, moveFrom: null, lastError: result.reason });
+        return;
+      }
+      const fromKey = tileKey(fromRow, fromCol);
+      const toKey = tileKey(toRow, toCol);
+      const nextPlaced = { ...state.placed };
+      delete nextPlaced[fromKey];
+      nextPlaced[toKey] = buildingId;
+      set({
+        placed: nextPlaced,
+        cash: state.cash - result.fee,
+        moveFrom: null,
+        pendingAction: null,
+        lastError: null,
+        undoable: { type: "move", fromRow, fromCol, toRow, toCol, buildingId, refund: result.fee },
+      });
     }
   },
 
@@ -252,6 +355,13 @@ const useGameStore = create((set, get) => ({
         cash: state.cash + undoable.refund,
         undoable: null,
       });
+    } else if (undoable.type === "move") {
+      const fromKey = tileKey(undoable.fromRow, undoable.fromCol);
+      const toKey = tileKey(undoable.toRow, undoable.toCol);
+      const nextPlaced = { ...state.placed };
+      delete nextPlaced[toKey];
+      nextPlaced[fromKey] = undoable.buildingId;
+      set({ placed: nextPlaced, cash: state.cash + undoable.refund, undoable: null });
     }
   },
 

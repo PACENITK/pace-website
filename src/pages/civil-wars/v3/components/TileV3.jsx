@@ -13,6 +13,15 @@ const TILE_CLASS = {
   colony: "cw3-tile--colony",
 };
 
+// Types with their own dedicated art (TILE_ART) that must stay visible
+// even when the tile is also flagged lowLying -- a flooded slum is
+// still a slum, and swapping in the generic marshy-ground art made it
+// unreadable ("slum overlapping with low-lying area"). The lowLying
+// tint (.cw3-tile--lowlying::after) still layers on top regardless, so
+// the flood-risk signal isn't lost, it's just an overlay instead of a
+// full art replacement.
+const KEEP_OWN_ART_WHEN_LOWLYING = new Set(["slum", "colony"]);
+
 // Renders only what has to stay clipped to this one tile's box (art/icon,
 // service pips, slum badge). Anything that needs to visually escape a
 // single tile -- the radius ghost, drop-validity chips, the hover
@@ -27,6 +36,7 @@ function TileV3({
   previewBuildingId,
   tileStat,
   upgraded,
+  isMoveSource,
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -37,7 +47,8 @@ function TileV3({
   const BuildingIcon = shownBuildingId ? BUILDING_ICON[shownBuildingId] : null;
   const buildingArt = shownBuildingId ? BUILDING_ART[shownBuildingId] : null;
   const hasDemand = !!tileStat && tileStat.pop > 0;
-  const tileArt = tile.lowLying ? LOWLYING_ART : TILE_ART[tile.type];
+  const tileArt =
+    tile.lowLying && !KEEP_OWN_ART_WHEN_LOWLYING.has(tile.type) ? LOWLYING_ART : TILE_ART[tile.type];
   const isPreview = !buildingId && !!previewBuildingId;
 
   const classes = [
@@ -46,6 +57,7 @@ function TileV3({
     tile.lowLying ? "cw3-tile--lowlying" : "",
     tileStat && tileStat.pollution ? "cw3-tile--polluted" : "",
     tileStat && tileStat.sewageNuisance ? "cw3-tile--sewage-nuisance" : "",
+    isMoveSource ? "cw3-tile--move-source" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -115,6 +127,7 @@ TileV3.propTypes = {
   previewBuildingId: PropTypes.string,
   tileStat: PropTypes.object,
   upgraded: PropTypes.bool,
+  isMoveSource: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   onMouseEnter: PropTypes.func.isRequired,
   onMouseLeave: PropTypes.func.isRequired,
