@@ -5,7 +5,12 @@
 // these exact files server-side too, so validation never drifts
 // between what the frontend previews and what gets authoritatively
 // scored.
-export { default as buildingsById, canPlace, CATEGORY } from "../../../../simulation/engine/buildings.js";
+export {
+  default as buildingsById,
+  canPlace,
+  CATEGORY,
+  hasAdjacentDamWithCapacity,
+} from "../../../../simulation/engine/buildings.js";
 export { default as tileTypes, SERVICES, effectiveSettlement, isBuildable } from "../../../../simulation/engine/tileTypes.js";
 export { default as config } from "../../../../simulation/engine/config.js";
 export { computeCityStats } from "../../../../simulation/engine/score.js";

@@ -30,7 +30,7 @@ import {
 } from "@phosphor-icons/react";
 
 export const BUILDING_ICON = {
-  power_plant: Lightning,
+  hydro_station: Lightning,
   water_tank: Drop,
   water_treatment: DropHalf,
   hospital: FirstAidKit,

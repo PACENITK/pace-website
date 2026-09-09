@@ -1,9 +1,17 @@
-// Hand-authored 16x12 grid (Part B): a river band with a low-lying
-// buffer on each side, a short existing-road segment, 4 slum tiles (2
-// of them on the low-lying band, per "two of the four slums sit on
-// low-lying land"), and 2 colony tiles. Everything else is empty/
-// buildable -- 192 - 16 (river) - 6 (road) - 4 (slum) - 2 (colony) =
-// 164 buildable tiles, matching "roughly 160."
+import config from "../engine/config.js";
+
+// Hand-authored 16x12 grid (Part B): a river band with graded flood
+// zones on each side (v4 Part C: Zone A at +-1 row = Severe, Zone B at
+// +-2 rows = Moderate -- 16 cols x 2 rows each = 32 tiles per zone), a
+// short existing-road segment, 4 slum tiles (2 of them in a flood
+// zone, per "two of the four slums sit on low-lying land"), and 2
+// colony tiles. Everything else is empty/buildable -- 192 - 16 (river)
+// - 6 (road) - 4 (slum) - 2 (colony) = 164 buildable tiles, matching
+// "roughly 160."
+//
+// `lowLying` is kept as a plain derived boolean (floodZone !== null)
+// for any consumer that only cares "is this tile flood-risk at all"
+// (existing UI/CSS) without needing the graded distinction.
 //
 // buildMap() is parametric so sweep.js can generate proportionally
 // similar maps at other grid sizes (Part L's 12x9/15x10 alternatives)
@@ -12,25 +20,35 @@ export function buildMap({ width, height, slumTiles, lowlandSlumKeys, colonyTile
   const tiles = [];
   for (let r = 0; r < height; r++) {
     const row = [];
-    for (let c = 0; c < width; c++) row.push({ type: "empty", lowLying: false });
+    for (let c = 0; c < width; c++) row.push({ type: "empty", lowLying: false, floodZone: null });
     tiles.push(row);
   }
 
-  for (let c = 0; c < width; c++) tiles[riverRow][c] = { type: "river", lowLying: false };
+  for (let c = 0; c < width; c++) tiles[riverRow][c] = { type: "river", lowLying: false, floodZone: null };
 
-  for (let c = 0; c < width; c++) {
-    if (riverRow - 1 >= 0 && tiles[riverRow - 1][c].type === "empty") tiles[riverRow - 1][c].lowLying = true;
-    if (riverRow + 1 < height && tiles[riverRow + 1][c].type === "empty") tiles[riverRow + 1][c].lowLying = true;
+  function setZone(r, zone) {
+    if (r < 0 || r >= height) return;
+    for (let c = 0; c < width; c++) {
+      if (tiles[r][c].type === "empty") {
+        tiles[r][c].floodZone = zone;
+        tiles[r][c].lowLying = true;
+      }
+    }
   }
+  setZone(riverRow - config.floodZoneARows, "A");
+  setZone(riverRow + config.floodZoneARows, "A");
+  setZone(riverRow - config.floodZoneBRows, "B");
+  setZone(riverRow + config.floodZoneBRows, "B");
 
   roadTiles.forEach(({ row, col }) => {
-    tiles[row][col] = { type: "road", lowLying: false };
+    tiles[row][col] = { type: "road", lowLying: false, floodZone: null };
   });
   slumTiles.forEach(({ row, col }) => {
-    tiles[row][col] = { type: "slum", lowLying: lowlandSlumKeys.has(`${row},${col}`) };
+    const inZone = lowlandSlumKeys.has(`${row},${col}`);
+    tiles[row][col] = { type: "slum", lowLying: inZone, floodZone: inZone ? "A" : null };
   });
   colonyTiles.forEach(({ row, col }) => {
-    tiles[row][col] = { type: "colony", lowLying: false };
+    tiles[row][col] = { type: "colony", lowLying: false, floodZone: null };
   });
 
   const riverPath = [];

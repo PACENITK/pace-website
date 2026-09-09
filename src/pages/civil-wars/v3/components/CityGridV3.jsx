@@ -86,6 +86,8 @@ function CityGridV3() {
   const clearHover = useGameStore((s) => s.clearHover);
   const proposePlacement = useGameStore((s) => s.proposePlacement);
   const proposeRehouse = useGameStore((s) => s.proposeRehouse);
+  const proposeRepair = useGameStore((s) => s.proposeRepair);
+  const damagedTiles = useGameStore((s) => s.damagedTiles);
   const previewPlacement = useGameStore((s) => s.previewPlacement);
   const stats = useCityStats();
 
@@ -125,6 +127,10 @@ function CityGridV3() {
     const key = `${row},${col}`;
     const type = map.tiles[row][col].type;
 
+    if (!selectedBuilding && damagedTiles[key]) {
+      proposeRepair(row, col);
+      return;
+    }
     if (!selectedBuilding && type === "slum" && !slumUpgraded.has(key)) {
       proposeRehouse(row, col);
       return;

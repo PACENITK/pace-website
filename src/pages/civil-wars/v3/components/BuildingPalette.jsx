@@ -1,27 +1,48 @@
-import React, { useMemo } from "react";
-import { CaretDown, CaretLeft, CaretRight, LockSimple, HandGrabbing, DotsSixVertical, TrendUp } from "@phosphor-icons/react";
+import React, { useMemo, useState } from "react";
+import { CaretDown, CaretLeft, CaretRight, HandGrabbing, DotsSixVertical, TrendUp } from "@phosphor-icons/react";
 import useGameStore from "../store/useGameStore.js";
 import { buildingsById, CATEGORY, config } from "../engine.js";
 import { BUILDING_ICON } from "../data/buildingMeta.js";
 import { formatBuildingNote, fmtCr } from "../format.js";
 
-// Tiered visibility per rules.md Part L's own suggestion: "showing only
-// Essentials and Residential in Year 0, unlocking Economy and Transport
-// at Year 1" -- extended here to Protection/Industry too, so a
-// first-time team isn't choosing from all 26 buildings on turn one.
-const CATEGORY_ORDER = [
-  { key: CATEGORY.ESSENTIAL, label: "Essentials", unlockYear: 0 },
-  { key: CATEGORY.RESIDENTIAL, label: "Residential", unlockYear: 0 },
-  { key: CATEGORY.PROTECTION, label: "Protection", unlockYear: 1 },
-  { key: CATEGORY.TRANSPORT, label: "Transport", unlockYear: 1 },
-  { key: CATEGORY.ECONOMY, label: "Economy", unlockYear: 1 },
-  { key: CATEGORY.INDUSTRY, label: "Industry", unlockYear: 1 },
-];
+// v4: nothing is year-gated anymore -- 22 buildings is a lot to scan
+// on turn one, but gating it behind an unlock-year rule blocks a
+// genuinely good early move (an early railway pays back by Year 5) for
+// a UI problem, not a rules one. Two tabs instead: "Essentials" is
+// exactly the survival set (everything needed to meet the mandatory
+// floor and serve the inherited city), "Economy" is the rest -- city-
+// wide transport and every commercial/industry building, none of
+// which are sensibly affordable or usable before a team has a city to
+// grow from anyway.
+const TAB_CATEGORY_ORDER = {
+  essentials: [
+    { key: CATEGORY.PROTECTION, label: "Protection" },
+    { key: CATEGORY.ESSENTIAL, label: "Essentials" },
+    { key: CATEGORY.RESIDENTIAL, label: "Residential" },
+  ],
+  economy: [
+    { key: CATEGORY.TRANSPORT, label: "Transport" },
+    { key: CATEGORY.ECONOMY, label: "Economy" },
+    { key: CATEGORY.INDUSTRY, label: "Industry" },
+  ],
+};
+
+// bus_stand is the one Transport building that belongs in Essentials
+// (every other essential-service building needs it as a prerequisite
+// chain root); railway/metro/airport are city-scale investments that
+// belong with the rest of Economy.
+function tabFor(def) {
+  if (def.category === CATEGORY.TRANSPORT) return def.id === "bus_stand" ? "essentials" : "economy";
+  if (def.category === CATEGORY.ECONOMY || def.category === CATEGORY.INDUSTRY) return "economy";
+  return "essentials";
+}
 
 const buildingsByCategory = Object.values(buildingsById).reduce((acc, def) => {
   (acc[def.category] ||= []).push(def);
   return acc;
 }, {});
+const essentialsBusStand = [buildingsById.bus_stand];
+const economyTransport = Object.values(buildingsById).filter((d) => d.category === CATEGORY.TRANSPORT && d.id !== "bus_stand");
 
 // The treasury card's 4-bucket spend breakdown -- folds Protection into
 // Essentials (both are city infrastructure) and Industry into Economy
@@ -49,21 +70,19 @@ function useTreasury(placed) {
   }, [placed]);
 }
 
-function BuildingCard({ def, cash, locked, selectedBuilding, onSelect, onBeginDrag }) {
+function BuildingCard({ def, cash, selectedBuilding, onSelect, onBeginDrag }) {
   const Icon = BUILDING_ICON[def.id];
   const affordable = cash >= def.cost;
-  const dim = locked || !affordable;
+  const dim = !affordable;
   const classes = [
     "cw3-card",
-    dim ? "cw3-card--dim" : "",
-    !affordable && !locked ? "cw3-card--unaffordable" : "",
-    locked ? "cw3-card--locked" : "",
+    dim ? "cw3-card--dim cw3-card--unaffordable" : "",
     selectedBuilding === def.id ? "cw3-card--selected" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
-  const note = locked ? "Unlocks Year 1" : !affordable ? `Short ₹${fmtCr(def.cost - cash)} Cr` : formatBuildingNote(def);
+  const note = !affordable ? `Short ₹${fmtCr(def.cost - cash)} Cr` : formatBuildingNote(def);
 
   return (
     <button
@@ -85,21 +104,15 @@ function BuildingCard({ def, cash, locked, selectedBuilding, onSelect, onBeginDr
       <span className="cw3-card-thumb">{Icon && <Icon size={17} weight="duotone" />}</span>
       <span className="cw3-card-info">
         <span className="cw3-card-name">{def.name}</span>
-        <span className={`cw3-card-note${!locked && !affordable ? " cw3-card-note--rust" : ""}`}>{note}</span>
+        <span className={`cw3-card-note${!affordable ? " cw3-card-note--rust" : ""}`}>{note}</span>
       </span>
-      <span
-        className={`cw3-card-cost${!locked && !affordable ? " cw3-card-cost--rust" : ""}${
-          locked ? " cw3-card-cost--locked" : ""
-        }`}
-      >
-        ₹{fmtCr(def.cost)} Cr
-      </span>
+      <span className={`cw3-card-cost${!affordable ? " cw3-card-cost--rust" : ""}`}>₹{fmtCr(def.cost)} Cr</span>
     </button>
   );
 }
 
 function BuildingPalette({ collapsed, onToggleCollapse }) {
-  const year = useGameStore((s) => s.year);
+  const [tab, setTab] = useState("essentials");
   const cash = useGameStore((s) => s.cash);
   const placed = useGameStore((s) => s.placed);
   const selectedBuilding = useGameStore((s) => s.selectedBuilding);
@@ -171,13 +184,29 @@ function BuildingPalette({ collapsed, onToggleCollapse }) {
           >
             <CaretLeft size={12} weight="duotone" />
           </button>
-          <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-[color:var(--game-mute)] flex-1">
-            Building palette
-          </span>
           <span className="flex items-center gap-1 text-[9.5px] text-[color:var(--game-rust)] shrink-0">
             <HandGrabbing size={13} weight="duotone" />
             drag to place
           </span>
+        </div>
+        <div className="sticky top-[33px] z-[2] flex bg-[color:var(--game-paper)] border-b border-[color:var(--game-rule)]">
+          {[
+            { key: "essentials", label: "Essentials" },
+            { key: "economy", label: "Economy" },
+          ].map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              className={`flex-1 py-2 text-[10px] font-bold tracking-[0.1em] uppercase cursor-pointer border-b-2 -mb-px transition-colors ${
+                tab === t.key
+                  ? "border-[color:var(--game-slate)] text-[color:var(--game-ink)]"
+                  : "border-transparent text-[color:var(--game-mute)] hover:text-[color:var(--game-ink)]"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
         {lastError && (
           <div className="mx-2.5 mt-2 px-2 py-1.5 bg-[#f8ecea] border border-[#d9a9a4] rounded-sm text-[11px] leading-[1.35] text-[#8f1e18]">
@@ -186,31 +215,23 @@ function BuildingPalette({ collapsed, onToggleCollapse }) {
         )}
 
         <div className="px-2.5 pt-1 pb-3 flex flex-col gap-0.5">
-          {CATEGORY_ORDER.map(({ key, label, unlockYear }) => {
-            const locked = year < unlockYear;
-            const defs = buildingsByCategory[key];
+          {TAB_CATEGORY_ORDER[tab].map(({ key, label }) => {
+            const defs = key === CATEGORY.TRANSPORT ? (tab === "essentials" ? essentialsBusStand : economyTransport) : buildingsByCategory[key];
             return (
               <React.Fragment key={key}>
-                <div className={`flex items-center gap-2 pt-[13px] pb-[5px] px-0.5 ${locked ? "opacity-70" : ""}`}>
+                <div className="flex items-center gap-2 pt-[13px] pb-[5px] px-0.5">
                   <span className="text-[12px] text-[color:var(--game-mute)] shrink-0 flex">
-                    {locked ? <LockSimple size={12} weight="duotone" /> : <CaretDown size={12} weight="duotone" />}
+                    <CaretDown size={12} weight="duotone" />
                   </span>
                   <span className="text-[11px] font-bold tracking-[0.1em] uppercase">{label}</span>
                   <span className="flex-1 h-px bg-[color:var(--game-rule)]" />
-                  {locked ? (
-                    <span className="px-1.5 py-0.5 bg-[#eae6da] border border-[color:var(--game-rule)] rounded-sm text-[8.5px] font-semibold tracking-[0.1em] uppercase text-[color:var(--game-mute)]">
-                      Unlocks Y1
-                    </span>
-                  ) : (
-                    <span className="text-[9.5px] text-[#a09684]">{defs.length}</span>
-                  )}
+                  <span className="text-[9.5px] text-[#a09684]">{defs.length}</span>
                 </div>
                 {defs.map((def) => (
                   <BuildingCard
                     key={def.id}
                     def={def}
                     cash={cash}
-                    locked={locked}
                     selectedBuilding={selectedBuilding}
                     onSelect={selectBuilding}
                     onBeginDrag={beginDrag}

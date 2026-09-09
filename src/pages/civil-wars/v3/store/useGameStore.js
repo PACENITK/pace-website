@@ -8,6 +8,7 @@ import {
   config,
   computeCityStats,
   chebyshev,
+  hasAdjacentDamWithCapacity,
   twists,
   map,
 } from "../engine.js";
@@ -29,6 +30,10 @@ function randomTreasureTile() {
   return tileKey(Math.floor(Math.random() * map.height), Math.floor(Math.random() * map.width));
 }
 
+function floodExtras(state) {
+  return { extraSlums: state.extraSlums, damagedTiles: state.damagedTiles, pollutionSpillTiles: state.pollutionSpillTiles };
+}
+
 // Shared by proposePlacement (mutating, via confirmPendingAction) and
 // previewPlacement (read-only, used while dragging) so the drop-preview
 // highlight can never drift from what actually happens on confirm.
@@ -36,8 +41,9 @@ function evaluatePlacement(buildingId, row, col, state) {
   const { placed, cash, slumUpgraded, residentialDemandMultiplier } = state;
   const key = tileKey(row, col);
   if (placed[key]) return { ok: false, reason: "That tile already has a building" };
+  if (state.extraSlums && state.extraSlums[key]) return { ok: false, reason: "tile not buildable" };
   const tileType = map.tiles[row][col].type;
-  const stats = computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier);
+  const stats = computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier, floodExtras(state));
   const ctx = {
     tile: { type: tileType, buildable: isBuildable(tileType) },
     cash,
@@ -49,6 +55,7 @@ function evaluatePlacement(buildingId, row, col, state) {
         (sum, t) => (t.pop > 0 && chebyshev(row, col, t.row, t.col) <= radius ? sum + t.pop : sum),
         0
       ),
+    hasAdjacentDamWithCapacity: hasAdjacentDamWithCapacity(row, col, placed, config, chebyshev),
   };
   return canPlace(buildingId, ctx);
 }
@@ -64,7 +71,12 @@ function initialState() {
     placed: {},
     slumUpgraded: new Set(),
     residentialDemandMultiplier: 1,
-    immigrationOverflow: 0,
+    // v4: new slum tiles from immigration ("r,c" -> {pop, demandUnits}),
+    // tiles put offline by a flood ("r,c" -> {repairCost, id, zone}),
+    // and industry tiles with a permanent flood pollution spill.
+    extraSlums: {},
+    damagedTiles: {},
+    pollutionSpillTiles: new Set(),
     year: 0,
     twistOrder: shuffle(["flood", "pandemic", "immigration"]),
     treasureTile: randomTreasureTile(),
@@ -74,12 +86,12 @@ function initialState() {
     hoveredTile: null,
     activeModal: null,
     lastError: null,
-    // pendingAction: a placement/rehouse proposed by a click or drop,
-    // awaiting the confirmation modal -- nothing here has touched cash
-    // or the board yet. undoable: the most recently *confirmed* action,
-    // reversible for a 5s window (UndoBanner owns the timer and calls
-    // clearUndoable() when it lapses) -- a safety net for a fast-paced
-    // in-person event where a mis-tap costs real budget.
+    // pendingAction: a placement/rehouse/repair proposed by a click or
+    // drop, awaiting the confirmation modal -- nothing here has touched
+    // cash or the board yet. undoable: the most recently *confirmed*
+    // action, reversible for a 5s window (UndoBanner owns the timer and
+    // calls clearUndoable() when it lapses) -- a safety net for a
+    // fast-paced in-person event where a mis-tap costs real budget.
     pendingAction: null,
     undoable: null,
   };
@@ -138,13 +150,26 @@ const useGameStore = create((set, get) => ({
     set({ pendingAction: { type: "rehouse", row, col }, lastError: null });
   },
 
+  // v4: pay a flood-damaged tile's repair cost to bring it back online.
+  proposeRepair: (row, col) => {
+    const state = get();
+    const key = tileKey(row, col);
+    const entry = state.damagedTiles[key];
+    if (!entry) return;
+    if (state.cash < entry.repairCost) {
+      set({ lastError: "Not enough cash to repair this" });
+      return;
+    }
+    set({ pendingAction: { type: "repair", row, col }, lastError: null });
+  },
+
   cancelPendingAction: () => set({ pendingAction: null }),
 
-  // Commits whatever proposePlacement/proposeRehouse staged, and opens
-  // the 5s undo window. Re-validates placement (board state can't have
-  // changed since propose in this single-player client, but this keeps
-  // the invariant that nothing reaches `placed`/`cash` without passing
-  // canPlace() immediately beforehand).
+  // Commits whatever proposePlacement/proposeRehouse/proposeRepair
+  // staged, and opens the 5s undo window. Re-validates (board state
+  // can't have changed since propose in this single-player client, but
+  // this keeps the invariant that nothing reaches persisted state
+  // without passing its check immediately beforehand).
   confirmPendingAction: () => {
     const state = get();
     const { pendingAction } = state;
@@ -182,6 +207,23 @@ const useGameStore = create((set, get) => ({
         lastError: null,
         undoable: { type: "rehouse", row, col, refund: config.slumUpgradeCost },
       });
+    } else if (pendingAction.type === "repair") {
+      const { row, col } = pendingAction;
+      const key = tileKey(row, col);
+      const entry = state.damagedTiles[key];
+      if (!entry || state.cash < entry.repairCost) {
+        set({ pendingAction: null });
+        return;
+      }
+      const nextDamaged = { ...state.damagedTiles };
+      delete nextDamaged[key];
+      set({
+        damagedTiles: nextDamaged,
+        cash: state.cash - entry.repairCost,
+        pendingAction: null,
+        lastError: null,
+        undoable: { type: "repair", row, col, refund: entry.repairCost, repairEntry: entry },
+      });
     }
   },
 
@@ -203,6 +245,13 @@ const useGameStore = create((set, get) => ({
       const next = new Set(state.slumUpgraded);
       next.delete(key);
       set({ slumUpgraded: next, cash: state.cash + undoable.refund, undoable: null });
+    } else if (undoable.type === "repair") {
+      const key = tileKey(undoable.row, undoable.col);
+      set({
+        damagedTiles: { ...state.damagedTiles, [key]: undoable.repairEntry },
+        cash: state.cash + undoable.refund,
+        undoable: null,
+      });
     }
   },
 
@@ -217,7 +266,14 @@ const useGameStore = create((set, get) => ({
     const state = get();
     if (state.year >= 5) return;
     const nextYear = state.year + 1;
-    const stats = computeCityStats(state.map, state.placed, state.slumUpgraded, config, state.residentialDemandMultiplier);
+    const stats = computeCityStats(
+      state.map,
+      state.placed,
+      state.slumUpgraded,
+      config,
+      state.residentialDemandMultiplier,
+      floodExtras(state)
+    );
 
     let grossIncome = 0;
     Object.values(state.placed).forEach((id) => {
@@ -242,17 +298,23 @@ const useGameStore = create((set, get) => ({
     };
     const twistName = yearTwist[nextYear];
 
+    // v4 Part B: checked once, using the board exactly as Year 0 left
+    // it -- before this transition's own twist (if any) has touched
+    // anything. Independent of, and stacks with, whatever the twist
+    // itself does.
+    let floorResult = null;
+    if (nextYear === 1) {
+      floorResult = twists.checkMandatoryFloor(stats, state.placed);
+    }
+
     const mutable = {
       cash: state.cash,
       placed: { ...state.placed },
-      // applyPandemic() reads state.slumUpgraded.has(...) via
-      // computeCityStats -- omitting it here crashed any pandemic year
-      // with "Cannot read properties of undefined (reading 'has')".
-      // Caught by the backend port of this same function, which hit
-      // the identical bug against real integration tests.
       slumUpgraded: new Set(state.slumUpgraded),
+      extraSlums: { ...state.extraSlums },
+      damagedTiles: { ...state.damagedTiles },
+      pollutionSpillTiles: new Set(state.pollutionSpillTiles),
       residentialDemandMultiplier: state.residentialDemandMultiplier,
-      immigrationOverflow: state.immigrationOverflow,
     };
 
     let twistResult = null;
@@ -261,13 +323,12 @@ const useGameStore = create((set, get) => ({
     if (twistName === "flood") {
       twistResult = twists.applyFlood(mutable, state.map, config);
     } else if (twistName === "pandemic") {
-      twistResult = twists.applyPandemic(mutable, state.map, config);
+      twistResult = twists.applyOutbreak(mutable, state.map, config);
       incomeMultiplier = Math.min(incomeMultiplier, twistResult.incomeMultiplier);
       mutable.cash += twistResult.cashBonus;
-      scoreDelta -= twistResult.scorePenalty;
+      scoreDelta += twistResult.scoreDelta;
     } else if (twistName === "immigration") {
-      twistResult = twists.applyImmigration(mutable, config);
-      mutable.residentialDemandMultiplier = 1 + (mutable.immigrationOverflow || 0);
+      twistResult = twists.applyImmigrationSlums(mutable, state.map, config);
     } else if (twistName === "olympics") {
       twistResult = twists.evaluateOlympics(mutable, config);
       mutable.cash += twistResult.cashBonus;
@@ -277,20 +338,27 @@ const useGameStore = create((set, get) => ({
       mutable.cash += twistResult.cashGain;
     }
 
+    if (floorResult && !floorResult.met) {
+      scoreDelta -= config.mandatoryFloorScorePenalty;
+      incomeMultiplier = Math.min(incomeMultiplier, config.mandatoryFloorIncomeMultiplier);
+    }
+
     mutable.cash = Math.max(0, mutable.cash + grossIncome * incomeMultiplier);
 
     set({
       year: nextYear,
       cash: mutable.cash,
       placed: mutable.placed,
+      extraSlums: mutable.extraSlums,
+      damagedTiles: mutable.damagedTiles,
+      pollutionSpillTiles: mutable.pollutionSpillTiles,
       residentialDemandMultiplier: mutable.residentialDemandMultiplier,
-      immigrationOverflow: mutable.immigrationOverflow,
       cumulativeScoreAdjustment: state.cumulativeScoreAdjustment + scoreDelta,
       twistLog: [
         ...state.twistLog,
-        { year: nextYear, twist: twistName, result: twistResult, grossIncome, incomeMultiplier },
+        { year: nextYear, twist: twistName, result: twistResult, floorResult, grossIncome, incomeMultiplier },
       ],
-      activeModal: { type: "twist", twist: twistName, result: twistResult, year: nextYear },
+      activeModal: { type: "twist", twist: twistName, result: twistResult, floorResult, year: nextYear },
     });
   },
 
@@ -307,6 +375,7 @@ const useGameStore = create((set, get) => ({
       ...initialState(),
       ...checkpoint,
       slumUpgraded: new Set(checkpoint.slumUpgraded || []),
+      pollutionSpillTiles: new Set(checkpoint.pollutionSpillTiles || []),
     }),
 }));
 

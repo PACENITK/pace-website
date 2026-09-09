@@ -37,7 +37,9 @@ function UndoBanner() {
   const label =
     undoable.type === "place"
       ? `Placed ${buildingsById[undoable.buildingId].name} at ${colLabel(undoable.row, undoable.col)}`
-      : `Rehoused slum at ${colLabel(undoable.row, undoable.col)}`;
+      : undoable.type === "rehouse"
+      ? `Rehoused slum at ${colLabel(undoable.row, undoable.col)}`
+      : `Repaired ${colLabel(undoable.row, undoable.col)}`;
   const pct = Math.max(0, Math.min(100, (remaining / UNDO_MS) * 100));
 
   return (

@@ -13,6 +13,7 @@ function PlacementConfirmModal() {
   const confirmPendingAction = useGameStore((s) => s.confirmPendingAction);
   const cancelPendingAction = useGameStore((s) => s.cancelPendingAction);
   const cash = useGameStore((s) => s.cash);
+  const damagedTiles = useGameStore((s) => s.damagedTiles);
 
   useEffect(() => {
     if (!pendingAction) return undefined;
@@ -43,8 +44,10 @@ function PlacementConfirmModal() {
           >
             {pendingAction.type === "place" ? (
               <PlaceDetails pendingAction={pendingAction} cash={cash} />
-            ) : (
+            ) : pendingAction.type === "rehouse" ? (
               <RehouseDetails pendingAction={pendingAction} cash={cash} />
+            ) : (
+              <RepairDetails pendingAction={pendingAction} cash={cash} damagedTiles={damagedTiles} />
             )}
             <div className="flex gap-2.5 mt-5">
               <button
@@ -104,6 +107,27 @@ function RehouseDetails({ pendingAction, cash }) {
           Cost: <strong>₹{fmtCr(config.slumUpgradeCost)} Cr</strong>
         </p>
         <p>Cash after: ₹{fmtCr(cash - config.slumUpgradeCost)} Cr</p>
+      </div>
+    </>
+  );
+}
+
+function RepairDetails({ pendingAction, cash, damagedTiles }) {
+  const coord = colLabel(pendingAction.row, pendingAction.col);
+  const entry = damagedTiles[`${pendingAction.row},${pendingAction.col}`];
+  const repairCost = entry ? entry.repairCost : 0;
+  return (
+    <>
+      <div className="cw3-modal-year">Confirm repair</div>
+      <h2 className="cw3-modal-title">{entry && entry.id === "slum" ? "Restore slum" : "Repair building"}</h2>
+      <div className="cw3-modal-body">
+        <p>
+          Tile: <strong>{coord}</strong>
+        </p>
+        <p>
+          Cost: <strong>₹{fmtCr(repairCost)} Cr</strong>
+        </p>
+        <p>Cash after: ₹{fmtCr(cash - repairCost)} Cr</p>
       </div>
     </>
   );

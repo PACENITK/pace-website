@@ -43,17 +43,6 @@ const buildings = {
     requires: [],
   },
 
-  power_plant: {
-    id: "power_plant",
-    name: "Power plant",
-    category: CATEGORY.ESSENTIAL,
-    cost: 100,
-    yearly: -4,
-    serves: "power",
-    capacity: 15,
-    radius: 5,
-    requires: [],
-  },
   water_tank: {
     id: "water_tank",
     name: "Water tank",
@@ -152,15 +141,38 @@ const buildings = {
     radius: 2,
     requires: [],
   },
+  // v4 Part A: power is dam + hydro only. A dam itself supplies no
+  // power (serves is intentionally absent) -- it enables hydro
+  // stations built adjacent to it and protects a column span
+  // downstream (config.damProtectionSpan). More than one dam is
+  // allowed; the river is 16 columns wide and one dam covers 6, so a
+  // second dam is a real (sweepable) choice, not a formality.
   dam: {
     id: "dam",
     name: "Dam",
     category: CATEGORY.PROTECTION,
     cost: 100,
     yearly: -3,
-    radius: 4,
-    requires: ["power"],
+    requires: [],
     riverOnly: true,
+  },
+  hydro_station: {
+    id: "hydro_station",
+    name: "Hydro station",
+    category: CATEGORY.ESSENTIAL,
+    cost: 70,
+    yearly: -2,
+    serves: "power",
+    capacity: 20,
+    radius: 5,
+    // Handled specially in canPlace() below, not by the generic
+    // requires-string machinery: needs to know *which* dams exist and
+    // how many hydro stations are already attached to each (max 2 per
+    // dam), which a plain "X:N" count string can't express. No
+    // attachment is persisted anywhere -- both this check and flood
+    // protection re-derive "which dam" fresh from the board every
+    // time (see ctx.adjacentDamWithCapacity below and twists.js).
+    requires: ["adjacentDamWithCapacity"],
   },
 
   bus_stand: {
@@ -287,7 +299,10 @@ const buildings = {
 };
 
 // ctx: { tile: {type, buildable}, cash, hasService(svc), countById(id),
-//        transportCount, popInRadius(radius) }
+//        transportCount, popInRadius(radius), hasAdjacentDamWithCapacity }
+// hasAdjacentDamWithCapacity is precomputed by the caller (it needs the
+// candidate tile's own row/col, which canPlace itself is never given --
+// same reason popInRadius is a closure rather than a raw number).
 export function canPlace(buildingId, ctx) {
   const def = buildings[buildingId];
   if (!def) return { ok: false, reason: "unknown building" };
@@ -301,6 +316,9 @@ export function canPlace(buildingId, ctx) {
   for (const req of def.requires) {
     if (req === "power" && !ctx.hasService("power")) return { ok: false, reason: "requires power" };
     if (req === "water" && !ctx.hasService("water")) return { ok: false, reason: "requires water" };
+    if (req === "adjacentDamWithCapacity" && !ctx.hasAdjacentDamWithCapacity) {
+      return { ok: false, reason: "requires an adjacent dam with fewer than 2 hydro stations already" };
+    }
     if (req.startsWith("transport:")) {
       const n = Number(req.split(":")[1]);
       if (ctx.transportCount < n) return { ok: false, reason: "requires a transport building" };
@@ -316,6 +334,41 @@ export function canPlace(buildingId, ctx) {
     }
   }
   return { ok: true };
+}
+
+// Dam<->hydro relationship helpers, shared by canPlace's context builder
+// (evaluatePlacement in useGameStore.js / backend game/state.js) and
+// twists.js's flood protection check. Nothing about a hydro's dam is
+// ever persisted -- both call sites re-derive "which dam(s)" fresh from
+// `placed` and a chebyshev() function every time, same stateless
+// philosophy as the rest of this engine (score.js, allocate.js).
+export function findAdjacentDams(row, col, placed, chebyshev, radius) {
+  const dams = [];
+  for (const [key, id] of Object.entries(placed)) {
+    if (id !== "dam") continue;
+    const [dr, dc] = key.split(",").map(Number);
+    if (chebyshev(dr, dc, row, col) <= radius) dams.push({ row: dr, col: dc, key });
+  }
+  return dams;
+}
+
+export function countHydroAdjacentToDam(damRow, damCol, placed, chebyshev, radius) {
+  let count = 0;
+  for (const [key, id] of Object.entries(placed)) {
+    if (id !== "hydro_station") continue;
+    const [hr, hc] = key.split(",").map(Number);
+    if (chebyshev(damRow, damCol, hr, hc) <= radius) count += 1;
+  }
+  return count;
+}
+
+// True if at least one dam adjacent to (row,col) still has room for
+// another hydro station (max hydroMaxPerDam already attached).
+export function hasAdjacentDamWithCapacity(row, col, placed, config, chebyshev) {
+  const dams = findAdjacentDams(row, col, placed, chebyshev, config.hydroAdjacencyRadius);
+  return dams.some(
+    (dam) => countHydroAdjacentToDam(dam.row, dam.col, placed, chebyshev, config.hydroAdjacencyRadius) < config.hydroMaxPerDam
+  );
 }
 
 export default buildings;

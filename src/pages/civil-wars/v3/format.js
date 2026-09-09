@@ -23,7 +23,10 @@ export function formatBuildingNote(def) {
     return `houses ${def.populates.pop.toLocaleString("en-IN")}`;
   }
   if (def.category === "protection") {
-    return def.riverOnly ? "flood mitigation · river tiles only" : "flood mitigation";
+    return def.riverOnly ? "flood protection · river tiles only · enables hydro" : "flood mitigation";
+  }
+  if (def.id === "hydro_station") {
+    return `${SERVICE_LABEL.power} · capacity ${def.capacity} · needs a dam adjacent`;
   }
   if (def.serves) {
     const label = SERVICE_LABEL[def.serves];

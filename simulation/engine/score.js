@@ -7,24 +7,52 @@ function tileKey(r, c) {
 }
 
 // Static-snapshot scoring, Part I. Everything here is a pure function of
-// (map, placed, slumUpgraded, config) -- never accumulated -- and
+// (map, placed, slumUpgraded, config, ...) -- never accumulated -- and
 // excludes anything that depends on game history rather than the
 // current board: cash bonus and twist-specific bonuses/penalties
-// (pandemic, Olympics, flood) are added on top by simulate.js, since
-// those require knowing what happened across years, not just the
-// current tiles.
+// (outbreak, Olympics, flood) are added on top by simulate.js/
+// useGameStore.js/backend game/state.js, since those require knowing
+// what happened across years, not just the current tiles.
 //
-// residentialDemandMultiplier > 1 models immigration: population and
-// demand on player-built residential tiles rise above rated capacity
-// (rules.md Part H) while inherited slum/colony demand is untouched --
-// immigrants move into homes you built, not into the inherited city.
-export function computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier = 1) {
+// residentialDemandMultiplier > 1 models immigration overflow on
+// player-built homes (kept from v3 for that specific mechanic --
+// immigration itself is now new slum tiles, see the `flood` param
+// below, not a demand multiplier).
+//
+// `flood` (v4 addition, all optional, default = no flood damage yet):
+//   - extraSlums: { "r,c": {pop, demandUnits} } -- tiles immigration
+//     turned into new slums. These can't be represented by mutating
+//     the shared `map` singleton (mutating a module-level import would
+//     corrupt every other team/game using the same import), so they
+//     live entirely in per-team state and get merged in here instead.
+//   - damagedTiles: Set-like (has(key)) of tiles a flood put offline.
+//     A damaged tile's own demand can never be served (services cut)
+//     regardless of what's in range, and it's excluded from every
+//     "this building is functioning" computation elsewhere (serving
+//     others, pollution source, pollution waiver, sewage nuisance
+//     source) -- one consistent rule: damaged reads as "doesn't
+//     functionally exist right now," not "destroyed" (it still
+//     occupies its tile and still costs money to repair).
+//   - pollutionSpillTiles: Set-like of industry tiles with a permanent
+//     +1 pollutionRadius from a past flood spill (v4 Part D "extra").
+export function computeCityStats(
+  map,
+  placed,
+  slumUpgraded,
+  config,
+  residentialDemandMultiplier = 1,
+  flood = {}
+) {
   const { width, height, tiles } = map;
+  const extraSlums = flood.extraSlums || {};
+  const damagedTiles = flood.damagedTiles || new Set();
+  const pollutionSpillTiles = flood.pollutionSpillTiles || new Set();
+  const isDamaged = (key) => (damagedTiles.has ? damagedTiles.has(key) : !!damagedTiles[key]);
+  const isSpilled = (key) => (pollutionSpillTiles.has ? pollutionSpillTiles.has(key) : !!pollutionSpillTiles[key]);
 
-  const placedList = Object.entries(placed).map(([key, id]) => {
-    const [row, col] = key.split(",").map(Number);
-    return { key, row, col, id, def: buildingsById[id] };
-  });
+  const placedList = Object.entries(placed)
+    .map(([key, id]) => ({ key, row: Number(key.split(",")[0]), col: Number(key.split(",")[1]), id, def: buildingsById[id] }))
+    .filter((b) => !isDamaged(b.key)); // damaged buildings don't functionally exist right now
 
   const demandUnits = tiles.map((row) => row.map(() => 0));
   const pop = tiles.map((row) => row.map(() => 0));
@@ -39,6 +67,27 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
       isSlum[r][c] = settlement.isSlum;
     }
   }
+  Object.entries(extraSlums).forEach(([key, s]) => {
+    const [r, c] = key.split(",").map(Number);
+    demandUnits[r][c] = s.demandUnits;
+    pop[r][c] = s.pop;
+    isSlum[r][c] = true;
+  });
+  // placedList already excludes damaged buildings, so a damaged
+  // residential tile falls through to here with whatever the static
+  // map says for that tile (0 for ordinary "empty" ground) -- its
+  // population isn't destroyed, it's just not counted as a functioning
+  // residential building while offline. Re-added explicitly below so
+  // "population never destroyed" still holds for a damaged home.
+  Object.entries(placed)
+    .filter(([key]) => isDamaged(key))
+    .forEach(([key, id]) => {
+      const def = buildingsById[id];
+      if (def.category !== "residential") return;
+      const [r, c] = key.split(",").map(Number);
+      demandUnits[r][c] = def.populates.demandUnits * residentialDemandMultiplier;
+      pop[r][c] = def.populates.pop * residentialDemandMultiplier;
+    });
   placedList.forEach(({ row, col, def }) => {
     if (def.category === "residential") {
       demandUnits[row][col] = def.populates.demandUnits * residentialDemandMultiplier;
@@ -130,6 +179,7 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
   for (let r = 0; r < height; r++) {
     for (let c = 0; c < width; c++) {
       const key = tileKey(r, c);
+      const damaged = isDamaged(key);
       const demand = {};
       const served = {};
       let tilePoints = 0;
@@ -137,7 +187,10 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
 
       SERVICES.forEach((service) => {
         const d = demandUnits[r][c];
-        const s = Math.min(perService[service].served[r][c], d);
+        // A damaged tile's demand is permanently unserved while
+        // offline -- "services cut" -- regardless of what capacity
+        // would otherwise reach it.
+        const s = damaged ? 0 : Math.min(perService[service].served[r][c], d);
         demand[service] = d;
         served[service] = s;
         const unmet = Math.max(0, d - s);
@@ -161,6 +214,7 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
         type: tiles[r][c].type,
         pop: pop[r][c],
         isSlum: isSlum[r][c],
+        damaged,
         demand,
         served,
         pollution: false,
@@ -174,17 +228,18 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
     .filter((b) => b.def.serves === "environment")
     .map((b) => ({ row: b.row, col: b.col }));
   let pollutionCount = 0;
-  industryList.forEach(({ row, col, def }) => {
+  industryList.forEach(({ row, col, def, key }) => {
+    const effectiveRadius = def.pollutionRadius + (isSpilled(key) ? config.industryFloodPollutionSpillRadius : 0);
     for (let r = 0; r < height; r++) {
       for (let c = 0; c < width; c++) {
         if (pop[r][c] <= 0) continue;
-        if (chebyshev(row, col, r, c) > def.pollutionRadius) continue;
-        const key = tileKey(r, c);
-        if (tileStats[key].pollution) continue;
+        if (chebyshev(row, col, r, c) > effectiveRadius) continue;
+        const tKey = tileKey(r, c);
+        if (tileStats[tKey].pollution) continue;
         const waived = parkPositions.some((p) => chebyshev(p.row, p.col, r, c) <= 1);
         if (waived) continue;
-        tileStats[key].pollution = true;
-        tileStats[key].points -= config.pollutionPenaltyNoPark;
+        tileStats[tKey].pollution = true;
+        tileStats[tKey].points -= config.pollutionPenaltyNoPark;
         pollutionCount += 1;
       }
     }
@@ -225,7 +280,7 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
     for (let r = 0; r < height; r++) {
       for (let c = 0; c < width; c++) {
         totalDemand += demandUnits[r][c];
-        totalServed += Math.min(perService[service].served[r][c], demandUnits[r][c]);
+        totalServed += Math.min(tileStats[tileKey(r, c)].served[service], demandUnits[r][c]);
       }
     }
     coverage[service] = { served: totalServed, total: totalDemand, pct: totalDemand > 0 ? totalServed / totalDemand : 1 };
@@ -250,6 +305,11 @@ export function computeCityStats(map, placed, slumUpgraded, config, residentialD
     tileStats,
     coverage,
     contention,
+    // Raw per-service allocation results (served/servedBy/buildingUsed
+    // grids), exposed mainly for the outbreak twist's water-provenance
+    // check (which building's water reaches which tile) -- not needed
+    // for ordinary scoring/UI use, which should prefer tileStats.
+    perService,
     totalPop,
     fullyServedPop,
     breakdown: {

@@ -11,8 +11,16 @@ export default function useCityStats() {
   const placed = useGameStore((s) => s.placed);
   const slumUpgraded = useGameStore((s) => s.slumUpgraded);
   const residentialDemandMultiplier = useGameStore((s) => s.residentialDemandMultiplier);
+  const extraSlums = useGameStore((s) => s.extraSlums);
+  const damagedTiles = useGameStore((s) => s.damagedTiles);
+  const pollutionSpillTiles = useGameStore((s) => s.pollutionSpillTiles);
   return useMemo(
-    () => computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier),
-    [map, placed, slumUpgraded, residentialDemandMultiplier]
+    () =>
+      computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier, {
+        extraSlums,
+        damagedTiles,
+        pollutionSpillTiles,
+      }),
+    [map, placed, slumUpgraded, residentialDemandMultiplier, extraSlums, damagedTiles, pollutionSpillTiles]
   );
 }
