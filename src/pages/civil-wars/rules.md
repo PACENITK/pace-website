@@ -1,4 +1,4 @@
-# URBAN MAYHEM — v3
+# URBAN MAYHEM — v4
 
 **Build smart. Survive the unexpected.**
 
@@ -24,7 +24,7 @@ Round 2 of Civil Unleashed · Teams of 3–4 · Laptop-based · ~50 minutes
 
 **Five things will go wrong.** You don't know which or when. Keep money aside.
 
-**Look at the low-lying tiles now.** They're marked. That's where the flood will hit.
+**Look at the flood bands now.** The two rows hugging the river are marked Severe, the next two out are marked Moderate. That's where the flood will hit, and how hard.
 
 **A computer scores everything.** No judges.
 
@@ -38,11 +38,11 @@ A **16 × 12 grid** — 192 tiles.
 
 | Feature | Rule |
 |---|---|
-| **River** | Runs across the map. Not buildable. Dams go here and nowhere else. |
-| **Low-lying tiles** | Marked with a wave icon, beside the river. Buildable. This is where the flood hits. |
+| **River** | Runs across the map, 16 columns wide. Not buildable. Dams go here and nowhere else. |
+| **Flood zones** | Two graded bands beside the river, marked with a wave icon: **Zone A** (rows ±1, Severe) and **Zone B** (rows ±2, Moderate). Buildable. This is where the flood hits, and how hard. |
 | **Existing roads and railway** | Not buildable. |
 
-Roughly **160 buildable tiles**. You will not have money for all of them.
+Roughly **164 buildable tiles**. You will not have money for all of them.
 
 ---
 
@@ -62,9 +62,9 @@ Roughly **160 buildable tiles**. You will not have money for all of them.
 **Slums are scored harder:**
 - Every missing service costs **−10 per unit** instead of −5
 - A slum with no sanitation in range loses an extra **−50**
-- During a pandemic, slums count **double** toward the hospital requirement
+- During a waterborne outbreak, slums count **double** toward the hospital requirement
 
-**Two of the four slums sit on low-lying land.** When you weigh up a ₹100 Cr dam, you are deciding about 4,000 people, not a building's resale value.
+**Two of the four slums sit in Zone A**, the severe flood band. When you weigh up a ₹100 Cr dam, you are deciding about 4,000 people, not a building's resale value.
 
 ### Slum upgrade — ₹60 Cr
 
@@ -94,7 +94,7 @@ Large is the best value per person and the hardest to serve. Small spreads deman
 
 | Service | Provided by |
 |---|---|
-| Power | Power plant |
+| Power | Hydro station (needs a dam) |
 | Water | Water tank / treatment plant |
 | Health | Hospital |
 | Education | School |
@@ -130,7 +130,7 @@ This is calculated in a fixed order, so **the same city always scores the same**
 
 | Building | Cost | Serves | Supplies | Radius | Yearly | Requires |
 |---|---|---|---|---|---|---|
-| Power plant | ₹100 Cr | Power | 15 units | 5 | −₹4 Cr | — |
+| **Hydro station** | **₹70 Cr** | Power | 20 units | 5 | −₹2 Cr | Adjacent to a dam. Max 2 per dam. |
 | Water tank | ₹25 Cr | Water | 3 units | 2 | −₹1 Cr | Power |
 | Water treatment plant | ₹80 Cr | Water | 12 units | 4 | −₹3 Cr | Power |
 | **Hospital** | **₹50 Cr** | Health | 3 units | 3 | −₹4 Cr | Power, Water |
@@ -140,6 +140,8 @@ This is calculated in a fixed order, so **the same city always scores the same**
 | Sewage plant | ₹40 Cr | Sanitation | 6 units | 3 | −₹2 Cr | Power, Water |
 | Farm | ₹20 Cr | Food | 6 units | city-wide | −₹0.5 Cr | Water |
 
+There is no power plant. Power comes only from hydro stations, and a hydro station only exists next to a dam — see Protection below. **Every "Requires Power" line in this document means "requires hydro coverage somewhere on the board."**
+
 Safety station covers police and fire together.
 
 **Read this against the residential table.** A Residential Large needs 5 health units. A hospital supplies 3. That block alone needs two hospitals — ₹100 Cr of health for a ₹70 Cr building. Dense housing is only cheap until you pay for its services.
@@ -148,10 +150,12 @@ Safety station covers police and fire together.
 
 | Building | Cost | Effect | Radius | Yearly | Requires |
 |---|---|---|---|---|---|
-| Storm drainage | ₹15 Cr | Reduces flood damage | 2 | −₹0.5 Cr | — |
-| Dam | ₹100 Cr | Blocks flood entirely | 4 downstream | −₹3 Cr | Power |
+| Storm drainage | ₹15 Cr | Halves flood repair costs nearby | 2 | −₹0.5 Cr | — |
+| **Dam** | **₹100 Cr** | Protects **6 columns downstream**, full immunity. Enables hydro stations. | 6 columns | −₹3 Cr | River tile only |
 
-**A dam can only be placed on a river tile**, and protects only tiles *downstream* of it. Where you place it on the river is the decision.
+**A dam can only be placed on a river tile**, and protects only the 6 columns *downstream* of it — full immunity, not a discount. The river is 16 columns wide, so one dam covers well under half of it. **More than one dam is allowed**, and where you place each one is the real decision.
+
+**A hydro station downstream of its own dam is protected. Built upstream of it, it is not.** Lose an unprotected hydro station and everything that needs power goes down with it, wherever it sits on the board.
 
 ## Transport
 
@@ -223,43 +227,70 @@ A Large industry poisons a 7×7 block — 49 tiles, a quarter of the whole map. 
 
 Organisers advance the year. Everyone moves together. A year can be held open if teams are struggling.
 
+## Mandatory floor
+
+Checked once, when Year 0 ends — not a twist, and it never blocks you from building. Four items, roughly ₹300 Cr of your ₹3,000 Cr:
+
+- 1 dam + 1 hydro station
+- Water covering all inherited demand
+- 1 sewage plant
+- 1 hospital
+
+**Miss any of them and you take −100 score, and your income is halved in Year 1.** A confused team keeps playing — it just starts Year 1 behind. Everything else stays optional.
+
 ---
 
 # PART H — THE TWISTS
 
-Three of Flood, Pandemic and Immigration fill years 1–3, in an order you won't know. Olympics is always year 4. Treasure is always year 5.
+Three of Flood, Waterborne outbreak and Immigration fill years 1–3, in an order you won't know. Olympics is always year 4. Treasure is always year 5.
 
 ## Flood
 
-The river bursts. **Every low-lying tile is hit** — and those tiles are marked from the first minute.
+The river bursts. **Every tile in a flood zone is hit** — and those tiles are marked from the first minute, graded into two bands.
 
-| Protection | Result |
+| Zone | Rows from the river | Tiles | Severity |
+|---|---|---|---|
+| **A** | ±1 | 32 | Severe |
+| **B** | ±2 | 32 | Moderate |
+
+**Population is never destroyed.** A flooded slum or home keeps its people — it just stops delivering services until repaired. Removing people would reward teams who neglected them.
+
+| Building | Zone A unprotected | Zone B unprotected |
+|---|---|---|
+| Slum | Services cut, demand stays, **₹40 Cr to restore** | Cut 1 year, ₹20 Cr |
+| Residential | Offline, **50% of cost to repair** | 25% |
+| Hospital / school / sewage / water / safety | Offline 1 year, **40% to repair** | 20% |
+| **Hydro station** | Offline — everything it powers fails too. **40% to repair** | 20% |
+| Park / drainage / farm | **Destroyed outright, cost lost** | 30% to repair |
+| Commercial / industry | Income stops until repaired, 40% | 20% |
+| Industry (extra) | Pollution radius **+1, permanently**, on top of repair | — |
+
+**Protection.** Downstream of a dam → no damage, full stop — for the dam's own protected buildings and for a hydro station downstream of its own dam. Storm drainage within 2 tiles halves whatever repair percentage applies, but it can't stop a Zone A park/drainage/farm from being destroyed outright.
+
+A dam is ₹100 Cr. Drainage is ₹15 Cr. An unprotected hydro station going down doesn't just cost its own repair — everything it powers stops working until it's fixed.
+
+## Waterborne outbreak
+
+Two checks, not one.
+
+**Containment.** A home is infected if no sewage plant reaches it. A home fed only by water tank(s) is also infected, unless one of those tanks is itself within a sewage plant's range — a water treatment plant carries no such exposure. This is the ₹80 Cr treatment plant's reason to exist over three ₹25 Cr tanks.
+
+**Treatment.** Infected population needs **1 hospital per 2,500 people** — slums count double.
+
+| Situation | Effect |
 |---|---|
-| Downstream of a dam | No damage |
-| Storm drainage within 2 tiles | Lose 30% of the building's cost in repairs |
-| Neither | **Building destroyed.** Cost lost, everyone it served now unserved. |
-
-A dam is ₹100 Cr. Drainage is ₹15 Cr. Losing three homes and a hospital is ₹260 Cr.
-
-## Pandemic
-
-**1 hospital required per 2,500 people.** Slums count double.
-
-| Result | Effect |
-|---|---|
-| Requirement met | **+₹50 Cr** and no penalty |
-| Short by 1 hospital | Income halved this year |
-| Short by 2 or more | Income **zero** this year, and **−100 score** |
+| No infections | **+₹50 Cr, +50 score** |
+| Infected, fully treated | Nothing |
+| Infected, short on hospitals | **−50 score per missing hospital**, income halved |
+| Infected, no hospital anywhere | **−150 score**, income zero |
 
 Nothing can be done after it's announced except emergency-building hospitals at full price.
 
 ## Immigration
 
-**5,000 people arrive.** They are added to your existing homes above their rated capacity — every residential building's population and demand rises proportionally.
+**Two new slum tiles appear** on empty land near your existing settlements — 2,500 people each, same demand profile as a rehoused slum.
 
-Nothing visibly happens. Your services simply go over capacity and your score starts falling.
-
-Teams who built exactly to requirement suffer most. Teams who left headroom barely notice.
+They arrive completely unserved, on tiles you don't control the placement of. Leave land and cash spare near your city — the alternative is scrambling to reach two new slums from wherever they happen to land.
 
 ## Olympics
 
@@ -307,7 +338,7 @@ Partial coverage counts. A hospital with 3 spare units serving a block needing 5
 |---|---|
 | 100% of population has all 9 services | +200 |
 | Olympics qualified | +150 |
-| Pandemic requirement met | +50 |
+| Outbreak: no infections | +50 |
 | Each service at 90%+ city-wide | +25 each |
 | Each slum rehoused | +75 |
 
@@ -319,7 +350,8 @@ Partial coverage counts. A hospital with 3 spare units serving a block needing 5
 | Slum with no sanitation in range | −50 each |
 | Home inside industry pollution with no park | −30 each |
 | Home adjacent to a sewage plant | −20 each |
-| Pandemic failure | −100 |
+| Outbreak: short on hospitals | −50 per missing hospital |
+| Outbreak: no hospital anywhere | −150 |
 | Olympics not qualified | −50 |
 
 ## Cash
@@ -333,12 +365,13 @@ Deliberately small. Hoarding is not a strategy; cash is what lets you survive tw
 # PART J — HOW TO WIN
 
 - **Serve the 11,000 people you already have first.** Cheapest points on the board.
-- **Power plant before anything else.** Almost nothing works without it.
-- **Sewage near the slums, early.** ₹40 Cr avoids −200 across four slums.
+- **Dam and hydro station before anything else.** Almost nothing works without power, and a hydro station can't exist without a dam next to it.
+- **Clear the mandatory floor before Year 0 ends.** Dam + hydro, full water coverage, a sewage plant, a hospital — ₹300 Cr you were probably spending anyway. Missing it costs more than it saves.
+- **Sewage near the slums, early.** ₹40 Cr avoids −200 across four slums, and it's your only defence against a waterborne outbreak.
 - **Don't build homes you can't serve.** An unserved Large is ₹70 Cr of zero.
 - **Get income running early.** A railway station in Year 0 has paid for itself by Year 5 and unlocks the airport.
-- **Leave headroom.** Immigration finds every service built exactly to capacity.
-- **Parks are ₹10 Cr** and they cancel pollution. Buy them.
+- **Leave land and cash spare.** Immigration drops two new, fully unserved slums near your city — you can't stop it, but you can be ready to reach them.
+- **Parks are ₹10 Cr** and they cancel industry pollution. Buy them.
 - **Decide on the Olympics early.** ₹500 Cr and 150 points is the biggest single swing available — but ₹300 Cr of hotels is a lot of hospitals.
 
 ---
@@ -355,8 +388,9 @@ Deliberately small. Hoarding is not a strategy; cash is what lets you survive tw
 8. Income is paid at the start of each year from the buildings then standing.
 9. Twists apply to all teams at the same moment.
 10. Twist costs come out of your current balance.
-11. The treasure tile is revealed at the end of Year 5.
-12. Final score is calculated by the system using Part I. There is no judging panel.
+11. The mandatory floor (dam + hydro, full water coverage, a sewage plant, a hospital) is checked once, when Year 0 ends. Missing it costs −100 score and halves Year 1 income — it never blocks play.
+12. The treasure tile is revealed at the end of Year 5.
+13. Final score is calculated by the system using Part I. There is no judging panel.
 
 ---
 
@@ -370,11 +404,20 @@ Deliberately small. Hoarding is not a strategy; cash is what lets you survive tw
 - **Grid enlarged** 12×9 (108 tiles) → **16×12 (192 tiles)**
 - **Budget raised** ₹1,200 → ₹3,000 Cr
 
+## What changed from v3
+
+- **Power plant removed.** Power is now dam + hydro station only — see Part E.
+- **Mandatory floor added.** Dam + hydro, water coverage, sewage, a hospital, checked once at the Year 0 → 1 transition. A penalty, not a block — see Part G.
+- **Flood is graded**, not flat. Zone A (severe) and Zone B (moderate) replace the single "low-lying" boolean, each with its own repair table — see Part H.
+- **Pandemic rebuilt into a waterborne outbreak** with two checks (containment via sewage/water-tank exposure, then treatment via hospitals) instead of one flat hospital-count check — see Part H.
+- **Immigration rebuilt.** Two new 2,500-person slum tiles now spawn on empty land, instead of inflating demand on every existing home — see Part H.
+- **Parks now only offset industry pollution.** There's no thermal plant left for them to offset.
+
 ## Why the grid grew
 
 At ₹3,000 Cr a realistic city is **60–75 buildings**, and a cheap-building strategy can reach 120. On the old 12×9 map that was 90 buildable tiles against up to 120 buildings — land ran out before money did, so teams would fill every square and *where* to build stopped being a question.
 
-The working ratio is **roughly 2 buildable tiles per building a team can afford**. At 160 buildable tiles against 60–75 buildings, that lands at about 2.2×, which leaves real room to plan.
+The working ratio is **roughly 2 buildable tiles per building a team can afford**. At 164 buildable tiles against 60–75 buildings, that lands at about 2.4×, which leaves real room to plan.
 
 **Render at 56px per tile** — 896 × 672 px, which fits a 1366×768 laptop with panels at 180px and 220px. Check the art at that size before committing: if a slum no longer reads as different from a colony at a glance, drop to **15×10 at 64px** rather than shrinking the tiles further.
 - **Hospitals** ₹80 → ₹50 Cr
@@ -386,7 +429,7 @@ Serving all 11,000 inherited people and nothing else:
 
 | Service | Buildings | Cost |
 |---|---|---|
-| Power | 1 plant | ₹100 Cr |
+| Power | 1 dam + 1 hydro station | ₹170 Cr |
 | Water | 1 treatment plant | ₹80 Cr |
 | Health | 4 hospitals | ₹200 Cr |
 | Education | 4 schools | ₹120 Cr |
@@ -395,9 +438,9 @@ Serving all 11,000 inherited people and nothing else:
 | Sanitation | 2 sewage plants | ₹80 Cr |
 | Transport | 3 bus stands | ₹90 Cr |
 | Food | 2 farms | ₹40 Cr |
-| **Total** | | **₹845 Cr** |
+| **Total** | | **₹915 Cr** |
 
-Leaves about **₹2,155 Cr** of genuine choice. That is the number to watch when tuning — if it drops much below ₹1,000 Cr, nobody builds a city; much above ₹1,500 Cr and there is a real risk everyone covers everything and the scores cluster.
+Leaves about **₹2,085 Cr** of genuine choice — down from v3's ₹2,155 Cr now that power costs a dam on top of the hydro station. That is the number to watch when tuning — if it drops much below ₹1,000 Cr, nobody builds a city; much above ₹1,500 Cr and there is a real risk everyone covers everything and the scores cluster.
 
 **At ₹3,000 Cr this is the main thing the simulation must check.** With over ₹2,100 Cr free, a team can plausibly afford full service coverage *and* the Olympics *and* industry. If the simulation shows the top 10% finishing with large unspent cash, or several strategies scoring within a few percent of each other, the budget is too high and ₹2,400 Cr is the next figure to try.
 
@@ -405,8 +448,8 @@ Leaves about **₹2,155 Cr** of genuine choice. That is the number to watch when
 
 **Prerequisite chain** — what must exist before what:
 
-- Power plant needs nothing.
-- Water (tank or treatment), school, safety station, bus stand and dam all need **Power**.
+- Dam needs nothing but a river tile. Hydro station needs a **dam adjacent to it with spare capacity** (max 2 hydro stations per dam).
+- Water (tank or treatment), school, safety station and bus stand all need **Power** (hydro coverage).
 - Hospital and sewage plant need **Power + Water**.
 - Railway needs **Power + 1 bus stand**. Metro needs **1 railway**. Airport needs **Power + 1 railway**.
 - Hotel and stadium need **any one transport building** (a bus stand alone is enough).
@@ -418,7 +461,7 @@ Leaves about **₹2,155 Cr** of genuine choice. That is the number to watch when
 
 | Building | Capacity | Fraction used by 1 Res. Small | 1 building fully covers |
 |---|---|---|---|
-| Power plant | 15 | 0.067 | 15 Small blocks |
+| Hydro station | 20 | 0.050 | 20 Small blocks |
 | Water tank | 3 | 0.333 | 3 |
 | Water treatment plant | 12 | 0.083 | 12 |
 | Hospital | 3 | 0.333 | 3 |
@@ -431,7 +474,15 @@ Leaves about **₹2,155 Cr** of genuine choice. That is the number to watch when
 
 Park is the tightest fit in the game — a single Residential Large (5×) needs 2.5 parks. Hospital, school and water tank tie for second-tightest at 1.667 for a Large block. Everything else has enough headroom that even a Large block barely dents one supplier — which is why "sewage near the slums, early" (Part J) is cheap advice, and why parks get repeated separately.
 
-**Industry doesn't supply anything — it draws from the same power/water pool citizens use**, at whatever distance it sits from the plant, with no rule currently giving homes priority at equal distance. Watch this in playtesting: if industry is measurably starving citizens of power/water, add "homes win ties" to Part D's Allocation rule.
+**Industry doesn't supply anything — it draws from the same power/water pool citizens use**, at whatever distance it sits from the hydro station or water source, with no rule currently giving homes priority at equal distance. Watch this in playtesting: if industry is measurably starving citizens of power/water, add "homes win ties" to Part D's Allocation rule.
+
+## New sweep parameters (v4)
+
+Three values worth A/B testing in the balance simulation before locking the event build. Current defaults, chosen as a reasonable middle ground and used throughout this document, are marked:
+
+- **Dam protection span** — 4 / **6** / 8 columns. Decides whether a second dam is ever worth buying: at 4 columns two dams barely overlap the 16-column river's demands; at 8, one dam nearly covers half of it and a second stops paying for itself.
+- **Hydro station cost** — 55 / **70** / 85. Interacts directly with the mandatory floor's ~₹300 Cr target and the ₹915 Cr inherited-city cost above.
+- **Dam cost** — 80 / **100** / 120. The other half of that same power line.
 
 ## Known risks
 
