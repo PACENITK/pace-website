@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import useGameStore from "../store/useGameStore.js";
+import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import { buildingsById, config } from "../engine.js";
 import { colLabel, fmtCr } from "../format.js";
 
@@ -9,11 +9,11 @@ import { colLabel, fmtCr } from "../format.js";
 // ₹100+ Cr building is easy to make, so nothing commits without an
 // explicit confirm naming the building and the exact tile.
 function PlacementConfirmModal() {
-  const pendingAction = useGameStore((s) => s.pendingAction);
-  const confirmPendingAction = useGameStore((s) => s.confirmPendingAction);
-  const cancelPendingAction = useGameStore((s) => s.cancelPendingAction);
-  const cash = useGameStore((s) => s.cash);
-  const damagedTiles = useGameStore((s) => s.damagedTiles);
+  const pendingAction = useActiveGameStore((s) => s.pendingAction);
+  const confirmPendingAction = useActiveGameStore((s) => s.confirmPendingAction);
+  const cancelPendingAction = useActiveGameStore((s) => s.cancelPendingAction);
+  const cash = useActiveGameStore((s) => s.cash);
+  const damagedTiles = useActiveGameStore((s) => s.damagedTiles);
 
   useEffect(() => {
     if (!pendingAction) return undefined;
@@ -46,6 +46,8 @@ function PlacementConfirmModal() {
               <PlaceDetails pendingAction={pendingAction} cash={cash} />
             ) : pendingAction.type === "rehouse" ? (
               <RehouseDetails pendingAction={pendingAction} cash={cash} />
+            ) : pendingAction.type === "move" ? (
+              <MoveDetails pendingAction={pendingAction} cash={cash} />
             ) : (
               <RepairDetails pendingAction={pendingAction} cash={cash} damagedTiles={damagedTiles} />
             )}
@@ -107,6 +109,27 @@ function RehouseDetails({ pendingAction, cash }) {
           Cost: <strong>₹{fmtCr(config.slumUpgradeCost)} Cr</strong>
         </p>
         <p>Cash after: ₹{fmtCr(cash - config.slumUpgradeCost)} Cr</p>
+      </div>
+    </>
+  );
+}
+
+function MoveDetails({ pendingAction, cash }) {
+  const def = buildingsById[pendingAction.buildingId];
+  const from = colLabel(pendingAction.fromRow, pendingAction.fromCol);
+  const to = colLabel(pendingAction.toRow, pendingAction.toCol);
+  return (
+    <>
+      <div className="cw3-modal-year">Confirm move</div>
+      <h2 className="cw3-modal-title">{def.name}</h2>
+      <div className="cw3-modal-body">
+        <p>
+          From <strong>{from}</strong> to <strong>{to}</strong>
+        </p>
+        <p>
+          Move fee (10% of ₹{fmtCr(def.cost)} Cr): <strong>₹{fmtCr(pendingAction.fee)} Cr</strong>
+        </p>
+        <p>Cash after: ₹{fmtCr(cash - pendingAction.fee)} Cr</p>
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { CaretDown, CaretLeft, CaretRight, HandGrabbing, DotsSixVertical, TrendUp } from "@phosphor-icons/react";
-import useGameStore from "../store/useGameStore.js";
+import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import { buildingsById, CATEGORY, config } from "../engine.js";
 import { BUILDING_ICON } from "../data/buildingMeta.js";
 import { formatBuildingNote, fmtCr } from "../format.js";
@@ -113,12 +113,12 @@ function BuildingCard({ def, cash, selectedBuilding, onSelect, onBeginDrag }) {
 
 function BuildingPalette({ collapsed, onToggleCollapse }) {
   const [tab, setTab] = useState("essentials");
-  const cash = useGameStore((s) => s.cash);
-  const placed = useGameStore((s) => s.placed);
-  const selectedBuilding = useGameStore((s) => s.selectedBuilding);
-  const selectBuilding = useGameStore((s) => s.selectBuilding);
-  const beginDrag = useGameStore((s) => s.beginDrag);
-  const lastError = useGameStore((s) => s.lastError);
+  const cash = useActiveGameStore((s) => s.cash);
+  const placed = useActiveGameStore((s) => s.placed);
+  const selectedBuilding = useActiveGameStore((s) => s.selectedBuilding);
+  const selectBuilding = useActiveGameStore((s) => s.selectBuilding);
+  const beginDrag = useActiveGameStore((s) => s.beginDrag);
+  const lastError = useActiveGameStore((s) => s.lastError);
   const { grossIncome, buckets, totalSpend } = useTreasury(placed);
 
   if (collapsed) {

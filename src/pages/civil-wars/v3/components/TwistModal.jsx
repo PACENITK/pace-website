@@ -1,6 +1,6 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import useGameStore from "../store/useGameStore.js";
+import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import { colLabel, fmtCr } from "../format.js";
 
 const TWIST_TITLE = {
@@ -106,8 +106,8 @@ function renderFloor(floorResult) {
 }
 
 function TwistModal() {
-  const activeModal = useGameStore((s) => s.activeModal);
-  const closeModal = useGameStore((s) => s.closeModal);
+  const activeModal = useActiveGameStore((s) => s.activeModal);
+  const closeModal = useActiveGameStore((s) => s.closeModal);
 
   return (
     <AnimatePresence>

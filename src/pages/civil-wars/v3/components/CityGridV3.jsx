@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { CursorClick, CheckCircle, Prohibit, ArrowFatLinesUp, Check } from "@phosphor-icons/react";
+import { CursorClick, ArrowsOutCardinal, CheckCircle, Prohibit, ArrowFatLinesUp, Check } from "@phosphor-icons/react";
 import TileV3 from "./TileV3.jsx";
-import useGameStore from "../store/useGameStore.js";
+import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import useCityStats from "../store/useCityStats.js";
 import { buildingsById, chebyshev, config } from "../engine.js";
 import { SERVICES, SERVICE_LABEL, SERVICE_ICON } from "../data/serviceMeta.js";
-import { colLabel } from "../format.js";
+import { colLabel, fmtCr } from "../format.js";
 import { explainUnmet } from "./explainUnmet.js";
 
 const COLS = 16;
@@ -76,32 +76,42 @@ function TileTooltip({ row, col, tileStat, buildingId, upgraded, placed }) {
 }
 
 function CityGridV3() {
-  const map = useGameStore((s) => s.map);
-  const year = useGameStore((s) => s.year);
-  const placed = useGameStore((s) => s.placed);
-  const slumUpgraded = useGameStore((s) => s.slumUpgraded);
-  const selectedBuilding = useGameStore((s) => s.selectedBuilding);
-  const hoveredTile = useGameStore((s) => s.hoveredTile);
-  const hoverTile = useGameStore((s) => s.hoverTile);
-  const clearHover = useGameStore((s) => s.clearHover);
-  const proposePlacement = useGameStore((s) => s.proposePlacement);
-  const proposeRehouse = useGameStore((s) => s.proposeRehouse);
-  const proposeRepair = useGameStore((s) => s.proposeRepair);
-  const damagedTiles = useGameStore((s) => s.damagedTiles);
-  const previewPlacement = useGameStore((s) => s.previewPlacement);
+  const map = useActiveGameStore((s) => s.map);
+  const year = useActiveGameStore((s) => s.year);
+  const placed = useActiveGameStore((s) => s.placed);
+  const slumUpgraded = useActiveGameStore((s) => s.slumUpgraded);
+  const selectedBuilding = useActiveGameStore((s) => s.selectedBuilding);
+  const moveFrom = useActiveGameStore((s) => s.moveFrom);
+  const hoveredTile = useActiveGameStore((s) => s.hoveredTile);
+  const hoverTile = useActiveGameStore((s) => s.hoverTile);
+  const clearHover = useActiveGameStore((s) => s.clearHover);
+  const proposePlacement = useActiveGameStore((s) => s.proposePlacement);
+  const proposeRehouse = useActiveGameStore((s) => s.proposeRehouse);
+  const proposeRepair = useActiveGameStore((s) => s.proposeRepair);
+  const beginMove = useActiveGameStore((s) => s.beginMove);
+  const cancelMove = useActiveGameStore((s) => s.cancelMove);
+  const proposeMove = useActiveGameStore((s) => s.proposeMove);
+  const previewMove = useActiveGameStore((s) => s.previewMove);
+  const damagedTiles = useActiveGameStore((s) => s.damagedTiles);
+  const previewPlacement = useActiveGameStore((s) => s.previewPlacement);
   const stats = useCityStats();
 
   const hoveredRC = hoveredTile ? hoveredTile.split(",").map(Number) : null;
 
-  // The pre-placement radius ghost -- hover a tile with a building
-  // selected and see exactly what it would cover (rules.md Part D).
+  // The building whose radius ghost should show while hovering: either
+  // a palette pick about to be placed, or a board building picked up
+  // for a move (rules.md Part D -- moving recalculates coverage from
+  // the new tile exactly like a fresh placement would).
+  const activeBuildingId = selectedBuilding || (moveFrom ? moveFrom.buildingId : null);
+
   const radiusOverlay = useMemo(() => {
-    if (!selectedBuilding || !hoveredRC) return null;
-    const def = buildingsById[selectedBuilding];
+    if (!activeBuildingId || !hoveredRC) return null;
+    const def = buildingsById[activeBuildingId];
     if (!def || !Number.isFinite(def.radius) || def.radius <= 0) return null;
     const [row, col] = hoveredRC;
     return { row, col, radius: def.radius };
-  }, [selectedBuilding, hoveredTile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeBuildingId, hoveredTile]);
 
   let radiusBox = null;
   if (radiusOverlay) {
@@ -127,6 +137,17 @@ function CityGridV3() {
     const key = `${row},${col}`;
     const type = map.tiles[row][col].type;
 
+    // A move is in progress: this click either drops the picked-up
+    // building here, or (clicking its own origin tile again) cancels.
+    if (moveFrom) {
+      if (row === moveFrom.row && col === moveFrom.col) {
+        cancelMove();
+      } else {
+        proposeMove(row, col);
+      }
+      return;
+    }
+
     if (!selectedBuilding && damagedTiles[key]) {
       proposeRepair(row, col);
       return;
@@ -135,16 +156,30 @@ function CityGridV3() {
       proposeRehouse(row, col);
       return;
     }
+    // Clicking an already-placed building (with nothing selected from
+    // the palette) picks it up to relocate it -- rules.md's new "move a
+    // building" mechanic, 10% of its cost, service coverage recomputed
+    // fresh from wherever it lands.
+    if (!selectedBuilding && placed[key]) {
+      beginMove(row, col);
+      return;
+    }
     if (selectedBuilding && !placed[key]) {
       proposePlacement(row, col);
     }
   }
 
-  // Live validation while dragging/hovering with a building selected --
-  // runs the exact canPlace() check proposePlacement will make on drop,
-  // so the green/red overlay never promises something the drop can't do.
-  const dropPreview =
-    selectedBuilding && hoveredTile ? previewPlacement(...hoveredTile.split(",").map(Number)) : null;
+  // Live validation while dragging/hovering with a building selected, or
+  // while a picked-up building is looking for a new home -- runs the
+  // exact canPlace() check the drop/click will make, so the green/red
+  // overlay never promises something the drop can't do.
+  const dropPreview = moveFrom
+    ? hoveredTile
+      ? previewMove(...hoveredTile.split(",").map(Number))
+      : null
+    : selectedBuilding && hoveredTile
+    ? previewPlacement(...hoveredTile.split(",").map(Number))
+    : null;
 
   function handleDragOver(row, col, e) {
     e.preventDefault();
@@ -173,15 +208,18 @@ function CityGridV3() {
 
   const hoveredKey = hoveredTile;
   const hoveredTileStat = hoveredKey ? stats.tileStats[hoveredKey] : null;
-  const showTooltip = !selectedBuilding && hoveredTileStat && hoveredTileStat.pop > 0;
+  const showTooltip = !selectedBuilding && !moveFrom && hoveredTileStat && hoveredTileStat.pop > 0;
 
   const hoveredIsUnupgradedSlum =
     !selectedBuilding &&
+    !moveFrom &&
     hoveredRC &&
     map.tiles[hoveredRC[0]][hoveredRC[1]].type === "slum" &&
     !slumUpgraded.has(hoveredKey);
 
   const selectedDef = selectedBuilding ? buildingsById[selectedBuilding] : null;
+  const movingDef = moveFrom ? buildingsById[moveFrom.buildingId] : null;
+  const moveFeeCr = movingDef ? movingDef.cost * config.moveCostRate : 0;
 
   const legendItem = "flex items-center gap-[5px] text-[11px] text-[#3f3a33]";
   const legendSwatch = "w-[9px] h-[9px] rounded-[1px] shrink-0";
@@ -212,6 +250,12 @@ function CityGridV3() {
             Placing: {selectedDef.name}
           </span>
         )}
+        {movingDef && (
+          <span className="flex items-center gap-[5px] px-2 py-[3px] bg-[#dbe6f0] border border-[#a9bccd] rounded-sm text-[10px] font-semibold text-[#2b4c6f]">
+            <ArrowsOutCardinal size={12} weight="duotone" />
+            Moving: {movingDef.name} — pick a tile (₹{fmtCr(moveFeeCr)} Cr fee), or click it again to cancel
+          </span>
+        )}
       </div>
 
       <div className="cw3-board-wrap flex items-center justify-center min-h-0 min-w-0">
@@ -230,6 +274,7 @@ function CityGridV3() {
                     previewBuildingId={hoveredTile === key ? selectedBuilding : null}
                     tileStat={stats.tileStats[key]}
                     upgraded={slumUpgraded.has(key)}
+                    isMoveSource={!!moveFrom && moveFrom.row === row && moveFrom.col === col}
                     onClick={() => handleTileClick(row, col)}
                     onMouseEnter={() => hoverTile(key)}
                     onMouseLeave={clearHover}

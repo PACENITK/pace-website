@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { CaretDown, CaretUp, CaretLeft, CaretRight, WarningDiamond, ArrowFatLinesUp } from "@phosphor-icons/react";
-import useGameStore from "../store/useGameStore.js";
+import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import useCityStats from "../store/useCityStats.js";
 import { SERVICES, SERVICE_LABEL, SERVICE_ICON } from "../data/serviceMeta.js";
 import { BUILDING_ICON } from "../data/buildingMeta.js";
@@ -29,9 +29,9 @@ function nf(n) {
 // score ("scoring sealed until Year 5"); the score itself still exists
 // under the hood for the Organizer Console, untouched by this screen.
 function CityStatusPanel({ collapsed, onToggleCollapse }) {
-  const placed = useGameStore((s) => s.placed);
-  const map = useGameStore((s) => s.map);
-  const slumUpgraded = useGameStore((s) => s.slumUpgraded);
+  const placed = useActiveGameStore((s) => s.placed);
+  const map = useActiveGameStore((s) => s.map);
+  const slumUpgraded = useActiveGameStore((s) => s.slumUpgraded);
   const stats = useCityStats();
   const [openNeed, setOpenNeed] = useState(null);
 

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import useGameStore from "./useGameStore.js";
+import { useActiveGameStore } from "./GameStoreContext.jsx";
 import { computeCityStats, config } from "../engine.js";
 
 // Score/coverage/allocation are always derived, never stored -- the
@@ -7,13 +7,13 @@ import { computeCityStats, config } from "../engine.js";
 // recomputed reactively via useMemo instead of duplicated into state
 // that could drift from the buildings actually placed.
 export default function useCityStats() {
-  const map = useGameStore((s) => s.map);
-  const placed = useGameStore((s) => s.placed);
-  const slumUpgraded = useGameStore((s) => s.slumUpgraded);
-  const residentialDemandMultiplier = useGameStore((s) => s.residentialDemandMultiplier);
-  const extraSlums = useGameStore((s) => s.extraSlums);
-  const damagedTiles = useGameStore((s) => s.damagedTiles);
-  const pollutionSpillTiles = useGameStore((s) => s.pollutionSpillTiles);
+  const map = useActiveGameStore((s) => s.map);
+  const placed = useActiveGameStore((s) => s.placed);
+  const slumUpgraded = useActiveGameStore((s) => s.slumUpgraded);
+  const residentialDemandMultiplier = useActiveGameStore((s) => s.residentialDemandMultiplier);
+  const extraSlums = useActiveGameStore((s) => s.extraSlums);
+  const damagedTiles = useActiveGameStore((s) => s.damagedTiles);
+  const pollutionSpillTiles = useActiveGameStore((s) => s.pollutionSpillTiles);
   return useMemo(
     () =>
       computeCityStats(map, placed, slumUpgraded, config, residentialDemandMultiplier, {
