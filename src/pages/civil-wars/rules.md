@@ -39,10 +39,9 @@ A **16 × 12 grid** — 192 tiles.
 | Feature | Rule |
 |---|---|
 | **River** | Runs across the map, 16 columns wide. Not buildable. Dams go here and nowhere else. |
-| **Flood zones** | Two graded bands beside the river, marked with a wave icon: **Zone A** (rows ±1, Severe) and **Zone B** (rows ±2, Moderate). Buildable. This is where the flood hits, and how hard. |
-| **Existing roads and railway** | Not buildable. |
+| **Flood zones** | Three low-lying rows, marked with a wave icon, in an asymmetric band: **Zone A** (Severe) sits one row on each side of the river; **Zone B** (Moderate) sits two rows out, but only on one side. Buildable. This is where the flood hits, and how hard. |
 
-Roughly **164 buildable tiles**. You will not have money for all of them.
+Roughly **170 buildable tiles**. You will not have money for all of them.
 
 ---
 
@@ -211,6 +210,8 @@ A Large industry poisons a 7×7 block — 49 tiles, a quarter of the whole map. 
 
 **Selling a building refunds 50%.**
 
+**Moving a building costs 10% of its price.** Pick up anything you've already placed and drop it on a different empty tile — a ₹100 Cr dam costs ₹10 Cr to relocate. Everything it was serving goes back to unserved the moment it lifts off, and its coverage is recalculated fresh from wherever it lands — same radius, same rules as a brand-new placement (a hydro station still needs a dam next to its new spot; a dam still needs a river tile). There's no limit on how many times you move something, other than paying the fee each time.
+
 ---
 
 # PART G — THE YEARS
@@ -246,12 +247,12 @@ Three of Flood, Waterborne outbreak and Immigration fill years 1–3, in an orde
 
 ## Flood
 
-The river bursts. **Every tile in a flood zone is hit** — and those tiles are marked from the first minute, graded into two bands.
+The river bursts. **Every tile in a flood zone is hit** — and those tiles are marked from the first minute, graded into two bands across three rows total.
 
 | Zone | Rows from the river | Tiles | Severity |
 |---|---|---|---|
-| **A** | ±1 | 32 | Severe |
-| **B** | ±2 | 32 | Moderate |
+| **A** | ±1 (both sides) | 32 | Severe |
+| **B** | 2 (one side only) | 16 | Moderate |
 
 **Population is never destroyed.** A flooded slum or home keeps its people — it just stops delivering services until repaired. Removing people would reward teams who neglected them.
 
@@ -322,6 +323,16 @@ You cannot plan for this. It is the one piece of pure luck in the game, and it i
 
 # PART I — SCORING
 
+## When you see it
+
+**You never see your score, or anyone else's, while the game is running.** No number on your own screen — not in Year 0, not after a twist, not at any point before Year 6. All you ever see is what's served and what isn't (the pips on each tile, Part D) — never a total.
+
+**The organizer sees every team's score, live and ranked, throughout the event** (Part L's Organizer Console). That's for pacing and watching the event, not for players.
+
+**Year 6 is the only reveal.** One number per team, calculated exactly as below, ranked against everyone else. Nobody — not even the organizer showing it — is doing any judging; it's the same formula that's been running the whole time, just never displayed until now.
+
+Everything below this line — every number, every formula — is public. It's only the running total that's never shown until Year 6.
+
 ## Points
 
 **+10 per demand unit delivered.**
@@ -360,6 +371,18 @@ Partial coverage counts. A hospital with 3 spare units serving a block needing 5
 
 Deliberately small. Hoarding is not a strategy; cash is what lets you survive twists.
 
+## The full formula
+
+Three things, added together:
+
+1. **Board score** — Points minus Penalties plus Bonuses, all three tables above, summed over your final board.
+2. **Cash score** — final cash × 0.05, from the Cash section above.
+3. **Every twist's own score change**, added up as the game plays out — the mandatory-floor penalty at Year 0 if you missed it, then whatever each of Years 1–5's twists did (a pandemic's +50 or −50/−150, Olympics' +150 or −50, and so on — each one is spelled out in Part H as its own twist). Nothing here is hidden math; every twist tells you its own score effect the moment it happens. What's hidden is only the running sum.
+
+**Score = board score + cash score + every twist's score change.**
+
+Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points), a pandemic that hit for −50 (short one hospital), Olympics qualified (+150) → 380 + 60 − 50 + 150 = **540**.
+
 ---
 
 # PART J — HOW TO WIN
@@ -382,7 +405,7 @@ Deliberately small. Hoarding is not a strategy; cash is what lets you survive tw
 2. Year 0 is 15 minutes; each later year is 5–6 minutes.
 3. A building can be placed only if you can afford it and its prerequisites are met. The system blocks anything else.
 4. Cost is deducted when the building is placed.
-5. Selling refunds 50%.
+5. Selling refunds 50%. Moving an already-placed building to a new tile costs 10% instead, and its coverage recalculates fresh from the new spot.
 6. One building per tile. Dams only on river tiles.
 7. **You cannot go below zero.** No debt.
 8. Income is paid at the start of each year from the buildings then standing.
@@ -412,12 +435,21 @@ Deliberately small. Hoarding is not a strategy; cash is what lets you survive tw
 - **Pandemic rebuilt into a waterborne outbreak** with two checks (containment via sewage/water-tank exposure, then treatment via hospitals) instead of one flat hospital-count check — see Part H.
 - **Immigration rebuilt.** Two new 2,500-person slum tiles now spawn on empty land, instead of inflating demand on every existing home — see Part H.
 - **Parks now only offset industry pollution.** There's no thermal plant left for them to offset.
+- **Flood band trimmed to 3 rows.** Zone B used to mirror Zone A on both sides of the river (4 low-lying rows total); it's now one-sided, so the far bank only carries the Zone A row. Fewer tiles read as "probably fine to ignore," and it reads less like a rendering bug and more like a deliberate asymmetric risk.
+- **Road tiles removed.** The 6-tile "existing roads" strip along the bottom-left last row wasn't teaching anything — on screen it just looked like a rendering artifact with no building on it and no explanation. Those tiles are now ordinary buildable land; buildable tile count moved 164 → 170.
+- **Low-lying art no longer replaces a slum's own art.** A slum tile flagged low-lying used to render as generic marshy ground, wiping out the slum sprite entirely ("slum overlapping with low-lying area"). It now keeps its own art with the flood tint layered on top.
+- **Fixed a z-index bug** where anything placed on a low-lying tile — building art, service pips, the slum badge — painted *behind* the flood-zone texture instead of on top of it, because the texture layer had no explicit stacking order.
+- **Moving a building added.** Pick up anything already placed and relocate it to a new empty tile for 10% of its price; coverage recalculates from the new position exactly like a fresh placement — see Part F.
+
+## Running the event
+
+One organizer laptop, one admin key. The Organizer Console: locks a year, advances it (draws and applies that year's twist to every team at once), and shows a live leaderboard — every team, ranked by score, updating continuously throughout the event. This is the one place scores are visible before Year 6 (Part I) — never show this screen to players.
 
 ## Why the grid grew
 
 At ₹3,000 Cr a realistic city is **60–75 buildings**, and a cheap-building strategy can reach 120. On the old 12×9 map that was 90 buildable tiles against up to 120 buildings — land ran out before money did, so teams would fill every square and *where* to build stopped being a question.
 
-The working ratio is **roughly 2 buildable tiles per building a team can afford**. At 164 buildable tiles against 60–75 buildings, that lands at about 2.4×, which leaves real room to plan.
+The working ratio is **roughly 2 buildable tiles per building a team can afford**. At 170 buildable tiles against 60–75 buildings, that lands at about 2.5×, which leaves real room to plan.
 
 **Render at 56px per tile** — 896 × 672 px, which fits a 1366×768 laptop with panels at 180px and 220px. Check the art at that size before committing: if a slum no longer reads as different from a colony at a glance, drop to **15×10 at 64px** rather than shrinking the tiles further.
 - **Hospitals** ₹80 → ₹50 Cr
