@@ -30,6 +30,11 @@ function createInitialTeamState(engine) {
     residentialDemandMultiplier: 1,
     immigrationOverflow: 0,
     cumulativeScoreAdjustment: 0,
+    damagedTiles: {},
+    extraSlums: {},
+    pollutionSpillTiles: [],
+    lastTwistResult: null,
+    lastTwistYear: 0,
     year: 0,
     actionSeq: 0,
     lastError: null,
@@ -48,6 +53,14 @@ function createInitialGlobal(engine) {
   };
 }
 
+function floodExtras(teamState) {
+  return {
+    extraSlums: teamState.extraSlums,
+    damagedTiles: teamState.damagedTiles,
+    pollutionSpillTiles: teamState.pollutionSpillTiles,
+  };
+}
+
 // Same ctx shape buildings.js's canPlace() expects as the client store
 // builds -- kept identical on purpose so a placement that previews as
 // legal in the browser is never rejected server-side for a different
@@ -56,9 +69,17 @@ function evaluatePlacement(engine, buildingId, row, col, teamState) {
   const { placed, cash, slumUpgraded, residentialDemandMultiplier } = teamState;
   const key = tileKey(row, col);
   if (placed[key]) return { ok: false, reason: 'That tile already has a building' };
+  if (teamState.extraSlums && teamState.extraSlums[key]) return { ok: false, reason: 'tile not buildable' };
   const tileType = engine.map.tiles[row][col].type;
   const slumUpgradedSet = new Set(slumUpgraded);
-  const stats = engine.computeCityStats(engine.map, placed, slumUpgradedSet, engine.config, residentialDemandMultiplier);
+  const stats = engine.computeCityStats(
+    engine.map,
+    placed,
+    slumUpgradedSet,
+    engine.config,
+    residentialDemandMultiplier,
+    floodExtras(teamState)
+  );
   const ctx = {
     tile: { type: tileType, buildable: engine.isBuildable(tileType) },
     cash,
@@ -71,6 +92,7 @@ function evaluatePlacement(engine, buildingId, row, col, teamState) {
         (sum, t) => (t.pop > 0 && engine.chebyshev(row, col, t.row, t.col) <= radius ? sum + t.pop : sum),
         0
       ),
+    hasAdjacentDamWithCapacity: engine.hasAdjacentDamWithCapacity(row, col, placed, engine.config, engine.chebyshev),
   };
   return engine.canPlace(buildingId, ctx);
 }
@@ -88,10 +110,9 @@ function applyRehouse(teamState, row, col, cost) {
   teamState.cash -= cost;
 }
 
-// Same formula as ScorePanel.jsx: static board score + a live cash
-// bonus + whatever twists have adjusted cumulatively. Never shown to
-// teams (the City Status panel deliberately hides it) but this is what
-// the Organizer Console and the final reveal both read.
+// Never shown to teams continuously (Part I: only right after a
+// twist reveal) but this is what the Organizer Console leaderboard and
+// the final reveal both read live.
 function computeScore(engine, teamState) {
   const slumUpgradedSet = new Set(teamState.slumUpgraded);
   const stats = engine.computeCityStats(
@@ -99,10 +120,10 @@ function computeScore(engine, teamState) {
     teamState.placed,
     slumUpgradedSet,
     engine.config,
-    teamState.residentialDemandMultiplier
+    teamState.residentialDemandMultiplier,
+    floodExtras(teamState)
   );
-  const cashBonus = teamState.cash * engine.config.cashPointsPer1Cr;
-  return Math.floor(stats.breakdown.staticTotal + cashBonus + teamState.cumulativeScoreAdjustment);
+  return engine.computeScore(stats, teamState.cash, teamState.cumulativeScoreAdjustment, engine.config);
 }
 
 // Runs one team through one year's transition -- income, then twist
@@ -117,7 +138,8 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
     teamState.placed,
     slumUpgradedSet,
     engine.config,
-    teamState.residentialDemandMultiplier
+    teamState.residentialDemandMultiplier,
+    floodExtras(teamState)
   );
 
   let grossIncome = 0;
@@ -134,15 +156,19 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
   const unservedShare = stats.totalPop > 0 ? popWithManyUnserved / stats.totalPop : 0;
   let incomeMultiplier = unservedShare > engine.config.incomeHalvedUnservedShare ? 0.5 : 1;
 
+  let floorResult = null;
+  if (nextYear === 1) {
+    floorResult = engine.twists.checkMandatoryFloor(stats, teamState.placed);
+  }
+
   const mutable = {
     cash: teamState.cash,
     placed: { ...teamState.placed },
-    // applyPandemic() reads state.slumUpgraded.has(...) via
-    // computeCityStats and expects a Set -- teamState stores it as a
-    // plain array (Mongoose [String]), so it has to be converted here.
     slumUpgraded: new Set(teamState.slumUpgraded),
+    extraSlums: { ...teamState.extraSlums },
+    damagedTiles: { ...teamState.damagedTiles },
+    pollutionSpillTiles: new Set(teamState.pollutionSpillTiles),
     residentialDemandMultiplier: teamState.residentialDemandMultiplier,
-    immigrationOverflow: teamState.immigrationOverflow,
   };
 
   let twistResult = null;
@@ -151,13 +177,12 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
   if (twistName === 'flood') {
     twistResult = engine.twists.applyFlood(mutable, engine.map, engine.config);
   } else if (twistName === 'pandemic') {
-    twistResult = engine.twists.applyPandemic(mutable, engine.map, engine.config);
+    twistResult = engine.twists.applyOutbreak(mutable, engine.map, engine.config);
     incomeMultiplier = Math.min(incomeMultiplier, twistResult.incomeMultiplier);
     mutable.cash += twistResult.cashBonus;
-    scoreDelta -= twistResult.scorePenalty;
+    scoreDelta += twistResult.scoreDelta;
   } else if (twistName === 'immigration') {
-    twistResult = engine.twists.applyImmigration(mutable, engine.config);
-    mutable.residentialDemandMultiplier = 1 + (mutable.immigrationOverflow || 0);
+    twistResult = engine.twists.applyImmigrationSlums(mutable, engine.map, engine.config);
   } else if (twistName === 'olympics') {
     twistResult = engine.twists.evaluateOlympics(mutable, engine.config);
     mutable.cash += twistResult.cashBonus;
@@ -167,16 +192,25 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
     mutable.cash += twistResult.cashGain;
   }
 
+  if (floorResult && !floorResult.met) {
+    scoreDelta -= engine.config.mandatoryFloorScorePenalty;
+    incomeMultiplier = Math.min(incomeMultiplier, engine.config.mandatoryFloorIncomeMultiplier);
+  }
+
   mutable.cash = Math.max(0, mutable.cash + grossIncome * incomeMultiplier);
 
   teamState.cash = mutable.cash;
   teamState.placed = mutable.placed;
+  teamState.extraSlums = mutable.extraSlums;
+  teamState.damagedTiles = mutable.damagedTiles;
+  teamState.pollutionSpillTiles = Array.from(mutable.pollutionSpillTiles);
   teamState.residentialDemandMultiplier = mutable.residentialDemandMultiplier;
-  teamState.immigrationOverflow = mutable.immigrationOverflow;
   teamState.cumulativeScoreAdjustment += scoreDelta;
   teamState.year = nextYear;
+  teamState.lastTwistResult = { twist: twistName, result: twistResult, floorResult };
+  teamState.lastTwistYear = nextYear;
 
-  return { twistResult, grossIncome, incomeMultiplier, scoreDelta };
+  return { twistResult, grossIncome, incomeMultiplier, scoreDelta, floorResult };
 }
 
 // Year -> twist name mapping, identical to useGameStore.js's yearTwist

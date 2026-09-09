@@ -326,4 +326,13 @@ export function computeCityStats(
   };
 }
 
+// Final score = the static board score + a live cash bonus + whatever
+// twists have adjusted cumulatively (rules.md Part I). Never shown to a
+// team -- only the backend's Organizer Console leaderboard and the
+// final reveal read this.
+export function computeScore(stats, cash, cumulativeScoreAdjustment, config) {
+  const cashBonus = cash * config.cashPointsPer1Cr;
+  return Math.floor(stats.breakdown.staticTotal + cashBonus + cumulativeScoreAdjustment);
+}
+
 export { tileTypes };

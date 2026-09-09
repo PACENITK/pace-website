@@ -108,20 +108,20 @@ describe('Urban Mayhem backend', () => {
       await request(app)
         .post('/api/urban-mayhem/action')
         .set('Cookie', cookie)
-        .send({ type: 'place', row: 3, col: 3, buildingId: 'power_plant' });
+        .send({ type: 'place', row: 3, col: 3, buildingId: 'park' });
       const second = await request(app)
         .post('/api/urban-mayhem/action')
         .set('Cookie', cookie)
-        .send({ type: 'place', row: 3, col: 4, buildingId: 'water_tank' });
+        .send({ type: 'place', row: 3, col: 4, buildingId: 'storm_drainage' });
 
-      expect(second.body.placed).toEqual({ '3,3': 'power_plant', '3,4': 'water_tank' });
+      expect(second.body.placed).toEqual({ '3,3': 'park', '3,4': 'storm_drainage' });
 
       // Independent read (a fresh request, not the mutated in-memory
       // doc from the write above) -- this is what actually catches a
       // Mixed-field write that looked fine in-process but never
       // reached MongoDB.
       const reread = await request(app).get('/api/urban-mayhem/state').set('Cookie', cookie);
-      expect(reread.body.placed).toEqual({ '3,3': 'power_plant', '3,4': 'water_tank' });
+      expect(reread.body.placed).toEqual({ '3,3': 'park', '3,4': 'storm_drainage' });
     });
 
     it('rejects placing on an already-occupied tile', async () => {

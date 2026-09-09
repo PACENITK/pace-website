@@ -35,6 +35,11 @@ function stateForClient(team, global) {
     residentialDemandMultiplier: team.state.residentialDemandMultiplier,
     immigrationOverflow: team.state.immigrationOverflow,
     cumulativeScoreAdjustment: team.state.cumulativeScoreAdjustment,
+    damagedTiles: team.state.damagedTiles,
+    extraSlums: team.state.extraSlums,
+    pollutionSpillTiles: team.state.pollutionSpillTiles,
+    lastTwistResult: team.state.lastTwistResult,
+    lastTwistYear: team.state.lastTwistYear,
     year: team.state.year,
     lastError: team.state.lastError,
     locked: global.locked,
@@ -194,7 +199,7 @@ router.post('/advance-year', requireAdminKey, async (req, res) => {
     // only ever moves via this exact path).
     if (team.state.year >= nextYear) continue;
 
-    const { twistResult, grossIncome, incomeMultiplier, scoreDelta } = applyYearTransition(
+    const { twistResult, grossIncome, incomeMultiplier, scoreDelta, floorResult } = applyYearTransition(
       engine,
       team.state,
       global,
@@ -208,15 +213,17 @@ router.post('/advance-year', requireAdminKey, async (req, res) => {
       seq: team.state.actionSeq,
       year: nextYear,
       action: `twist_${twistName}`,
-      payload: { twistResult, grossIncome, incomeMultiplier, scoreDelta },
+      payload: { twistResult, grossIncome, incomeMultiplier, scoreDelta, floorResult },
       cost: null,
       cashAfter: team.state.cash,
       scoreAfter: score,
     });
     // Same Mixed-field caveat as /action's place branch: applyYearTransition
-    // reassigns team.state.placed (flood/treasure can remove entries),
-    // which Mongoose won't persist without this.
+    // reassigns these, which Mongoose won't persist without this.
     team.markModified('state.placed');
+    team.markModified('state.extraSlums');
+    team.markModified('state.damagedTiles');
+    team.markModified('state.lastTwistResult');
     await team.save();
     processed += 1;
   }

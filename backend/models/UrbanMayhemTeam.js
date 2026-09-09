@@ -29,6 +29,13 @@ const urbanMayhemTeamSchema = new mongoose.Schema({
     residentialDemandMultiplier: { type: Number, default: 1 },
     immigrationOverflow: { type: Number, default: 0 },
     cumulativeScoreAdjustment: { type: Number, default: 0 },
+    // v4 flood/immigration state -- mirrors useGameStore.js's initialState().
+    damagedTiles: { type: mongoose.Schema.Types.Mixed, default: {} },
+    extraSlums: { type: mongoose.Schema.Types.Mixed, default: {} },
+    pollutionSpillTiles: { type: [String], default: [] },
+    // What the last twist did to this team, for the client's reveal modal.
+    lastTwistResult: { type: mongoose.Schema.Types.Mixed, default: null },
+    lastTwistYear: { type: Number, default: 0 },
     // Mirrors the global clock (see UrbanMayhemGlobal) but lives here
     // too so /advance-year can tell, per team, whether this team's
     // twist for the year in question has already been applied --
