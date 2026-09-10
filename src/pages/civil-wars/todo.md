@@ -338,6 +338,17 @@ networked game teams actually play.
       5-second full-refund undo, then no recourse but moving. Runbook §3.2 notes that
       locking the year cancels any in-progress undo.
 
+## Done this session (immigration slums invisible on the board)
+
+- [x] Immigration spawns 2 slum tiles per team into `state.extraSlums`, but those tiles
+      stay `type: "empty"` in the shared map — so `CityGridV3` drew them as plain grass with
+      no marker. A player only saw where they landed in the twist modal, and building on
+      them failed with an unexplained "tile not buildable". Fixed: `TileV3` renders an
+      `extraSlums` tile with the slum texture + a pulsing amber "new arrivals" badge;
+      `CityGridV3` passes `isNewSlum` and the hover tooltip labels it "Immigration slum";
+      new `.cw3-slum-badge--new` CSS. Frontend only. **Needs an eyeball after redeploy** —
+      build passes and the logic is verified, but not seen rendering.
+
 ## Production config blockers for the organiser flow
 
 - [~] **`VITE_API_URL`** — addressed by another session in `5540510`: `.env.production` at
