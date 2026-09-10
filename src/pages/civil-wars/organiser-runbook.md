@@ -94,15 +94,22 @@ On the console, top bar: set the minutes (default **10**), click **Start practic
 
 ### 2.2 Hand out codes and let teams join
 
-Each team opens `/civil-wars/v3/play`, types their 4-character code, and confirms the team
-name shown ("is this you?") before the board loads — so a mistyped code is caught in
-seconds, not ten minutes in.
+Each team opens `/civil-wars/v3/play`, types their 4-character code, hits **Join**, and
+lands straight on the board with their team name in the top-left header. **Tell teams to
+check that name** — there is no separate "is this you?" confirmation screen, so a mistyped
+code that happens to match another real team is only caught by noticing the wrong name in
+the header.
 
-- A team can join from **multiple devices** on the same code. Each device gets its own
-  session; the join screen tells them how many other devices are already active on that
-  code. All devices see the same board, live (2.5-second poll).
-- The session is a cookie, valid 12 hours — longer than the event day.
-- The console's **Sessions** column shows how many devices each team has connected.
+- A team can join from **multiple devices** on the same code — this is expected (teams of
+  3–4). Every device shares the **same board**; a change on one shows on the others within
+  the 2.5-second poll. There is **no limit** on devices per code.
+- The session is an `um_session` cookie, valid 12 hours — longer than the event day.
+- **A browser refresh drops the player back to the join screen** (the "joined" state isn't
+  persisted client-side) and they must re-enter the code. The cookie still works, but
+  re-joining creates a fresh session and leaves the old one behind — so the console's
+  **Sessions** count drifts upward over the event and is a rough "devices that ever
+  connected", not "devices connected right now".
+- None of this affects the game: see §4.
 
 ### 2.3 End it — this starts the real game
 
@@ -221,6 +228,29 @@ deliberate (`rules.md` Part I): all a team ever sees is which service pips are f
 The score shown is the same formula that produces the final number — it's been running the
 whole time, just never shown to players. At the end, the leaderboard *is* the result.
 
+### 4.1 Joining, sessions, and the "Joined" column — what actually matters
+
+**None of it affects the game.** Cash, coverage, twists and score depend only on the board.
+Sessions and the "Joined" flag exist purely so the organiser can see who's in the room.
+
+- **Every seeded team is in the game whether or not anyone joins.** `Advance year` processes
+  all teams. A team that never connects still gets income, still gets hit by every twist,
+  and still has a score at the end (an empty board — almost all penalties). Watch the
+  **Joined** column during Year 0 and chase anyone showing "—".
+- **A join is just a session.** `POST /join` with a valid code creates a new session and
+  sets a cookie. `/state` and `/action` need only a valid session cookie — not a minimum
+  number of sessions, not the "Joined" flag.
+- **No cap on devices per code**, by design. All of a team's devices drive one shared
+  board; concurrent edits are serialised server-side so they can't corrupt the save.
+- **"Joined"** in the console = "has anyone on this team ever connected" (`sessions > 0`).
+  Display only.
+- **"Sessions"** = total sessions ever created for that team. It only goes up — a browser
+  refresh makes the player re-enter their code, which adds a session and orphans the old
+  one. Treat it as "connections so far", not "people online now".
+- **Session lifetime**: the cookie lasts 12 hours; there is no idle timeout and no
+  server-side cleanup. A `Full reset` (or `End practice`) is the only thing that clears
+  sessions.
+
 ---
 
 ## 5. IF SOMETHING GOES WRONG
@@ -228,9 +258,11 @@ whole time, just never shown to players. At the end, the leaderboard *is* the re
 | Symptom | Cause / fix |
 |---|---|
 | Organiser console: "Bad or missing admin key" on every action | `URBAN_MAYHEM_ADMIN_KEY` not set on the server, or you typed it wrong. Check the backend env; the console 500s if it's absent. |
-| Players: page loads but "not joined" / can't reach the board | `VITE_API_URL` wasn't set at build time, so the browser is calling `localhost:5000`. Rebuild the frontend with `VITE_API_URL` pointing at the backend's public origin. |
+| **"Couldn't join with that code"** on every code | The client shows this same message for a bad code *and* for any network/CORS/server failure. Open the browser's Network tab and look at the `/join` request: **404** = the code really isn't seeded (or was misread — the alphabet has no `O/0/I/1`); **failed / CORS / blocked** = `VITE_API_URL` is wrong (page is calling `localhost:5000`) or the page origin isn't in the backend's CORS allow-list (`localhost:5173`, `127.0.0.1:5173`, `FRONTEND_URL`); **500** = backend or Mongo down. |
+| Players: page loads but "not joined" / can't reach the board | Same root cause as above — `VITE_API_URL` wasn't set at build time, so the browser calls `localhost:5000`. Rebuild the frontend with `VITE_API_URL` pointing at the backend's public origin (and make sure that origin equals `FRONTEND_URL` for CORS + cookies). |
 | Backend won't start / can't connect to Mongo | With host networking, `MONGO_URI` must be `mongodb://127.0.0.1:27017/pace`, not `mongodb://mongo:...`. |
-| A team joined the wrong code | They'll have seen the wrong team name on the confirm screen. Re-issue the correct slip; the bad session is harmless (it's just another device on that other team — visible in the Sessions count). |
+| A team joined the wrong code | They'll be on the wrong team's board with that team's name in the header — tell them to check it. Re-issue the correct slip. The stray session on the other team is harmless (just another device in its Sessions count). |
+| A player refreshed and is back at the join screen | Expected — "joined" isn't persisted. They re-enter the same code; the cookie still works, they rejoin the same board. Their Sessions count ticks up by one; ignore it. |
 | Team says their board is wrong / wants a do-over mid-event | There is no per-team reset. The only resets are **End practice** and **Full reset**, both of which wipe *everyone*. Don't. |
 | You advanced a year too early | Not reversible from the console. The twist has been applied and logged. Decide whether to hold the next year open longer to compensate, or (worst case, pre-scoring) `Full reset` and restart — this logs everyone out and they re-enter codes. |
 | Need to wipe everything and restart (rehearsal, or a broken event) | **Full reset** (dev button, arms on first click, confirms on second). Wipes all boards, clears all sessions, re-inits the clock. Teams must re-enter their codes. Codes and team names survive. |
