@@ -253,6 +253,39 @@ Sessions and the "Joined" flag exist purely so the organiser can see who's in th
 
 ---
 
+## 4a. REHEARSING THE WHOLE EVENT (do this before the real one)
+
+`backend/scripts/rehearseUrbanMayhem.js` runs a complete 6-year game against the deployed
+backend in ~5 minutes: it seeds throwaway `RHRS*` teams, joins each as an autonomous bot
+player (build → poll → react), and a conductor fires the twists on a timer
+(Flood → Outbreak → Immigration → Olympics → Treasure, one per `--year-seconds`). Bots
+repair flood damage, emergency-build hospitals, reach the new slums, and claim the
+treasure — the same requests a real browser sends.
+
+```bash
+# inside / next to the backend container, admin key from the env:
+docker compose exec backend node scripts/rehearseUrbanMayhem.js \
+  --url http://localhost:5000 --admin "$URBAN_MAYHEM_ADMIN_KEY" \
+  --teams 8 --year-seconds 60
+```
+
+Options: `--teams N` (default 6), `--year-seconds S` (default 60 → ~5-min run; use `8` for
+a ~1-min smoke test), `--warmup S` (Year 0 build time), `--no-cleanup` (leave the RHRS
+teams + Year 5 board for inspection), `--mongo <uri>`.
+
+It **asserts and exits non-zero** on: wrong twist order, a twist not reaching every team, a
+non-finite score, the global clock not reaching Year 5, or any HTTP 5xx to a bot. On
+success it prints a leaderboard and per-bot activity (buildings placed, repairs, treasure
+claimed).
+
+**Run it against a local `docker compose` stack first, then against prod _before_ seeding
+the real 31 teams** — it deletes only `RHRS*` teams but it **does reset the shared global
+clock**, so run it, then seed the real teams (`npm run seed:urban-mayhem`), then open the
+console. It's also the fastest check that `URBAN_MAYHEM_ADMIN_KEY`, nginx routing, the
+container's engine, and Mongo persistence are all wired correctly.
+
+---
+
 ## 5. IF SOMETHING GOES WRONG
 
 | Symptom | Cause / fix |
