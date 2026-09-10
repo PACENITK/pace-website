@@ -34,6 +34,7 @@ function loadEngine() {
       config: configMod.default,
       computeCityStats: scoreMod.computeCityStats,
       computeScore: scoreMod.computeScore,
+      computeScoreParts: scoreMod.computeScoreParts,
       chebyshev: allocateMod.chebyshev,
       twists: twistsMod,
       map: mapMod.default,

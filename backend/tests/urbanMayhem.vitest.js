@@ -298,6 +298,50 @@ describe('Urban Mayhem backend', () => {
     });
   });
 
+  describe('POST /reveal-results', () => {
+    it('adds a score breakdown to /state and blocks building once revealed', async () => {
+      await makeTeam({ code: 'WXYZ' });
+      const { cookie } = await joinAs('WXYZ');
+      await request(app)
+        .post('/api/urban-mayhem/action')
+        .set('Cookie', cookie)
+        .send({ type: 'place', row: 2, col: 2, buildingId: 'park' });
+
+      // before reveal: no breakdown
+      const before = await request(app).get('/api/urban-mayhem/state').set('Cookie', cookie);
+      expect(before.body.scoreBreakdown).toBeUndefined();
+
+      const rev = await request(app)
+        .post('/api/urban-mayhem/reveal-results')
+        .set('x-admin-key', ADMIN_KEY)
+        .send({ show: true });
+      expect(rev.status).toBe(200);
+      expect(rev.body.phase).toBe('results');
+
+      const after = await request(app).get('/api/urban-mayhem/state').set('Cookie', cookie);
+      const bd = after.body.scoreBreakdown;
+      expect(bd).toBeDefined();
+      expect(Number.isFinite(bd.total)).toBe(true);
+      expect(Math.floor(bd.board.total + bd.cashBonus + bd.twistAdjustment)).toBe(Math.round(bd.total));
+      expect(Array.isArray(bd.twists)).toBe(true);
+
+      const blocked = await request(app)
+        .post('/api/urban-mayhem/action')
+        .set('Cookie', cookie)
+        .send({ type: 'place', row: 3, col: 3, buildingId: 'park' });
+      expect(blocked.status).toBe(423);
+
+      // hide again -> back to live, breakdown gone
+      const hide = await request(app)
+        .post('/api/urban-mayhem/reveal-results')
+        .set('x-admin-key', ADMIN_KEY)
+        .send({ show: false });
+      expect(hide.body.phase).toBe('live');
+      const relive = await request(app).get('/api/urban-mayhem/state').set('Cookie', cookie);
+      expect(relive.body.scoreBreakdown).toBeUndefined();
+    });
+  });
+
   describe('POST /reset', () => {
     it('wipes board state and sessions but keeps team identity', async () => {
       await makeTeam({ code: 'WXYZ' });

@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { fetchOverview, lockYear, advanceYear, resetAll, startPractice, endPractice } from "../api/urbanMayhemClient.js";
+import {
+  fetchOverview,
+  lockYear,
+  advanceYear,
+  resetAll,
+  startPractice,
+  endPractice,
+  revealResults,
+} from "../api/urbanMayhemClient.js";
 import "../civil-wars-v3.css";
 
 const KEY_STORAGE = "um_admin_key";
@@ -193,6 +201,7 @@ function OrganizerConsole() {
   const ranked = [...teams].sort((a, b) => b.score - a.score);
   const joinedCount = teams.filter((t) => t.joined).length;
   const inPractice = global.phase === "practice";
+  const resultsRevealed = global.phase === "results";
   const practiceRemainingMs = global.practiceEndsAt ? new Date(global.practiceEndsAt).getTime() - now : 0;
   const gameOver = global.year >= 5;
   const nextYear = global.year + 1;
@@ -214,7 +223,7 @@ function OrganizerConsole() {
                 : "bg-white border border-[color:var(--game-rule)] text-[color:var(--game-ink)]"
             }`}
           >
-            {inPractice ? "TRIAL RUN" : "Live game"}
+            {inPractice ? "TRIAL RUN" : resultsRevealed ? "RESULTS SHOWN" : "Live game"}
           </span>
           {global.locked && !inPractice && (
             <span className="px-2.5 py-1 rounded-sm bg-[color:var(--game-bad)] text-white text-sm font-semibold">
@@ -317,7 +326,30 @@ function OrganizerConsole() {
           </div>
 
           {gameOver ? (
-            <div className="text-sm font-semibold">All 5 years played. Final standings are below.</div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="text-sm">
+                All 5 years played. Final standings are below.
+                <div className="text-[color:var(--game-mute)]">
+                  {resultsRevealed
+                    ? "Teams can now sign in at /civil-wars/v3/play and see their own score breakdown."
+                    : "Reveal results to let each team sign in and see their own score breakdown on the play page."}
+                </div>
+              </div>
+              <span className="flex-1" />
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() =>
+                  run(
+                    () => revealResults(adminKey, !resultsRevealed),
+                    resultsRevealed ? "Results hidden — teams see the board again." : "Results revealed to every team.",
+                  )
+                }
+                className={resultsRevealed ? btnGhost : btnGo}
+              >
+                {resultsRevealed ? "Hide results" : "🏁 Reveal results to teams"}
+              </button>
+            </div>
           ) : (
             <>
               <p className="text-sm text-[color:var(--game-mute)] mb-3">

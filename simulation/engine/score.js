@@ -331,8 +331,33 @@ export function computeCityStats(
 // team -- only the backend's Organizer Console leaderboard and the
 // final reveal read this.
 export function computeScore(stats, cash, cumulativeScoreAdjustment, config) {
+  return computeScoreParts(stats, cash, cumulativeScoreAdjustment, config).total;
+}
+
+// Same number as computeScore(), but with every component broken out
+// for the final results screen (rules.md Part I's three tables). The
+// per-twist itemisation isn't here -- `twistAdjustment` is the lump
+// sum; the caller reads the individual deltas from the action log.
+export function computeScoreParts(stats, cash, cumulativeScoreAdjustment, config) {
+  const b = stats.breakdown;
   const cashBonus = cash * config.cashPointsPer1Cr;
-  return Math.floor(stats.breakdown.staticTotal + cashBonus + cumulativeScoreAdjustment);
+  const total = Math.floor(b.staticTotal + cashBonus + cumulativeScoreAdjustment);
+  return {
+    total,
+    board: {
+      servicePoints: b.servicePoints,
+      unservedPenalty: -b.unservedPenalty,
+      slumSanitationPenalty: -b.slumSanitationPenalty,
+      pollutionPenalty: -b.pollutionPenalty,
+      sewagePenalty: -b.sewagePenalty,
+      allServedBonus: b.allServedBonus,
+      coverageBonus: b.coverageBonus,
+      slumRehousedBonus: b.slumRehousedBonus,
+      total: b.staticTotal,
+    },
+    cashBonus: Math.round(cashBonus * 100) / 100,
+    twistAdjustment: cumulativeScoreAdjustment,
+  };
 }
 
 export { tileTypes };

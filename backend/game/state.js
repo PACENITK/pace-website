@@ -271,6 +271,22 @@ function computeScore(engine, teamState) {
   return engine.computeScore(stats, teamState.cash, teamState.cumulativeScoreAdjustment, engine.config);
 }
 
+// The itemised version, for the end-of-game results screen. Same total
+// as computeScore(). `twists` (the per-year deltas) is filled in by the
+// route from the action log -- this function only knows the lump sum.
+function computeScoreBreakdown(engine, teamState) {
+  const slumUpgradedSet = new Set(teamState.slumUpgraded);
+  const stats = engine.computeCityStats(
+    engine.map,
+    teamState.placed,
+    slumUpgradedSet,
+    engine.config,
+    teamState.residentialDemandMultiplier,
+    floodExtras(teamState)
+  );
+  return engine.computeScoreParts(stats, teamState.cash, teamState.cumulativeScoreAdjustment, engine.config);
+}
+
 // Runs one team through one year's transition -- income, then twist
 // (a team that's about to get hit by the pandemic still collected the
 // year's income first) -- mutating teamState in place. Mirrors
@@ -390,6 +406,7 @@ module.exports = {
   applyRepair,
   applyUndo,
   computeScore,
+  computeScoreBreakdown,
   applyYearTransition,
   twistForYear,
   applyClaimTreasure,

@@ -68,4 +68,8 @@ export function endPractice(key) {
   return api.post("/end-practice", {}, adminHeaders(key)).then((r) => r.data);
 }
 
+export function revealResults(key, show = true) {
+  return api.post("/reveal-results", { show }, adminHeaders(key)).then((r) => r.data);
+}
+
 export default api;

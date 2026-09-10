@@ -568,6 +568,32 @@ async function main() {
     if (ov.data.teams.every((t) => Number.isFinite(t.score))) ok('every team has a finite score');
   }
 
+  // reveal results -> every team's /state should now carry a score
+  // breakdown whose total matches the leaderboard
+  const rev = await admin.post('/reveal-results', { show: true }, { admin: true });
+  if (rev.status !== 200 || rev.data.phase !== 'results') {
+    fail(`reveal-results -> ${rev.status} ${JSON.stringify(rev.data)}`);
+  } else {
+    let breakdownOk = true;
+    for (const bot of bots) {
+      const st = await bot.client.get('/state');
+      const bd = st.data && st.data.scoreBreakdown;
+      const lbScore = leaderboard.find((t) => t.code === bot.code)?.score;
+      if (!bd || !Number.isFinite(bd.total)) { breakdownOk = false; fail(`${bot.code}: no scoreBreakdown after reveal`); continue; }
+      if (Math.round(bd.total) !== Math.round(lbScore)) {
+        breakdownOk = false;
+        fail(`${bot.code}: breakdown total ${bd.total} != leaderboard ${lbScore}`);
+      }
+      const sum = Math.floor(bd.board.total + bd.cashBonus + bd.twistAdjustment);
+      if (sum !== Math.round(bd.total)) { breakdownOk = false; fail(`${bot.code}: breakdown parts ${sum} != total ${bd.total}`); }
+    }
+    if (breakdownOk) ok('results revealed: every team has a breakdown whose total + parts check out');
+    // building is refused once results are shown
+    const blocked = await bots[0].client.post('/action', { type: 'place', row: 1, col: 1, buildingId: 'park' });
+    if (blocked.status === 423) ok('building is refused after results are revealed');
+    else fail(`expected 423 building after reveal, got ${blocked.status}`);
+  }
+
   // per-bot state checks
   let anyFlood = false;
   let allImmigration = true;

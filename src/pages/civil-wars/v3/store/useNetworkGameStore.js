@@ -41,6 +41,8 @@ function applyServerState(set, data) {
     practiceEndsAt: data.practiceEndsAt || null,
     treasureRevealed: data.treasureRevealed || false,
     treasureClaimed: data.treasureClaimed || false,
+    // Present only once the organiser reveals results (phase === "results").
+    scoreBreakdown: data.scoreBreakdown || null,
     // Server sends "r,c"; the board compares against numeric tile
     // indices, so parse to [row, col].
     treasureTile: data.treasureTile
@@ -73,6 +75,7 @@ function initialState() {
     treasureRevealed: false,
     treasureClaimed: false,
     treasureTile: null,
+    scoreBreakdown: null,
     shownTwistYear: 0,
     lastTwist: null,
     twistHelpOpen: false,

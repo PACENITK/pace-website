@@ -10,6 +10,7 @@ import CityStatusPanel from "./components/CityStatusPanel.jsx";
 import TwistModal from "./components/TwistModal.jsx";
 import PlacementConfirmModal from "./components/PlacementConfirmModal.jsx";
 import UndoBanner from "./components/UndoBanner.jsx";
+import ResultsScreen from "./components/ResultsScreen.jsx";
 import "./civil-wars-v3.css";
 
 function fmtCountdown(ms) {
@@ -127,10 +128,11 @@ function CivilWarsV3Board() {
 
 function CivilWarsV3Online() {
   const joined = useNetworkGameStore((s) => s.joined);
+  const phase = useNetworkGameStore((s) => s.phase);
 
   return (
     <GameStoreContext.Provider value={useNetworkGameStore}>
-      {joined ? <CivilWarsV3Board /> : <JoinScreen />}
+      {!joined ? <JoinScreen /> : phase === "results" ? <ResultsScreen /> : <CivilWarsV3Board />}
     </GameStoreContext.Provider>
   );
 }

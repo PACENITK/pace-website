@@ -11,6 +11,7 @@ const {
   applyRepair,
   applyUndo,
   computeScore,
+  computeScoreBreakdown,
   applyYearTransition,
   twistForYear,
   tileKey,
@@ -82,10 +83,36 @@ router.post('/join', async (req, res) => {
   res.json({ teamName: team.teamName, otherActiveSessions: team.sessions.length - 1 });
 });
 
+// The per-year twist score changes for one team, itemised from the
+// action log (each `twist_<name>` row stored its own scoreDelta and,
+// at year 1, the mandatory-floor result). Only used for the results
+// screen -- ordinary play never needs this.
+async function twistDeltasForTeam(teamId) {
+  const rows = await UrbanMayhemActionLog.find({ teamId, action: /^twist_/ }).sort({ year: 1 });
+  return rows.map((r) => {
+    const p = r.payload || {};
+    return {
+      year: r.year,
+      twist: r.action.replace(/^twist_/, ''),
+      scoreDelta: p.scoreDelta || 0,
+      floorMissed: p.floorResult ? p.floorResult.met === false : false,
+    };
+  });
+}
+
 router.get('/state', requireTeamSession, async (req, res) => {
   const engine = await loadEngine();
   const global = await getOrCreateGlobal(engine);
-  res.json(stateForClient(req.umTeam, global));
+  const body = stateForClient(req.umTeam, global);
+
+  // Once the organiser reveals results, a team's own final score
+  // breakdown rides along on /state so the /play page can show it.
+  if (global.phase === 'results') {
+    const parts = computeScoreBreakdown(engine, req.umTeam.state);
+    body.scoreBreakdown = { ...parts, twists: await twistDeltasForTeam(req.umTeam._id) };
+  }
+
+  res.json(body);
 });
 
 const ACTION_TYPES = ['place', 'rehouse', 'move', 'repair', 'undo', 'claim_treasure'];
@@ -107,6 +134,9 @@ router.post('/action', requireTeamSession, async (req, res) => {
       const team = await UrbanMayhemTeam.findById(teamId);
       const global = await getOrCreateGlobal(engine);
 
+      if (global.phase === 'results') {
+        return { status: 423, body: { error: 'The game is over.' } };
+      }
       if (global.locked) {
         return { status: 423, body: { error: 'Year is ending -- building is paused.' } };
       }
@@ -375,6 +405,20 @@ router.post('/advance-year', requireAdminKey, async (req, res) => {
   await global.save();
 
   res.json({ year: nextYear, twist: twistName, teamsProcessed: processed });
+});
+
+// Flips the event into 'results': every team's /play page swaps the
+// board for a final-score breakdown (they still sign in with their
+// code). `{ show: false }` flips it back to 'live' if revealed early.
+// Doesn't touch any team's board or score -- purely a visibility gate.
+router.post('/reveal-results', requireAdminKey, async (req, res) => {
+  const engine = await loadEngine();
+  const global = await getOrCreateGlobal(engine);
+  const show = req.body?.show !== false;
+  global.phase = show ? 'results' : 'live';
+  global.locked = false;
+  await global.save();
+  res.json({ phase: global.phase });
 });
 
 router.get('/overview', requireAdminKey, async (req, res) => {

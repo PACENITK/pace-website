@@ -397,7 +397,7 @@ The treasure tile glows gold on your map after the reveal. Click it to claim.
 
 **The organizer sees every team's score, live and ranked, throughout the event** (Part L's Organizer Console). That's for pacing and watching the event, not for players.
 
-**Year 6 is the only reveal.** One number per team, calculated exactly as below, ranked against everyone else. Nobody — not even the organizer showing it — is doing any judging; it's the same formula that's been running the whole time, just never displayed until now.
+**Year 6 is the only reveal.** When the organizer releases the results, sign back in on the play screen with your team code and you'll see your final score with a full breakdown — every board line, your cash score, and what each year's event did. One number per team, calculated exactly as below. Nobody is doing any judging; it's the same formula that's been running the whole time, just never displayed until now.
 
 Everything below this line — every number, every formula — is public. It's only the running total that's never shown until Year 6.
 

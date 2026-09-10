@@ -366,9 +366,12 @@ networked game teams actually play.
       with `network_mode: host` the hostname `mongo` doesn't resolve, needs
       `mongodb://127.0.0.1:27017/pace`. (Still open — if the portal's DB writes work in prod,
       something's compensating.)
-- [ ] No automated "Year 6" / final-score reveal screen for players — the organiser reads
-      the leaderboard off `/overview` and announces it verbally. Fine for a live event;
-      note it so nobody goes looking for a button.
+- [x] ~~No Year 6 / final-score reveal screen for players~~ — built. `POST /reveal-results`
+      (organiser button) flips `global.phase` to `results`; `/state` then carries a per-team
+      `scoreBreakdown` (board lines + cash score + per-year twist deltas, itemised from the
+      action log); `/play` shows `ResultsScreen` in that phase. Building is refused once
+      revealed; "Hide results" reverts. `computeScoreParts` in `score.js`, one vitest test
+      (24/24), rehearsal script gained a reveal check.
 - [ ] **Manual browser click-through still not done** for `/civil-wars/v3/play` and
       `/civil-wars/v3/organizer`. Another session found and fixed three real UI bugs by
       looking (`17e9476`, `586bf10`, `aa4ccbc`: invisible console buttons, no repair markers)

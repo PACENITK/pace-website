@@ -199,9 +199,15 @@ A year can be held open as long as you like — just don't lock/advance until yo
 There is no automated "Year 6". Once teams have finished spending in Year 5 (including the
 treasure decision):
 
-- **Lock year** one last time so nobody can keep building.
-- Attempting to advance past Year 5 returns "Game is already complete."
-- Read the final standings off the console leaderboard (see section 4) and announce them.
+- **Lock year** one last time so nobody can keep building. (Attempting to advance past
+  Year 5 returns "Game is already complete.")
+- Click **🏁 Reveal results to teams** in the Twists & year control card. This flips the
+  event to the `results` phase: every team's `/play` page swaps the board for a **final
+  score breakdown** (they sign in again with the same code). Building is refused from this
+  point.
+- Read the final standings off the console leaderboard (section 4) and announce them —
+  teams can follow along on their own breakdown screens.
+- **Hide results** flips it back to `live` if you revealed too early.
 
 ---
 
@@ -326,6 +332,7 @@ YEARS 1..5  (~6 min each)
 
 AFTER YEAR 5
   [Lock year]  (final)
+  [Reveal results to teams]  ->  each team signs in and sees its own breakdown
   read leaderboard off the console  ->  announce standings
 
 leaderboard (console only, polled every 3s) is the single source of score
