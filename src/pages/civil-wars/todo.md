@@ -42,10 +42,7 @@ when new gaps turn up, add them here instead of just in chat.
     preview, "Moving: X" badge), `v3/components/TileV3.jsx` (move-source highlight),
     `v3/components/PlacementConfirmModal.jsx` (`MoveDetails`), `v3/components/
     UndoBanner.jsx` (move label). Documented in rules.md Parts F/K/L.
-  - ⚠️ **Only exists in the local single-browser simulation.** `backend/routes/
-    urbanMayhem.js`'s `/action` route only accepts `type: "place"` or `"rehouse"`; there's
-    no `"move"` branch, no `evaluateMove`/`applyMove` in `backend/game/state.js`. Add this
-    when the network path needs it.
+  - Now wired to the backend too — see "repair + move on the backend" below.
 
 ## Done this session (backend v4 parity — Phase 1 of connecting frontend↔backend)
 
@@ -107,10 +104,9 @@ real database (see below), not building it.
       (`/civil-wars/v3`) is unaffected since the context's default *is* that same store.
       `UndoBanner.jsx` still imports the local store directly on purpose (no undo online).
 - [x] `v3/store/useNetworkGameStore.js` — polls `GET /state` every 2.5s, calls
-      `placeBuilding`/`rehouseSlum` on confirm, pops the twist-reveal modal when the
-      server's `lastTwistYear` advances past what's already been shown. `repair`/`move`
-      are stubbed with a clear `lastError` message rather than left to crash on an
-      undefined function call.
+      `placeBuilding`/`rehouseSlum`/`moveBuilding`/`repairBuilding` on confirm, pops the
+      twist-reveal modal when the server's `lastTwistYear` advances past what's already
+      been shown.
 - [x] `v3/JoinScreen.jsx` + `v3/CivilWarsV3Online.jsx`, routed at `/civil-wars/v3/play`
       (`src/App.jsx`) — join by code, then the same board UI as the local sandbox, wired to
       the network store.
@@ -160,48 +156,127 @@ real database (see below), not building it.
 
 ---
 
-## Practice period (10 min) + admin reset-all
+## Done this session (repair + move on the backend)
 
-- [ ] Decide the flow: teams join early and get ~10 minutes of free play on a throwaway
-      board (to learn the interface / read the rules), then an organizer action wipes
-      every board back to zero and the real, scored game begins from Year 0.
-- [x] ~~Depends on the frontend↔backend wiring above existing~~ — that wiring now exists
-      (see above); this can be picked up directly.
-- [ ] Backend already has most of what a reset needs: `POST /reset`
-      (`backend/routes/urbanMayhem.js:259-271`, admin-key gated) wipes every team's
-      `state` back to `createInitialTeamState()` (fresh ₹3,000 Cr, empty board, Year 0),
-      resets the global clock/twist order/treasure tile, and clears the action log.
-  - ⚠️ It **also clears every team's `sessions` array** (line 265), which logs everyone
-    out and forces re-entering the join code. Decide if that's fine for a
-    practice→real-game transition, or add a lighter reset that wipes the board/cash but
-    keeps sessions alive.
-- [ ] Add a visible countdown for the practice window (10:00 → 0:00). Should be
-      server-driven (one clock everyone sees the same value for), not each browser's own
-      timer — there's no server-side timer/clock concept in `UrbanMayhemGlobal` today,
-      only a `locked` boolean and `year`.
-- [x] Organizer console now has a "Reset everyone" button (double-click-to-confirm) that
-      calls `POST /reset`.
-- [ ] It's generic ("reset the game"), not framed as "end practice" specifically, and
-      there's still no explicit signal on a team's screen when the board wipes out from
-      under them mid-build — their next poll (≤2.5s) will just show an empty board with no
-      banner explaining why.
-- [ ] If players should be told about the practice period, add a line to rules.md's
-      Player Brief (Part A) or Organiser Notes (Part L).
+The two features that only worked in the local sandbox now work in the real,
+backend-connected game too — closing the gap between what rules.md documents and what a
+team can actually do online.
+
+- [x] `backend/game/state.js` gained `evaluateMove`/`applyMove` (a direct port of the
+      client's `evaluateMove`) and `applyRepair`.
+- [x] `backend/routes/urbanMayhem.js`'s `/action` route now accepts `type: "move"` (body:
+      `fromRow`/`fromCol`/`toRow`/`toCol`) and `type: "repair"` (body: `row`/`col`), on top
+      of the existing `place`/`rehouse`. The building being moved is looked up from the
+      team's own `placed` state server-side, never trusted from the request body, so a
+      team can only ever move what's actually sitting on their own tile.
+- [x] `v3/store/evaluatePlacement.js` gained `evaluateMove`/`moveFee` (moved out of
+      `useGameStore.js`, which now imports them) so the local store, the network store, and
+      the backend all share the same validation shape.
+- [x] `v3/api/urbanMayhemClient.js` gained `moveBuilding`/`repairBuilding`;
+      `useNetworkGameStore.js`'s `beginMove`/`cancelMove`/`proposeMove`/`previewMove`/
+      `proposeRepair` are now real (mirroring the local store) instead of "not available
+      online yet" stubs.
+- [x] **Verified against the real running server + real Mongo**: seeded a team, placed a
+      dam + hydro, forced a flood twist (via `mongosh`, same technique the vitest suite's
+      own pandemic-regression test uses) to get a real damaged tile, repaired it (cash
+      dropped by exactly the repair cost, `damagedTiles` cleared, repairing again correctly
+      rejected), moved the hydro to a still-dam-adjacent tile (cash dropped by exactly the
+      10% fee), then confirmed a move far from any dam was correctly rejected with the same
+      `hasAdjacentDamWithCapacity` reason placement uses, and a move from an empty tile was
+      rejected with "No building at that tile". Checked the action log directly in Mongo —
+      `move`/`repair` entries recorded with the right cost/payload. Backend integration
+      suite still 23/23 afterward, engine test suite still the same pre-existing 12
+      failures, frontend build still clean.
+  - Caught and fixed a process-management mistake mid-verification: an earlier test's
+    backend server was still running in the background (killing it via `kill %1` in a later
+    tool call didn't work — each shell invocation is its own process, so that job number
+    didn't exist there), silently holding port 5000 and causing the *new* server process to
+    crash on startup (`EADDRINUSE`) while curl kept hitting the stale one. Killed it by PID
+    and confirmed the port was free before restarting.
+- [x] Confirmed the participant page (`/civil-wars/v3/play`) has no reset/organizer
+      controls reachable from it — grepped `v3/components/`, `JoinScreen.jsx`, and
+      `CivilWarsV3Online.jsx` for "Organizer"/"Reset"; the only match was an unrelated code
+      comment.
 
 ---
 
+## Practice period (10 min) + admin reset-all
+
+- [x] Decide the flow: teams join early and get ~10 minutes of free play on a throwaway
+      board (to learn the interface / read the rules), then an organizer action wipes
+      every board back to zero and the real, scored game begins from Year 0.
+      — Implemented via `POST /start-practice` (sets phase to "practice" with a timed end)
+      and `POST /end-practice` (wipes boards, preserves sessions, transitions to "live").
+- [x] ~~Depends on the frontend↔backend wiring above existing~~ — that wiring now exists
+      (see above); this can be picked up directly.
+- [x] Backend reset: resolved by splitting into two endpoints.
+      `POST /end-practice` wipes every team's board/cash back to fresh but **preserves
+      sessions** (nobody has to re-enter their join code). `POST /reset` (dev/rehearsal
+      only) still does the full wipe including sessions.
+- [x] Add a visible countdown for the practice window (10:00 → 0:00). Server-driven via
+      `practiceEndsAt` field on `UrbanMayhemGlobal`, `PracticeCountdown` component in
+      `CivilWarsV3Online.jsx`, organizer console also shows it.
+- [x] Organizer console now has dedicated "Start practice" and "End practice" buttons
+      (double-click-to-confirm) alongside the dev-only "Full reset". Teams see a
+      "Practice is over — the real game has begun. Your board was reset." banner
+      (auto-dismisses after 8s) when the practice→live transition happens.
+- [x] If players should be told about the practice period, add a line to rules.md's
+      Player Brief (Part A) or Organiser Notes (Part L).
+      — Done: Part A has a "10-minute practice run first" line; Part G's year table opens
+      with a Practice row; Part L "Running the event" has a "Practice → live" paragraph and
+      "What changed from v3" notes it.
+
+---
+
+## Done this session (fixed twist order — Flood → Outbreak → Immigration)
+
+Years 1–3 were a random permutation; they are now always Flood (Y1), Waterborne outbreak
+(Y2), Immigration (Y3). A known order is what lets the rules state, year by year, exactly
+what each twist puts at stake — which was the other half of this request.
+
+- [x] `src/pages/civil-wars/v3/store/useGameStore.js` — `shuffle([...])` replaced with a
+      module-level `TWIST_ORDER = ["flood", "pandemic", "immigration"]`; `twistOrder:
+      TWIST_ORDER.slice()` in `initialState()`. (`"pandemic"` kept as the internal key —
+      renaming it to `"outbreak"` would touch the test suite, the sim harness, the
+      action-log format string and DB-persisted values for no functional gain; the
+      player-facing label in `TwistModal.jsx` is already "Waterborne outbreak".)
+- [x] `backend/game/state.js` — same: `TWIST_ORDER` constant, `twistOrder:
+      TWIST_ORDER.slice()` in `createInitialGlobal()`. `twistForYear()` unchanged (still
+      reads `global.twistOrder[0..2]`), so `/advance-year` is now deterministic. The
+      `shuffle()` helper is still defined/exported but no longer used for the twist order.
+- [x] `backend/tests/urbanMayhem.vitest.js` — no change needed. The order-agnostic
+      assertion (`expect(['flood','pandemic','immigration']).toContain(...)`) still holds,
+      and the outbreak-regression test overrides `twistOrder` in the DB directly so it's
+      unaffected by the new default.
+- [x] `simulation/engine/simulate.js` — comment updated: the sweep still passes every
+      permutation for balance analysis, but the shipped order is `[flood, pandemic,
+      immigration]`. Sweep/run harness logic left as-is (it's a dev balance tool).
+- [x] **rules.md** — Part A ("Five things happen, and you know the order"), Part G (year
+      table names each twist; new "## What each year puts at stake" table with per-year
+      score/cash stakes), Part H intro ("The order is fixed: Flood Y1, Outbreak Y2,
+      Immigration Y3"), Part H Immigration (notes it lands after the outbreak, so the new
+      slums don't count toward the Y2 hospital check), Part I (worked example + formula
+      point 3 reference the new Part G table), Part K rule 9, Part L "What changed from v3".
+- [x] Also fixed in rules.md while here: Part L orphan bullets (hospital cost / income ×2.5)
+      given a "## Number changes carried into v4" heading instead of dangling under "Why the
+      grid grew"; Part A flood-band description corrected (Zone B is one row on one bank,
+      not "the next two out").
+
 ## Other known gaps (unrelated to the frontend↔backend connection work)
 
-- [ ] `simulation/strategies.js:284,300` (`ensurePower()`) still references
-      `buildingsById.power_plant`, which no longer exists in `buildings.js` — breaks any
-      simulated strategy that calls it.
-- [ ] `simulation/strategies.js:600` references `config.damDownstreamRadius`, renamed to
-      `damProtectionSpan` in `config.js` — same kind of breakage.
-- [ ] Both of the above break `simulation/sweep.js` (balance-simulation sweep) and
-      `simulation/inheritedCost.js` — worth fixing before running the pre-event balance
-      simulation rules.md Part L asks for. Same root cause as the `buildings.test.js`/
-      `score.test.js` failures logged above.
-- [ ] `backend/routes/urbanMayhem.js`'s `/action` route only accepts `type: "place"` or
-      `"rehouse"` — the client-side "move a building" mechanic has no server-side
-      equivalent yet. Needs an `evaluateMove`/`applyMove` pair in `backend/game/state.js`
-      mirroring `useGameStore.js`'s `evaluateMove`, plus a `move` branch in the route.
+- [ ] `simulation/` was **not** removed — it's the shared rules engine (`simulation/engine/
+      *.js` is imported by both `src/pages/civil-wars/v3/engine.js` and
+      `backend/game/engine.js`). The three struck-through items below were marked "moot,
+      directory removed" in error.
+- [ ] `simulation/strategies.js` (`ensurePower()`, ~line 284/300) still references
+      `buildingsById.power_plant`, and (~line 600) `config.damDownstreamRadius` — both gone
+      in v4. Breaks `simulation/sweep.js` / `simulation/run.js` / `simulation/
+      inheritedCost.js` and is part of the pre-existing 12 failing engine tests. `strategies.js`
+      needs a v4 pass (power_plant → dam+hydro, damDownstreamRadius → damProtectionSpan) or
+      the balance harness stays broken.
+- [ ] `simulation/engine/twists.test.js` (8 failures) and `simulate.js` still call the
+      removed `applyPandemic`/`applyImmigration` and read the dead `config.pandemic*` keys —
+      needs rewriting against `applyOutbreak`/`applyImmigrationSlums`, not just renaming.
+- [ ] `simulation/engine/config.js` still carries a dead `pandemic*` constant block
+      (lines 26–31) alongside the live `outbreak*` keys — safe to delete once the stale
+      tests above stop reading it.

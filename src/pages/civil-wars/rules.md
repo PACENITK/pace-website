@@ -22,9 +22,11 @@ Round 2 of Civil Unleashed · Teams of 3–4 · Laptop-based · ~50 minutes
 
 **Your city earns money every year.** Shops, industry and transport pay. Hospitals and schools cost. You need both.
 
-**Five things will go wrong.** You don't know which or when. Keep money aside.
+**Five things happen, and you know the order.** Flood in Year 1, a waterborne outbreak in Year 2, immigration in Year 3, the Olympics in Year 4, a hidden treasure in Year 5. What you *don't* know is how hard each one hits your particular city — that depends on what you built. The screen tells you exactly what each year puts at stake the moment it turns. Keep money aside for all of them.
 
-**Look at the flood bands now.** The two rows hugging the river are marked Severe, the next two out are marked Moderate. That's where the flood will hit, and how hard.
+**You get a 10-minute practice run first.** Join early and build freely on a throwaway board to learn the interface. When practice ends, the organiser wipes every board and the real, scored game begins from Year 0.
+
+**Look at the flood bands now.** The two rows hugging the river (one on each side) are marked Severe. One more row out, on a single bank only, is marked Moderate. That's where the flood will hit in Year 1, and how hard.
 
 **A computer scores everything.** No judges.
 
@@ -216,12 +218,15 @@ A Large industry poisons a 7×7 block — 49 tiles, a quarter of the whole map. 
 
 # PART G — THE YEARS
 
+**The order is fixed and you know it from the start.** What you don't know is how hard each year hits *your* city — that is decided by what you built.
+
 | | Duration | What happens |
 |---|---|---|
-| **Year 0** | 15 min | Planning. Build freely. No income, no costs yet. |
-| **Year 1** | 6 min | Income paid. **Twist 1.** |
-| **Year 2** | 6 min | Income paid. **Twist 2.** |
-| **Year 3** | 6 min | Income paid. **Twist 3.** |
+| **Practice** | ~10 min | Free play on a throwaway board. Learn the interface. Wiped clean when the organiser ends it. |
+| **Year 0** | 15 min | Planning. Build freely. No income, no costs yet. Mandatory floor checked when it ends. |
+| **Year 1** | 6 min | Income paid. **Flood.** |
+| **Year 2** | 6 min | Income paid. **Waterborne outbreak.** |
+| **Year 3** | 6 min | Income paid. **Immigration.** |
 | **Year 4** | 6 min | Income paid. **Olympics.** |
 | **Year 5** | 5 min | Income paid. **Treasure revealed.** Final spend. |
 | **Year 6** | — | Scoring. Leaderboard. |
@@ -239,11 +244,27 @@ Checked once, when Year 0 ends — not a twist, and it never blocks you from bui
 
 **Miss any of them and you take −100 score, and your income is halved in Year 1.** A confused team keeps playing — it just starts Year 1 behind. Everything else stays optional.
 
+## What each year puts at stake
+
+Every twist announces its own score and cash effect the moment the year turns — nothing here is hidden. This is that list, in order, so you can plan for it. Full mechanics are in Part H; the point and cash figures are in Part I.
+
+| Year | Event | Score at stake | Cash at stake | What decides it |
+|---|---|---|---|---|
+| **0 → 1** | Mandatory floor check | **−100** if any item missing (else 0) | **Year 1 income halved** if missed | Dam + hydro, full water coverage, a sewage plant, a hospital — all standing when Year 0 ends |
+| **1** | Flood | No direct score change. You lose **+10 per unit** for every service knocked offline, and take **−5 per unit unserved (−10 on a slum)** until repaired. Zone A park / drainage / farm are **destroyed outright** — cost lost. | **Repair bills**: slum ₹40 Cr (Zone A) / ₹20 Cr (B); most buildings 40% / 20% of their cost; residential 50% / 25%. Anything downstream of a dam pays nothing. | Dam coverage, storm drainage (halves repair), and cash held back for repairs |
+| **2** | Waterborne outbreak | **+50** if no infections · **0** if infected but fully treated · **−50 per missing hospital** if short · **−150** if infected with no hospital anywhere | **+₹50 Cr** if no infections · income **halved** if short on hospitals · income **zero** if no hospital anywhere | Sewage-plant coverage or treatment-plant water supply (containment), then 1 hospital per 2,500 infected — slums count double |
+| **3** | Immigration | No direct score change. Two new 2,500-person slums (3 demand units each) arrive fully unserved — up to **−540** in unserved-demand penalties across the two, plus **−50 each** with no sanitation in range, and **+270 each** forgone that you could have earned by serving them | The cost of the services needed to reach them | Empty land and spare cash left near your existing settlements |
+| **4** | Olympics | **+150** qualified · **−50** not qualified | **+₹500 Cr** qualified · nothing if not | 1 stadium + 5 hotels + 3 restaurants standing (announced Year 0, so decide early) |
+| **5** | Treasure | Only via cash score (see next column) | Empty tile → **+₹250 Cr net** (₹300 Cr − ₹50 Cr mining). Built on it → ₹300 Cr minus ₹50 Cr mining minus 50% demolish, or move the building first for 10% and claim the empty tile. Forfeit → ₹0. | Pure luck where the tile lands; your call whether to claim |
+| **6** | Final scoring | Board score + cash score + every line above, summed | — | — |
+
+**Also every year:** income is **halved** in any year where more than a third of your population is unserved on three or more services (Part F) — this stacks on top of a twist's own income penalty.
+
 ---
 
 # PART H — THE TWISTS
 
-Three of Flood, Waterborne outbreak and Immigration fill years 1–3, in an order you won't know. Olympics is always year 4. Treasure is always year 5.
+**The order is fixed: Flood in Year 1, Waterborne outbreak in Year 2, Immigration in Year 3.** Olympics is always Year 4, Treasure always Year 5. The order never changes between games or between teams — what changes is how much damage each one does to your city.
 
 ## Flood
 
@@ -293,6 +314,8 @@ Nothing can be done after it's announced except emergency-building hospitals at 
 
 They arrive completely unserved, on tiles you don't control the placement of. Leave land and cash spare near your city — the alternative is scrambling to reach two new slums from wherever they happen to land.
 
+Immigration is Year 3, *after* the outbreak — so these two slums never count toward the Year 2 hospital requirement. They do count toward everything scored at Year 6.
+
 ## Olympics
 
 The city bids to host. **Requirements:**
@@ -312,12 +335,16 @@ Announced at the start of the game. The required buildings all generate income a
 
 **One tile on the map holds treasure worth ₹300 Cr.** Which tile is not revealed until the end of Year 5.
 
-| Situation | Result |
-|---|---|
-| That tile is empty | You receive the full **₹300 Cr** |
-| You built there | You may claim the ₹300 Cr, but the building is **demolished and its cost lost**, along with whatever it was serving |
+When the tile is revealed, **claiming the treasure is your choice** — it is not automatic. You have the remainder of Year 5 to decide.
 
-You cannot plan for this. It is the one piece of pure luck in the game, and it is there for the drama of the final reveal.
+| Situation | To claim | Net gain |
+|---|---|---|
+| That tile is empty | Pay **₹50 Cr** mining charge | **₹250 Cr** |
+| You built there — demolish | Pay **50% of the building's cost** (demolition) + **₹50 Cr** mining charge. The building is removed and its services are lost. | ₹300 Cr minus those costs |
+| You built there — move first | Use the normal **move** action (10% of building cost) to relocate the building, then claim the now-empty tile for ₹50 Cr mining. | ₹300 Cr minus move + mining costs, building kept |
+| Do nothing | Keep the building, forfeit the treasure. | ₹0 |
+
+The treasure tile glows gold on your map after the reveal. Click it to claim.
 
 ---
 
@@ -377,11 +404,11 @@ Three things, added together:
 
 1. **Board score** — Points minus Penalties plus Bonuses, all three tables above, summed over your final board.
 2. **Cash score** — final cash × 0.05, from the Cash section above.
-3. **Every twist's own score change**, added up as the game plays out — the mandatory-floor penalty at Year 0 if you missed it, then whatever each of Years 1–5's twists did (a pandemic's +50 or −50/−150, Olympics' +150 or −50, and so on — each one is spelled out in Part H as its own twist). Nothing here is hidden math; every twist tells you its own score effect the moment it happens. What's hidden is only the running sum.
+3. **Every twist's own score change**, added up as the game plays out — the mandatory-floor penalty at Year 0 if you missed it, then whatever each of Years 1–5's twists did (the outbreak's +50 or −50/−150, Olympics' +150 or −50, and so on). Part G's "What each year puts at stake" table lists all of these in order. Nothing here is hidden math; every twist tells you its own score effect the moment it happens. What's hidden is only the running sum.
 
 **Score = board score + cash score + every twist's score change.**
 
-Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points), a pandemic that hit for −50 (short one hospital), Olympics qualified (+150) → 380 + 60 − 50 + 150 = **540**.
+Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points), an outbreak in Year 2 that hit for −50 (short one hospital), Olympics qualified in Year 4 (+150) → 380 + 60 − 50 + 150 = **540**.
 
 ---
 
@@ -409,10 +436,10 @@ Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points
 6. One building per tile. Dams only on river tiles.
 7. **You cannot go below zero.** No debt.
 8. Income is paid at the start of each year from the buildings then standing.
-9. Twists apply to all teams at the same moment.
+9. Twists apply to all teams at the same moment, in a fixed order: Flood (Year 1), Waterborne outbreak (Year 2), Immigration (Year 3), Olympics (Year 4), Treasure (Year 5).
 10. Twist costs come out of your current balance.
 11. The mandatory floor (dam + hydro, full water coverage, a sewage plant, a hospital) is checked once, when Year 0 ends. Missing it costs −100 score and halves Year 1 income — it never blocks play.
-12. The treasure tile is revealed at the end of Year 5.
+12. The treasure tile is revealed at the end of Year 5. Claiming it costs ₹50 Cr (mining); if you built on it, demolishing costs 50% of that building's price on top. You may also move the building first. You can choose not to claim.
 13. Final score is calculated by the system using Part I. There is no judging panel.
 
 ---
@@ -421,7 +448,7 @@ Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points
 
 ## What changed from v2
 
-- **Treasure** reverted to a single random tile revealed at the end, per the original design
+- **Treasure** is a single tile revealed at Year 5; claiming is now a choice — teams pay ₹50 Cr mining (+ 50% demolish if built on), or can move the building first, or forfeit
 - **Olympics** requirements restored to 1 stadium, 5 hotels, 3 restaurants — only the points and payout are new
 - **Debt system removed** entirely; spending below zero is simply blocked
 - **Grid enlarged** 12×9 (108 tiles) → **16×12 (192 tiles)**
@@ -440,10 +467,16 @@ Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points
 - **Low-lying art no longer replaces a slum's own art.** A slum tile flagged low-lying used to render as generic marshy ground, wiping out the slum sprite entirely ("slum overlapping with low-lying area"). It now keeps its own art with the flood tint layered on top.
 - **Fixed a z-index bug** where anything placed on a low-lying tile — building art, service pips, the slum badge — painted *behind* the flood-zone texture instead of on top of it, because the texture layer had no explicit stacking order.
 - **Moving a building added.** Pick up anything already placed and relocate it to a new empty tile for 10% of its price; coverage recalculates from the new position exactly like a fresh placement — see Part F.
+- **Twist order fixed.** Years 1–3 were a random permutation of Flood / Outbreak / Immigration in v3. They are now always Flood → Outbreak → Immigration, in that order, every game and every team. A known order is what lets Part G tell players exactly what each year puts at stake. Olympics (Year 4) and Treasure (Year 5) were already fixed.
+- **Practice period added.** Teams join early and get ~10 minutes of free play on a throwaway board; the organiser then wipes every board and the scored game starts from Year 0. Sessions (join codes) survive the wipe — see "Running the event" below.
 
 ## Running the event
 
-One organizer laptop, one admin key. The Organizer Console: locks a year, advances it (draws and applies that year's twist to every team at once), and shows a live leaderboard — every team, ranked by score, updating continuously throughout the event. This is the one place scores are visible before Year 6 (Part I) — never show this screen to players.
+One organizer laptop, one admin key. The Organizer Console: starts and ends the practice period, locks a year, advances it (applies that year's fixed twist to every team at once), and shows a live leaderboard — every team, ranked by score, updating continuously throughout the event. This is the one place scores are visible before Year 6 (Part I) — never show this screen to players.
+
+**Practice → live.** Teams join with their code and play freely on a throwaway board while a countdown runs (default 10:00). "End practice" wipes every board and cash back to fresh and moves the event to Year 0 — but keeps every session, so nobody re-enters a join code. Teams see a "practice is over, your board was reset" banner. There is also a dev-only full reset that clears sessions too; do not use it once teams have joined.
+
+**Advancing years.** Because the twist order is fixed, "Advance year" is deterministic: Year 1 always draws Flood, Year 2 the outbreak, Year 3 immigration, Year 4 Olympics, Year 5 the treasure reveal. Lock the year first (pauses building for every team), then advance. A year can be held open longer if teams are struggling — just don't advance until you're ready.
 
 ## Why the grid grew
 
@@ -452,6 +485,9 @@ At ₹3,000 Cr a realistic city is **60–75 buildings**, and a cheap-building s
 The working ratio is **roughly 2 buildable tiles per building a team can afford**. At 170 buildable tiles against 60–75 buildings, that lands at about 2.5×, which leaves real room to plan.
 
 **Render at 56px per tile** — 896 × 672 px, which fits a 1366×768 laptop with panels at 180px and 220px. Check the art at that size before committing: if a slum no longer reads as different from a colony at a glance, drop to **15×10 at 64px** rather than shrinking the tiles further.
+
+## Number changes carried into v4
+
 - **Hospitals** ₹80 → ₹50 Cr
 - **All commercial and transport income ×2.5** — at the old figures no income strategy ever paid back its capital
 
@@ -518,7 +554,7 @@ Three values worth A/B testing in the balance simulation before locking the even
 
 ## Known risks
 
-**The treasure is luck.** Roughly a 1-in-3 chance of hitting a built tile on a full board, and nothing a team can do about it. **Check that the gap between 1st and 2nd is larger than ₹300 Cr.** If it isn't, the treasure picked your winner.
+**The treasure is a choice, not pure luck.** Teams who built on it can move the building (10% cost), demolish and claim (50% + ₹50 mining), or forfeit entirely. The drama is in the decision, not the dice roll. Still worth checking the leaderboard gap — if a team at the bottom claims ₹250 Cr net and it changes nothing, no harm; if the gap between 1st and 2nd is razor-thin, the treasure tile's location may matter.
 
 **22 buildings is a lot for a first-year.** Consider showing only Essentials and Residential in Year 0, unlocking Economy and Transport at Year 1. Same game, half the menu when they are most overwhelmed.
 

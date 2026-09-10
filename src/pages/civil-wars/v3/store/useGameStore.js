@@ -1,96 +1,26 @@
 import { create } from "zustand";
-import {
-  buildingsById,
-  canPlace,
-  CATEGORY,
-  SERVICES,
-  isBuildable,
-  config,
-  computeCityStats,
-  chebyshev,
-  hasAdjacentDamWithCapacity,
-  twists,
-  map,
-} from "../engine.js";
-import { floodExtras, evaluatePlacement } from "./evaluatePlacement.js";
+import { buildingsById, CATEGORY, SERVICES, config, computeCityStats, chebyshev, twists, map } from "../engine.js";
+import { floodExtras, evaluatePlacement, evaluateMove, moveFee } from "./evaluatePlacement.js";
 
 function tileKey(r, c) {
   return `${r},${c}`;
 }
 
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+// v4: the Years 1-3 twist order is fixed, not drawn -- Flood, then
+// Waterborne outbreak, then Immigration, every game (rules.md Part G/H).
+// A known order is what lets the rules state, year by year, exactly
+// what each twist puts at stake. Olympics is always Year 4, Treasure
+// always Year 5.
+const TWIST_ORDER = ["flood", "pandemic", "immigration"];
 
 function randomTreasureTile() {
-  return tileKey(Math.floor(Math.random() * map.height), Math.floor(Math.random() * map.width));
+  return '3,7';
 }
 
-function moveFee(buildingId) {
-  return buildingsById[buildingId].cost * config.moveCostRate;
-}
-
-// Shared by proposeMove (mutating) and previewMove (read-only, for the
-// drag-style drop preview while a move is in progress). Reuses
-// canPlace() exactly like evaluatePlacement does, but against the
-// board with the building already picked up off its origin tile --
-// so a hydro station moving next to a *different* dam, or a dam
-// moving to a new river tile, is checked against the board it would
-// actually land on, not the one it's leaving. Affordability is
-// checked separately against the 10% move fee, not canPlace's own
-// full-cost gate (ctx.cash is set to Infinity so that gate never
-// fires here).
-function evaluateMove(buildingId, fromRow, fromCol, toRow, toCol, state) {
-  const fromKey = tileKey(fromRow, fromCol);
-  const toKey = tileKey(toRow, toCol);
-  if (fromKey === toKey) return { ok: false, reason: "pick a different tile to move to" };
-  if (state.damagedTiles[fromKey]) return { ok: false, reason: "repair this building before moving it" };
-
-  const placedWithoutSource = { ...state.placed };
-  delete placedWithoutSource[fromKey];
-  if (placedWithoutSource[toKey]) return { ok: false, reason: "That tile already has a building" };
-  if (state.extraSlums && state.extraSlums[toKey]) return { ok: false, reason: "tile not buildable" };
-
-  const tileType = map.tiles[toRow][toCol].type;
-  const stats = computeCityStats(
-    map,
-    placedWithoutSource,
-    state.slumUpgraded,
-    config,
-    state.residentialDemandMultiplier,
-    floodExtras(state)
-  );
-  const ctx = {
-    tile: { type: tileType, buildable: isBuildable(tileType) },
-    cash: Infinity,
-    hasService: (svc) => Object.values(placedWithoutSource).some((id) => buildingsById[id].serves === svc),
-    countById: (id) => Object.values(placedWithoutSource).filter((v) => v === id).length,
-    transportCount: Object.values(placedWithoutSource).filter((id) => buildingsById[id].category === CATEGORY.TRANSPORT)
-      .length,
-    popInRadius: (radius) =>
-      Object.values(stats.tileStats).reduce(
-        (sum, t) => (t.pop > 0 && chebyshev(toRow, toCol, t.row, t.col) <= radius ? sum + t.pop : sum),
-        0
-      ),
-    hasAdjacentDamWithCapacity: hasAdjacentDamWithCapacity(toRow, toCol, placedWithoutSource, config, chebyshev),
-  };
-  const result = canPlace(buildingId, ctx);
-  if (!result.ok) return result;
-
-  const fee = moveFee(buildingId);
-  if (state.cash < fee) return { ok: false, reason: "insufficient cash for the move fee" };
-  return { ok: true, fee };
-}
-
-// Twist order and the treasure tile are drawn once here, the same way
-// an organizer would draw them before a real event -- shared by every
-// viewer of this store, never re-rolled per action (rules.md Part H/K:
-// "twists apply to all teams at the same moment", one shared draw).
+// The treasure tile is drawn once here, the same way an organizer would
+// draw it before a real event -- shared by every viewer of this store,
+// never re-rolled per action (rules.md Part H/K: "twists apply to all
+// teams at the same moment", one shared draw).
 function initialState() {
   return {
     map,
@@ -105,8 +35,10 @@ function initialState() {
     damagedTiles: {},
     pollutionSpillTiles: new Set(),
     year: 0,
-    twistOrder: shuffle(["flood", "pandemic", "immigration"]),
+    twistOrder: TWIST_ORDER.slice(),
     treasureTile: randomTreasureTile(),
+    treasureRevealed: false,
+    treasureClaimed: false,
     twistLog: [],
     cumulativeScoreAdjustment: 0,
     selectedBuilding: null,
@@ -445,7 +377,6 @@ const useGameStore = create((set, get) => ({
       scoreDelta += twistResult.scoreDelta;
     } else if (twistName === "treasure") {
       twistResult = twists.revealTreasure(mutable, state.treasureTile, config);
-      mutable.cash += twistResult.cashGain;
     }
 
     if (floorResult && !floorResult.met) {
@@ -463,6 +394,7 @@ const useGameStore = create((set, get) => ({
       damagedTiles: mutable.damagedTiles,
       pollutionSpillTiles: mutable.pollutionSpillTiles,
       residentialDemandMultiplier: mutable.residentialDemandMultiplier,
+      treasureRevealed: twistName === "treasure" ? true : state.treasureRevealed,
       cumulativeScoreAdjustment: state.cumulativeScoreAdjustment + scoreDelta,
       twistLog: [
         ...state.twistLog,
@@ -473,6 +405,39 @@ const useGameStore = create((set, get) => ({
   },
 
   closeModal: () => set({ activeModal: null }),
+
+  claimTreasure: () => {
+    const state = get();
+    if (!state.treasureRevealed) {
+      set({ lastError: "Treasure has not been revealed yet" });
+      return;
+    }
+    if (state.treasureClaimed) {
+      set({ lastError: "Treasure already claimed" });
+      return;
+    }
+
+    const builtId = state.placed[state.treasureTile];
+    let cost = config.treasureMiningCost;
+    if (builtId) {
+      cost += buildingsById[builtId].cost * config.treasureDemolishRate;
+    }
+
+    if (state.cash < cost) {
+      set({ lastError: "Not enough cash to claim treasure" });
+      return;
+    }
+
+    const mutable = { placed: { ...state.placed } };
+    const result = twists.claimTreasure(mutable, state.treasureTile, config, buildingsById);
+
+    set({
+      cash: state.cash - result.cost + result.cashGain,
+      placed: mutable.placed,
+      treasureClaimed: true,
+      lastError: null,
+    });
+  },
 
   resetGame: () => set(initialState()),
 

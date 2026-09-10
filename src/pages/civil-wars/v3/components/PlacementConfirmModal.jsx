@@ -14,6 +14,8 @@ function PlacementConfirmModal() {
   const cancelPendingAction = useActiveGameStore((s) => s.cancelPendingAction);
   const cash = useActiveGameStore((s) => s.cash);
   const damagedTiles = useActiveGameStore((s) => s.damagedTiles);
+  const placed = useActiveGameStore((s) => s.placed);
+  const treasureTile = useActiveGameStore((s) => s.treasureTile);
 
   useEffect(() => {
     if (!pendingAction) return undefined;
@@ -48,6 +50,8 @@ function PlacementConfirmModal() {
               <RehouseDetails pendingAction={pendingAction} cash={cash} />
             ) : pendingAction.type === "move" ? (
               <MoveDetails pendingAction={pendingAction} cash={cash} />
+            ) : pendingAction.type === "claim_treasure" ? (
+              <TreasureDetails cash={cash} treasureTile={treasureTile} placed={placed} />
             ) : (
               <RepairDetails pendingAction={pendingAction} cash={cash} damagedTiles={damagedTiles} />
             )}
@@ -151,6 +155,44 @@ function RepairDetails({ pendingAction, cash, damagedTiles }) {
           Cost: <strong>₹{fmtCr(repairCost)} Cr</strong>
         </p>
         <p>Cash after: ₹{fmtCr(cash - repairCost)} Cr</p>
+      </div>
+    </>
+  );
+}
+
+function TreasureDetails({ cash, treasureTile, placed }) {
+  if (!treasureTile) return null;
+  const key = `${treasureTile[0]},${treasureTile[1]}`;
+  const buildingId = placed[key];
+  const def = buildingId ? buildingsById[buildingId] : null;
+  const demoCost = def ? Math.round(def.cost * 0.5) : 0;
+  const miningCharge = 50;
+  const netGain = 300 - demoCost - miningCharge;
+  const coord = colLabel(treasureTile[0], treasureTile[1]);
+
+  return (
+    <>
+      <div className="cw3-modal-year">Confirm action</div>
+      <h2 className="cw3-modal-title">Claim Treasure</h2>
+      <div className="cw3-modal-body">
+        <p>
+          Tile: <strong>{coord}</strong>
+        </p>
+        <p>
+          Base value: <strong>₹300 Cr</strong>
+        </p>
+        <p>
+          Mining charge: <strong>-₹{miningCharge} Cr</strong>
+        </p>
+        {def && (
+          <p>
+            Demolishing {def.name}: <strong>-₹{fmtCr(demoCost)} Cr</strong>
+          </p>
+        )}
+        <p>
+          Net gain: <strong>₹{fmtCr(netGain)} Cr</strong>
+        </p>
+        <p>Cash after: ₹{fmtCr(cash + netGain)} Cr</p>
       </div>
     </>
   );

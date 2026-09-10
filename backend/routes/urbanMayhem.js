@@ -6,10 +6,14 @@ const {
   evaluatePlacement,
   applyPlacement,
   applyRehouse,
+  evaluateMove,
+  applyMove,
+  applyRepair,
   computeScore,
   applyYearTransition,
   twistForYear,
   tileKey,
+  applyClaimTreasure,
 } = require('../game/state');
 const { runSerialized } = require('../game/concurrency');
 const { requireTeamSession, requireAdminKey, newSessionId, COOKIE_NAME } = require('../middleware/urbanMayhemAuth');
@@ -42,7 +46,12 @@ function stateForClient(team, global) {
     lastTwistYear: team.state.lastTwistYear,
     year: team.state.year,
     lastError: team.state.lastError,
+    treasureRevealed: team.state.treasureRevealed,
+    treasureClaimed: team.state.treasureClaimed,
+    treasureTile: team.state.treasureRevealed ? global.treasureTile : undefined,
     locked: global.locked,
+    phase: global.phase,
+    practiceEndsAt: global.practiceEndsAt,
     sessionsCount: team.sessions.length,
   };
 }
@@ -78,10 +87,13 @@ router.get('/state', requireTeamSession, async (req, res) => {
   res.json(stateForClient(req.umTeam, global));
 });
 
+const ACTION_TYPES = ['place', 'rehouse', 'move', 'repair', 'claim_treasure'];
+
 router.post('/action', requireTeamSession, async (req, res) => {
-  const { type, row, col, buildingId } = req.body || {};
-  if (!['place', 'rehouse'].includes(type)) return res.status(400).json({ error: 'type must be "place" or "rehouse"' });
-  if (!Number.isInteger(row) || !Number.isInteger(col)) return res.status(400).json({ error: 'row/col must be integers' });
+  const { type } = req.body || {};
+  if (!ACTION_TYPES.includes(type)) {
+    return res.status(400).json({ error: `type must be one of: ${ACTION_TYPES.join(', ')}` });
+  }
 
   const engine = await loadEngine();
   const teamId = req.umTeam._id;
@@ -99,6 +111,10 @@ router.post('/action', requireTeamSession, async (req, res) => {
       }
 
       if (type === 'place') {
+        const { row, col, buildingId } = req.body;
+        if (!Number.isInteger(row) || !Number.isInteger(col)) {
+          return { status: 400, body: { error: 'row/col must be integers' } };
+        }
         if (!buildingId || !engine.buildingsById[buildingId]) {
           return { status: 400, body: { error: 'Unknown buildingId' } };
         }
@@ -133,33 +149,130 @@ router.post('/action', requireTeamSession, async (req, res) => {
         return { status: 200, body: stateForClient(team, global) };
       }
 
-      // type === "rehouse"
-      const key = tileKey(row, col);
-      if (engine.map.tiles[row][col].type !== 'slum') {
-        return { status: 400, body: { error: 'That tile is not a slum.' } };
+      if (type === 'rehouse') {
+        const { row, col } = req.body;
+        if (!Number.isInteger(row) || !Number.isInteger(col)) {
+          return { status: 400, body: { error: 'row/col must be integers' } };
+        }
+        const key = tileKey(row, col);
+        if (engine.map.tiles[row][col].type !== 'slum') {
+          return { status: 400, body: { error: 'That tile is not a slum.' } };
+        }
+        if (team.state.slumUpgraded.includes(key)) {
+          return { status: 400, body: { error: 'That slum is already rehoused.' } };
+        }
+        if (team.state.cash < engine.config.slumUpgradeCost) {
+          return { status: 400, body: { error: 'Not enough cash to rehouse this slum.' } };
+        }
+        applyRehouse(team.state, row, col, engine.config.slumUpgradeCost);
+        team.state.lastError = null;
+        team.state.actionSeq += 1;
+        const score = computeScore(engine, team.state);
+        await UrbanMayhemActionLog.create({
+          teamId,
+          seq: team.state.actionSeq,
+          year: team.state.year,
+          action: 'rehouse',
+          payload: { row, col },
+          cost: engine.config.slumUpgradeCost,
+          cashAfter: team.state.cash,
+          scoreAfter: score,
+        });
+        await team.save();
+        return { status: 200, body: stateForClient(team, global) };
       }
-      if (team.state.slumUpgraded.includes(key)) {
-        return { status: 400, body: { error: 'That slum is already rehoused.' } };
+
+      if (type === 'move') {
+        const { fromRow, fromCol, toRow, toCol } = req.body;
+        if (![fromRow, fromCol, toRow, toCol].every(Number.isInteger)) {
+          return { status: 400, body: { error: 'fromRow/fromCol/toRow/toCol must be integers' } };
+        }
+        // The building identity comes from the team's own board, never
+        // from the client -- a team can only ever move what's actually
+        // sitting on their fromRow/fromCol tile.
+        const buildingId = team.state.placed[tileKey(fromRow, fromCol)];
+        if (!buildingId) {
+          return { status: 400, body: { error: 'No building at that tile' } };
+        }
+        const evaluation = evaluateMove(engine, buildingId, fromRow, fromCol, toRow, toCol, team.state);
+        if (!evaluation.ok) {
+          team.state.lastError = evaluation.reason;
+          await team.save();
+          return { status: 400, body: { error: evaluation.reason } };
+        }
+        applyMove(team.state, fromRow, fromCol, toRow, toCol, buildingId, evaluation.fee);
+        team.state.lastError = null;
+        team.state.actionSeq += 1;
+        const score = computeScore(engine, team.state);
+        await UrbanMayhemActionLog.create({
+          teamId,
+          seq: team.state.actionSeq,
+          year: team.state.year,
+          action: 'move',
+          payload: { buildingId, fromRow, fromCol, toRow, toCol },
+          cost: evaluation.fee,
+          cashAfter: team.state.cash,
+          scoreAfter: score,
+        });
+        team.markModified('state.placed');
+        await team.save();
+        return { status: 200, body: stateForClient(team, global) };
       }
-      if (team.state.cash < engine.config.slumUpgradeCost) {
-        return { status: 400, body: { error: 'Not enough cash to rehouse this slum.' } };
+
+      if (type === 'repair') {
+        const { row, col } = req.body;
+        if (!Number.isInteger(row) || !Number.isInteger(col)) {
+          return { status: 400, body: { error: 'row/col must be integers' } };
+        }
+        const key = tileKey(row, col);
+        const entry = team.state.damagedTiles[key];
+        if (!entry) {
+          return { status: 400, body: { error: 'That tile is not damaged' } };
+        }
+        if (team.state.cash < entry.repairCost) {
+          return { status: 400, body: { error: 'Not enough cash to repair this' } };
+        }
+        applyRepair(team.state, row, col, entry.repairCost);
+        team.state.lastError = null;
+        team.state.actionSeq += 1;
+        const score = computeScore(engine, team.state);
+        await UrbanMayhemActionLog.create({
+          teamId,
+          seq: team.state.actionSeq,
+          year: team.state.year,
+          action: 'repair',
+          payload: { row, col, id: entry.id },
+          cost: entry.repairCost,
+          cashAfter: team.state.cash,
+          scoreAfter: score,
+        });
+        team.markModified('state.damagedTiles');
+        await team.save();
+        return { status: 200, body: stateForClient(team, global) };
       }
-      applyRehouse(team.state, row, col, engine.config.slumUpgradeCost);
-      team.state.lastError = null;
-      team.state.actionSeq += 1;
-      const score = computeScore(engine, team.state);
-      await UrbanMayhemActionLog.create({
-        teamId,
-        seq: team.state.actionSeq,
-        year: team.state.year,
-        action: 'rehouse',
-        payload: { row, col },
-        cost: engine.config.slumUpgradeCost,
-        cashAfter: team.state.cash,
-        scoreAfter: score,
-      });
-      await team.save();
-      return { status: 200, body: stateForClient(team, global) };
+
+      if (type === 'claim_treasure') {
+        const result = applyClaimTreasure(engine, team.state, global);
+        if (result.error) {
+          return { status: 400, body: { error: result.error } };
+        }
+        team.state.lastError = null;
+        team.state.actionSeq += 1;
+        const score = computeScore(engine, team.state);
+        await UrbanMayhemActionLog.create({
+          teamId,
+          seq: team.state.actionSeq,
+          year: team.state.year,
+          action: 'claim_treasure',
+          payload: { result },
+          cost: result.cost,
+          cashAfter: team.state.cash,
+          scoreAfter: score,
+        });
+        team.markModified('state.placed');
+        await team.save();
+        return { status: 200, body: stateForClient(team, global) };
+      }
     });
 
     res.status(result.status).json(result.body);
@@ -257,7 +370,44 @@ router.get('/overview', requireAdminKey, async (req, res) => {
     };
   });
 
-  res.json({ global: { year: global.year, locked: global.locked }, teams: rows });
+  res.json({
+    global: { year: global.year, locked: global.locked, phase: global.phase, practiceEndsAt: global.practiceEndsAt },
+    teams: rows,
+  });
+});
+
+// Opens an optional pre-game practice window: teams can join and build
+// freely on a throwaway board before the real, scored game starts.
+// Purely informational server-side -- /action isn't gated by phase, a
+// practice board is built with the exact same rules as the real one.
+router.post('/start-practice', requireAdminKey, async (req, res) => {
+  const engine = await loadEngine();
+  const minutes = Number(req.body?.minutes) || 10;
+  if (minutes <= 0) return res.status(400).json({ error: 'minutes must be a positive number' });
+
+  const global = await getOrCreateGlobal(engine);
+  global.phase = 'practice';
+  global.practiceEndsAt = new Date(Date.now() + minutes * 60 * 1000);
+  await global.save();
+  res.json({ phase: global.phase, practiceEndsAt: global.practiceEndsAt });
+});
+
+// Ends the practice window and starts the real game: every team's
+// board wipes back to fresh, but -- unlike /reset below -- sessions
+// are left alone, so nobody has to re-enter their join code mid-event.
+// Also re-rolls the twist order/treasure tile, same as a fresh event
+// start, and clears the practice period's own action log.
+router.post('/end-practice', requireAdminKey, async (req, res) => {
+  const engine = await loadEngine();
+  const teams = await UrbanMayhemTeam.find({});
+  for (const team of teams) {
+    team.state = createInitialTeamState(engine);
+    team.markModified('state.placed');
+    await team.save();
+  }
+  await UrbanMayhemActionLog.deleteMany({});
+  await UrbanMayhemGlobal.findByIdAndUpdate('singleton', createInitialGlobal(engine), { upsert: true });
+  res.json({ endedPractice: true, teams: teams.length });
 });
 
 // Dev/rehearsal convenience -- wipes every team's board and the global

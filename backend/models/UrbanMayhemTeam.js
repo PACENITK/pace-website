@@ -36,6 +36,8 @@ const urbanMayhemTeamSchema = new mongoose.Schema({
     // What the last twist did to this team, for the client's reveal modal.
     lastTwistResult: { type: mongoose.Schema.Types.Mixed, default: null },
     lastTwistYear: { type: Number, default: 0 },
+    treasureRevealed: { type: Boolean, default: false },
+    treasureClaimed: { type: Boolean, default: false },
     // Mirrors the global clock (see UrbanMayhemGlobal) but lives here
     // too so /advance-year can tell, per team, whether this team's
     // twist for the year in question has already been applied --

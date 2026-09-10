@@ -18,6 +18,13 @@ const urbanMayhemGlobalSchema = new mongoose.Schema({
   twistOrder: { type: [String], default: [] },
   treasureTile: { type: String, default: null },
   twistLog: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  // Optional pre-game practice window (rules.md Part L): 'practice'
+  // while teams can build freely on a throwaway board, 'live' once the
+  // organizer ends it and the real, scored game starts. Defaults to
+  // 'live' so events that skip a practice period behave exactly as
+  // before -- this is opt-in via POST /start-practice.
+  phase: { type: String, enum: ['practice', 'live'], default: 'live' },
+  practiceEndsAt: { type: Date, default: null },
 });
 
 module.exports = mongoose.model('UrbanMayhemGlobal', urbanMayhemGlobalSchema);

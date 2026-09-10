@@ -2,6 +2,7 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import { colLabel, fmtCr } from "../format.js";
+import { buildingsById } from "../engine.js";
 
 const TWIST_TITLE = {
   flood: "Flood",
@@ -69,11 +70,22 @@ function renderBody(twist, result) {
       return <p>{result.qualified ? "Olympics qualified! +₹500 Cr, +150 score." : "Olympics bid failed. -50 score."}</p>;
     case "treasure":
       return (
-        <p>
-          {result.demolished
-            ? `You built on the treasure tile — the building is lost, but you still claim ₹${result.cashGain} Cr.`
-            : `The treasure tile was empty. You receive ₹${result.cashGain} Cr.`}
-        </p>
+        <>
+          <p>The treasure tile has been revealed at {colLabel(...result.treasureTile.map(Number))}!</p>
+          {result.buildingId ? (
+            <p>
+              Your {buildingsById[result.buildingId].name} is currently on it. You can either move it out of the way, or
+              claim the treasure to instantly demolish the building (recovering 50% of its cost) and receive ₹300 Cr,
+              minus a ₹50 Cr mining charge.
+            </p>
+          ) : (
+            <p>
+              The tile is currently empty. You can claim the treasure at any time to receive ₹300 Cr, minus a ₹50 Cr mining
+              charge.
+            </p>
+          )}
+          <p>Select the glowing tile on the map to claim it.</p>
+        </>
       );
     default:
       return null;

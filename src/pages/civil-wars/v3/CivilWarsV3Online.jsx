@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Buildings } from "@phosphor-icons/react";
+import React, { useEffect, useState } from "react";
+import { Buildings, Timer } from "@phosphor-icons/react";
 import useNetworkGameStore from "./store/useNetworkGameStore.js";
 import { GameStoreContext } from "./store/GameStoreContext.jsx";
 import JoinScreen from "./JoinScreen.jsx";
@@ -10,10 +10,46 @@ import TwistModal from "./components/TwistModal.jsx";
 import PlacementConfirmModal from "./components/PlacementConfirmModal.jsx";
 import "./civil-wars-v3.css";
 
+function fmtCountdown(ms) {
+  const total = Math.max(0, Math.round(ms / 1000));
+  const mm = Math.floor(total / 60);
+  const ss = total % 60;
+  return `${mm}:${String(ss).padStart(2, "0")}`;
+}
+
+// Ticks locally between polls (every second) rather than hitting the
+// server every second -- practiceEndsAt is a fixed timestamp, so the
+// countdown only needs re-syncing on each normal ~2.5s poll.
+function PracticeCountdown({ practiceEndsAt }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  const remaining = new Date(practiceEndsAt).getTime() - now;
+  return (
+    <div className="flex items-center gap-2 px-[18px] border-r border-[color:var(--game-rule)] text-[color:var(--game-rust)]">
+      <Timer size={16} weight="duotone" />
+      <div className="flex flex-col gap-px">
+        <div className="text-[8.5px] font-semibold leading-none tracking-[0.16em] uppercase text-[color:var(--game-mute)]">
+          Practice ends in
+        </div>
+        <div className="text-sm font-bold leading-none tabular-nums">
+          {remaining > 0 ? fmtCountdown(remaining) : "any moment now"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CivilWarsV3Board() {
   const teamName = useNetworkGameStore((s) => s.teamName);
   const year = useNetworkGameStore((s) => s.year);
   const locked = useNetworkGameStore((s) => s.locked);
+  const phase = useNetworkGameStore((s) => s.phase);
+  const practiceEndsAt = useNetworkGameStore((s) => s.practiceEndsAt);
+  const practiceJustEnded = useNetworkGameStore((s) => s.practiceJustEnded);
+  const dismissPracticeBanner = useNetworkGameStore((s) => s.dismissPracticeBanner);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
 
@@ -38,12 +74,23 @@ function CivilWarsV3Board() {
           </span>
         </div>
 
+        {phase === "practice" && practiceEndsAt && <PracticeCountdown practiceEndsAt={practiceEndsAt} />}
+
         {locked && (
           <div className="flex items-center px-[18px] text-xs font-semibold text-[#8f1e18]">
             Year is ending — building is paused
           </div>
         )}
       </header>
+
+      {practiceJustEnded && (
+        <div className="flex items-center justify-between px-[18px] py-2 bg-[#f4e9c9] border-b border-[#d8c48c] text-sm font-semibold text-[#6b5a1e]">
+          <span>Practice is over — the real game has begun. Your board was reset.</span>
+          <button type="button" onClick={dismissPracticeBanner} className="text-xs underline">
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <main
         className="grid gap-3 p-3 min-h-0"

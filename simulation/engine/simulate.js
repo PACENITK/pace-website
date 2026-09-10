@@ -19,11 +19,12 @@ function servicesUnservedShare(stats, cfg) {
   return share > cfg.incomeHalvedUnservedShare;
 }
 
-// Runs one full Year 0 -> Year 6 game. `twistOrder` is a 3-element
-// permutation of [flood, pandemic, immigration] for years 1-3 (Part H:
-// the pool exactly equals the slot count, so every run gets all three,
-// only the order varies). Olympics is always year 4, treasure year 5,
-// per Part G.
+// Runs one full Year 0 -> Year 6 game. `twistOrder` is the 3-element
+// years-1-3 sequence. In the live game this is always the fixed
+// ['flood', 'pandemic', 'immigration'] (rules.md Part G/H); the sweep
+// still passes every permutation so balance analysis can answer "would
+// a different order be fairer?" -- but the shipped order is the first
+// one. Olympics is always year 4, treasure year 5, per Part G.
 export function simulateGame(map, strategy, twistOrder, treasureTile, cfg) {
   const state = {
     cash: cfg.startingBudget,

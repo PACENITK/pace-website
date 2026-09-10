@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { fetchOverview, lockYear, advanceYear, resetAll } from "../api/urbanMayhemClient.js";
+import { fetchOverview, lockYear, advanceYear, resetAll, startPractice, endPractice } from "../api/urbanMayhemClient.js";
 import "../civil-wars-v3.css";
 
 const KEY_STORAGE = "um_admin_key";
@@ -7,6 +7,22 @@ const POLL_MS = 3000;
 
 function fmt(n) {
   return Math.round(n).toLocaleString("en-IN");
+}
+
+function fmtCountdown(ms) {
+  const total = Math.max(0, Math.round(ms / 1000));
+  const mm = Math.floor(total / 60);
+  const ss = total % 60;
+  return `${mm}:${String(ss).padStart(2, "0")}`;
+}
+
+function useTicking() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return now;
 }
 
 function AdminKeyForm({ onSubmit, error }) {
@@ -44,7 +60,11 @@ function OrganizerConsole() {
   const [overview, setOverview] = useState(null);
   const [lastTwist, setLastTwist] = useState(null);
   const [resetArmed, setResetArmed] = useState(false);
+  const [endPracticeArmed, setEndPracticeArmed] = useState(false);
+  const [practiceMinutes, setPracticeMinutes] = useState(10);
   const armTimer = useRef(null);
+  const endPracticeArmTimer = useRef(null);
+  const now = useTicking();
 
   function saveKey(key) {
     sessionStorage.setItem(KEY_STORAGE, key);
@@ -88,18 +108,77 @@ function OrganizerConsole() {
     armTimer.current = setTimeout(() => setResetArmed(false), 4000);
   }
 
+  function armEndPractice() {
+    if (endPracticeArmed) {
+      clearTimeout(endPracticeArmTimer.current);
+      setEndPracticeArmed(false);
+      endPractice(adminKey);
+      return;
+    }
+    setEndPracticeArmed(true);
+    endPracticeArmTimer.current = setTimeout(() => setEndPracticeArmed(false), 4000);
+  }
+
   if (!adminKey) return <AdminKeyForm onSubmit={saveKey} error={keyError} />;
   if (!overview) return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
 
   const { global, teams } = overview;
   const ranked = [...teams].sort((a, b) => b.score - a.score);
+  const practiceRemainingMs = global.practiceEndsAt ? new Date(global.practiceEndsAt).getTime() - now : 0;
 
   return (
     <div className="min-h-screen bg-[color:var(--game-paper)] p-8 max-w-[960px] mx-auto">
       <h1 className="text-xl font-bold mb-1">Organizer console</h1>
       <p className="text-sm text-[color:var(--game-mute)] mb-5">
         Year {global.year} of 5 · {global.locked ? "locked — ready to advance" : "open"}
+        {global.phase === "practice" && (
+          <>
+            {" "}
+            · <strong>Practice period</strong> — {practiceRemainingMs > 0 ? fmtCountdown(practiceRemainingMs) : "any moment now"} left
+          </>
+        )}
       </p>
+
+      <div className="flex items-center gap-2.5 mb-3 p-3 bg-[color:var(--game-paper-2)] border border-[color:var(--game-rule)] rounded-sm">
+        {global.phase === "practice" ? (
+          <>
+            <span className="text-sm">
+              Practice ends in <strong className="tabular-nums">{fmtCountdown(practiceRemainingMs)}</strong> — teams can build
+              freely on a throwaway board.
+            </span>
+            <span className="flex-1" />
+            <button
+              type="button"
+              onClick={armEndPractice}
+              className={`px-4 py-2 rounded-sm font-semibold border ${
+                endPracticeArmed ? "bg-[color:var(--game-slate)] text-white border-[color:var(--game-slate)]" : "bg-white text-[color:var(--game-slate)] border-[color:var(--game-rule)]"
+              }`}
+            >
+              {endPracticeArmed ? "Click again to end practice now" : "End practice & start the real game"}
+            </button>
+          </>
+        ) : (
+          <>
+            <span className="text-sm">Start an optional practice window before the real game.</span>
+            <span className="flex-1" />
+            <input
+              type="number"
+              min={1}
+              value={practiceMinutes}
+              onChange={(e) => setPracticeMinutes(Number(e.target.value))}
+              className="w-16 py-1.5 px-2 rounded-sm border border-[color:var(--game-rule)] text-sm"
+            />
+            <span className="text-sm text-[color:var(--game-mute)]">min</span>
+            <button
+              type="button"
+              onClick={() => startPractice(adminKey, practiceMinutes)}
+              className="px-4 py-2 rounded-sm bg-[color:var(--game-slate)] text-white font-semibold"
+            >
+              Start practice
+            </button>
+          </>
+        )}
+      </div>
 
       <div className="flex gap-2.5 mb-6">
         <button
@@ -121,13 +200,14 @@ function OrganizerConsole() {
         <button
           type="button"
           onClick={armReset}
+          title="Dev/rehearsal only — wipes every board AND logs every team out. Use 'End practice' above for the real event."
           className={`px-4 py-2.5 rounded-sm font-semibold border ${
             resetArmed
               ? "bg-[#8f1e18] text-white border-[#8f1e18]"
               : "bg-white text-[#8f1e18] border-[#d9a9a4]"
           }`}
         >
-          {resetArmed ? "Click again to confirm reset" : "Reset everyone"}
+          {resetArmed ? "Click again to confirm full reset" : "Full reset (dev, logs everyone out)"}
         </button>
       </div>
 

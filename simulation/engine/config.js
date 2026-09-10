@@ -101,6 +101,8 @@ const config = {
   outbreakNoHospitalIncomeMultiplier: 0,
 
   treasureValue: 300,
+  treasureMiningCost: 50,
+  treasureDemolishRate: 0.5,
 
   sellRefundRate: 0.5,
   // Relocate an already-placed building to a different empty tile

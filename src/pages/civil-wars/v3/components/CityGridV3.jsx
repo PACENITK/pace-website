@@ -94,6 +94,10 @@ function CityGridV3() {
   const previewMove = useActiveGameStore((s) => s.previewMove);
   const damagedTiles = useActiveGameStore((s) => s.damagedTiles);
   const previewPlacement = useActiveGameStore((s) => s.previewPlacement);
+  const treasureRevealed = useActiveGameStore((s) => s.treasureRevealed);
+  const treasureClaimed = useActiveGameStore((s) => s.treasureClaimed);
+  const treasureTile = useActiveGameStore((s) => s.treasureTile);
+  const proposeClaimTreasure = useActiveGameStore((s) => s.proposeClaimTreasure);
   const stats = useCityStats();
 
   const hoveredRC = hoveredTile ? hoveredTile.split(",").map(Number) : null;
@@ -154,6 +158,10 @@ function CityGridV3() {
     }
     if (!selectedBuilding && type === "slum" && !slumUpgraded.has(key)) {
       proposeRehouse(row, col);
+      return;
+    }
+    if (!selectedBuilding && treasureRevealed && !treasureClaimed && treasureTile && row === treasureTile[0] && col === treasureTile[1] && !placed[key]) {
+      proposeClaimTreasure();
       return;
     }
     // Clicking an already-placed building (with nothing selected from
@@ -217,6 +225,16 @@ function CityGridV3() {
     map.tiles[hoveredRC[0]][hoveredRC[1]].type === "slum" &&
     !slumUpgraded.has(hoveredKey);
 
+  const hoveredIsUnclaimedTreasure =
+    !selectedBuilding &&
+    !moveFrom &&
+    hoveredRC &&
+    treasureRevealed &&
+    !treasureClaimed &&
+    treasureTile &&
+    hoveredRC[0] === treasureTile[0] &&
+    hoveredRC[1] === treasureTile[1];
+
   const selectedDef = selectedBuilding ? buildingsById[selectedBuilding] : null;
   const movingDef = moveFrom ? buildingsById[moveFrom.buildingId] : null;
   const moveFeeCr = movingDef ? movingDef.cost * config.moveCostRate : 0;
@@ -264,6 +282,7 @@ function CityGridV3() {
             {map.tiles.map((rowTiles, row) =>
               rowTiles.map((tile, col) => {
                 const key = `${row},${col}`;
+                const isTreasure = treasureRevealed && treasureTile && row === treasureTile[0] && col === treasureTile[1];
                 return (
                   <TileV3
                     key={key}
@@ -275,6 +294,8 @@ function CityGridV3() {
                     tileStat={stats.tileStats[key]}
                     upgraded={slumUpgraded.has(key)}
                     isMoveSource={!!moveFrom && moveFrom.row === row && moveFrom.col === col}
+                    isTreasure={isTreasure}
+                    isTreasureClaimed={treasureClaimed}
                     onClick={() => handleTileClick(row, col)}
                     onMouseEnter={() => hoverTile(key)}
                     onMouseLeave={clearHover}
@@ -352,6 +373,28 @@ function CityGridV3() {
               <ArrowFatLinesUp size={"1.8cqw"} weight="duotone" />
               Rehouse slum — ₹{config.slumUpgradeCost} Cr
             </div>
+          )}
+
+          {hoveredIsUnclaimedTreasure && (
+            <button
+              className="cw3-rehouse-chip"
+              style={{
+                left: `${(hoveredRC[1] / COLS) * 100}%`,
+                top: hoveredRC[0] > 0 ? `${(hoveredRC[0] / ROWS) * 100}%` : `${((hoveredRC[0] + 1) / ROWS) * 100}%`,
+                transform: hoveredRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
+                pointerEvents: "auto",
+                cursor: "pointer",
+                background: "#f3c300",
+                borderColor: "#b69200",
+                color: "#1a1a1a",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                proposeClaimTreasure();
+              }}
+            >
+              Claim Treasure (Net: ₹{fmtCr(300 - 50 - (placed[hoveredKey] ? Math.round(buildingsById[placed[hoveredKey]].cost * 0.5) : 0))} Cr)
+            </button>
           )}
 
           {showTooltip && (

@@ -37,6 +37,8 @@ function TileV3({
   tileStat,
   upgraded,
   isMoveSource,
+  isTreasure,
+  isTreasureClaimed,
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -58,6 +60,8 @@ function TileV3({
     tileStat && tileStat.pollution ? "cw3-tile--polluted" : "",
     tileStat && tileStat.sewageNuisance ? "cw3-tile--sewage-nuisance" : "",
     isMoveSource ? "cw3-tile--move-source" : "",
+    isTreasure && !isTreasureClaimed ? "cw3-tile--treasure" : "",
+    isTreasure && isTreasureClaimed ? "cw3-tile--treasure-claimed" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -128,6 +132,8 @@ TileV3.propTypes = {
   tileStat: PropTypes.object,
   upgraded: PropTypes.bool,
   isMoveSource: PropTypes.bool,
+  isTreasure: PropTypes.bool,
+  isTreasureClaimed: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   onMouseEnter: PropTypes.func.isRequired,
   onMouseLeave: PropTypes.func.isRequired,

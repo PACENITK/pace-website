@@ -303,7 +303,18 @@ export function evaluateOlympics(state, config) {
 
 export function revealTreasure(state, treasureTile, config) {
   const builtId = state.placed[treasureTile];
-  if (!builtId) return { cashGain: config.treasureValue, demolished: null };
-  delete state.placed[treasureTile];
-  return { cashGain: config.treasureValue, demolished: { tile: treasureTile, buildingId: builtId } };
+  return { treasureTile, buildingId: builtId || null };
+}
+
+export function claimTreasure(state, treasureTile, config, buildings) {
+  const builtId = state.placed[treasureTile];
+  let totalCost = config.treasureMiningCost;
+  let demolished = null;
+  if (builtId) {
+    const building = buildings[builtId];
+    totalCost += building.cost * config.treasureDemolishRate;
+    demolished = { tile: treasureTile, buildingId: builtId };
+    delete state.placed[treasureTile];
+  }
+  return { cashGain: config.treasureValue, cost: totalCost, demolished };
 }

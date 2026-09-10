@@ -19,7 +19,7 @@ function shuffle(arr) {
 }
 
 function randomTreasureTile(map) {
-  return tileKey(Math.floor(Math.random() * map.height), Math.floor(Math.random() * map.width));
+  return '3,7';
 }
 
 function createInitialTeamState(engine) {
@@ -41,15 +41,23 @@ function createInitialTeamState(engine) {
   };
 }
 
-// Drawn once at event start, shared by every team -- rules.md Part H/K:
-// "twists apply to all teams at the same moment," one shared draw.
+// v4: the Years 1-3 twist order is fixed -- Flood, then Waterborne
+// outbreak, then Immigration, every event (rules.md Part G/H). A known
+// order is what lets the rules state, year by year, what each twist
+// puts at stake. Only the treasure tile is still drawn at random, once
+// at event start and shared by every team (rules.md Part H/K: "twists
+// apply to all teams at the same moment").
+const TWIST_ORDER = ['flood', 'pandemic', 'immigration'];
+
 function createInitialGlobal(engine) {
   return {
     year: 0,
     locked: false,
-    twistOrder: shuffle(['flood', 'pandemic', 'immigration']),
+    twistOrder: TWIST_ORDER.slice(),
     treasureTile: randomTreasureTile(engine.map),
     twistLog: [],
+    phase: 'live',
+    practiceEndsAt: null,
   };
 }
 
@@ -108,6 +116,90 @@ function applyPlacement(teamState, buildingId, row, col, cost) {
 function applyRehouse(teamState, row, col, cost) {
   teamState.slumUpgraded.push(tileKey(row, col));
   teamState.cash -= cost;
+}
+
+// Same shape as evaluatePlacement, but against the board with the
+// building already picked up off its origin tile -- mirrors
+// useGameStore.js's evaluateMove exactly. ctx.cash is Infinity since
+// affordability is checked separately against the 10% move fee, not
+// canPlace's own full-cost gate.
+function evaluateMove(engine, buildingId, fromRow, fromCol, toRow, toCol, teamState) {
+  const fromKey = tileKey(fromRow, fromCol);
+  const toKey = tileKey(toRow, toCol);
+  if (fromKey === toKey) return { ok: false, reason: 'pick a different tile to move to' };
+  if (teamState.damagedTiles[fromKey]) return { ok: false, reason: 'repair this building before moving it' };
+
+  const placedWithoutSource = { ...teamState.placed };
+  delete placedWithoutSource[fromKey];
+  if (placedWithoutSource[toKey]) return { ok: false, reason: 'That tile already has a building' };
+  if (teamState.extraSlums && teamState.extraSlums[toKey]) return { ok: false, reason: 'tile not buildable' };
+
+  const tileType = engine.map.tiles[toRow][toCol].type;
+  const stats = engine.computeCityStats(
+    engine.map,
+    placedWithoutSource,
+    new Set(teamState.slumUpgraded),
+    engine.config,
+    teamState.residentialDemandMultiplier,
+    floodExtras(teamState)
+  );
+  const ctx = {
+    tile: { type: tileType, buildable: engine.isBuildable(tileType) },
+    cash: Infinity,
+    hasService: (svc) => Object.values(placedWithoutSource).some((id) => engine.buildingsById[id].serves === svc),
+    countById: (id) => Object.values(placedWithoutSource).filter((v) => v === id).length,
+    transportCount: Object.values(placedWithoutSource).filter((id) => engine.buildingsById[id].category === engine.CATEGORY.TRANSPORT)
+      .length,
+    popInRadius: (radius) =>
+      Object.values(stats.tileStats).reduce(
+        (sum, t) => (t.pop > 0 && engine.chebyshev(toRow, toCol, t.row, t.col) <= radius ? sum + t.pop : sum),
+        0
+      ),
+    hasAdjacentDamWithCapacity: engine.hasAdjacentDamWithCapacity(toRow, toCol, placedWithoutSource, engine.config, engine.chebyshev),
+  };
+  const result = engine.canPlace(buildingId, ctx);
+  if (!result.ok) return result;
+
+  const fee = engine.buildingsById[buildingId].cost * engine.config.moveCostRate;
+  if (teamState.cash < fee) return { ok: false, reason: 'insufficient cash for the move fee' };
+  return { ok: true, fee };
+}
+
+function applyMove(teamState, fromRow, fromCol, toRow, toCol, buildingId, fee) {
+  delete teamState.placed[tileKey(fromRow, fromCol)];
+  teamState.placed[tileKey(toRow, toCol)] = buildingId;
+  teamState.cash -= fee;
+}
+
+function applyRepair(teamState, row, col, repairCost) {
+  delete teamState.damagedTiles[tileKey(row, col)];
+  teamState.cash -= repairCost;
+}
+
+function applyClaimTreasure(engine, teamState, global) {
+  if (teamState.treasureRevealed !== true) {
+    return { error: 'Treasure has not been revealed yet' };
+  }
+  if (teamState.treasureClaimed === true) {
+    return { error: 'Treasure already claimed' };
+  }
+
+  const builtId = teamState.placed[global.treasureTile];
+  let cost = engine.config.treasureMiningCost;
+  if (builtId) {
+    cost += engine.buildingsById[builtId].cost * engine.config.treasureDemolishRate;
+  }
+
+  if (teamState.cash < cost) {
+    return { error: 'Not enough cash to claim treasure' };
+  }
+
+  const result = engine.twists.claimTreasure(teamState, global.treasureTile, engine.config, engine.buildingsById);
+  teamState.cash -= result.cost;
+  teamState.cash += result.cashGain;
+  teamState.treasureClaimed = true;
+
+  return result;
 }
 
 // Never shown to teams continuously (Part I: only right after a
@@ -169,6 +261,8 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
     damagedTiles: { ...teamState.damagedTiles },
     pollutionSpillTiles: new Set(teamState.pollutionSpillTiles),
     residentialDemandMultiplier: teamState.residentialDemandMultiplier,
+    treasureRevealed: teamState.treasureRevealed,
+    treasureClaimed: teamState.treasureClaimed,
   };
 
   let twistResult = null;
@@ -189,7 +283,7 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
     scoreDelta += twistResult.scoreDelta;
   } else if (twistName === 'treasure') {
     twistResult = engine.twists.revealTreasure(mutable, global.treasureTile, engine.config);
-    mutable.cash += twistResult.cashGain;
+    mutable.treasureRevealed = true;
   }
 
   if (floorResult && !floorResult.met) {
@@ -205,6 +299,8 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
   teamState.damagedTiles = mutable.damagedTiles;
   teamState.pollutionSpillTiles = Array.from(mutable.pollutionSpillTiles);
   teamState.residentialDemandMultiplier = mutable.residentialDemandMultiplier;
+  teamState.treasureRevealed = mutable.treasureRevealed;
+  teamState.treasureClaimed = mutable.treasureClaimed;
   teamState.cumulativeScoreAdjustment += scoreDelta;
   teamState.year = nextYear;
   teamState.lastTwistResult = { twist: twistName, result: twistResult, floorResult };
@@ -214,8 +310,8 @@ function applyYearTransition(engine, teamState, global, nextYear, twistName) {
 }
 
 // Year -> twist name mapping, identical to useGameStore.js's yearTwist
-// table: years 1-3 come from the shared shuffled draw, 4 is always
-// Olympics, 5 is always Treasure.
+// table: years 1-3 are the fixed Flood/Outbreak/Immigration order, 4 is
+// always Olympics, 5 is always Treasure.
 function twistForYear(global, year) {
   const table = {
     1: global.twistOrder[0],
@@ -236,7 +332,11 @@ module.exports = {
   evaluatePlacement,
   applyPlacement,
   applyRehouse,
+  evaluateMove,
+  applyMove,
+  applyRepair,
   computeScore,
   applyYearTransition,
   twistForYear,
+  applyClaimTreasure,
 };

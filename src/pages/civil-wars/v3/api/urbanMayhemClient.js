@@ -23,6 +23,19 @@ export function rehouseSlum(row, col) {
   return api.post("/action", { type: "rehouse", row, col }).then((r) => r.data);
 }
 
+export function moveBuilding(fromRow, fromCol, toRow, toCol) {
+  return api.post("/action", { type: "move", fromRow, fromCol, toRow, toCol }).then((r) => r.data);
+}
+
+export function repairBuilding(row, col) {
+  return api.post("/action", { type: "repair", row, col }).then((r) => r.data);
+}
+
+export async function claimTreasure() {
+  const { data } = await api.post('/action', { type: 'claim_treasure' });
+  return data;
+}
+
 function adminHeaders(key) {
   return { headers: { "x-admin-key": key } };
 }
@@ -41,6 +54,14 @@ export function advanceYear(key) {
 
 export function resetAll(key) {
   return api.post("/reset", {}, adminHeaders(key)).then((r) => r.data);
+}
+
+export function startPractice(key, minutes) {
+  return api.post("/start-practice", { minutes }, adminHeaders(key)).then((r) => r.data);
+}
+
+export function endPractice(key) {
+  return api.post("/end-practice", {}, adminHeaders(key)).then((r) => r.data);
 }
 
 export default api;
