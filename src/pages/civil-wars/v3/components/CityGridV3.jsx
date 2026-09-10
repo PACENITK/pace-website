@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CursorClick, ArrowsOutCardinal, CheckCircle, Prohibit, ArrowFatLinesUp, Check, Wrench } from "@phosphor-icons/react";
 import TileV3 from "./TileV3.jsx";
 import { useActiveGameStore } from "../store/GameStoreContext.jsx";
@@ -100,7 +100,42 @@ function CityGridV3() {
   const proposeClaimTreasure = useActiveGameStore((s) => s.proposeClaimTreasure);
   const stats = useCityStats();
 
+  // Which tile's action menu (repair / rehouse / claim treasure) is
+  // open. Opened by clicking the tile, not by hovering -- a hover menu
+  // was too easy to trigger by accident and, on a flood-damaged slum,
+  // stacked two actions in the same spot.
+  const [menuTile, setMenuTile] = useState(null);
+
   const hoveredRC = hoveredTile ? hoveredTile.split(",").map(Number) : null;
+
+  // The board actions available on a given tile with nothing selected
+  // from the palette. Order here is the order they appear in the menu.
+  function tileActions(row, col) {
+    const key = `${row},${col}`;
+    const acts = [];
+    if (damagedTiles[key]) acts.push("repair");
+    if (map.tiles[row][col].type === "slum" && !slumUpgraded.has(key)) acts.push("rehouse");
+    if (
+      treasureRevealed &&
+      !treasureClaimed &&
+      treasureTile &&
+      row === treasureTile[0] &&
+      col === treasureTile[1] &&
+      !placed[key]
+    ) {
+      acts.push("treasure");
+    }
+    return acts;
+  }
+
+  useEffect(() => {
+    if (!menuTile) return undefined;
+    function onKey(e) {
+      if (e.key === "Escape") setMenuTile(null);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuTile]);
 
   // The building whose radius ghost should show while hovering: either
   // a palette pick about to be placed, or a board building picked up
@@ -139,11 +174,11 @@ function CityGridV3() {
 
   function handleTileClick(row, col) {
     const key = `${row},${col}`;
-    const type = map.tiles[row][col].type;
 
     // A move is in progress: this click either drops the picked-up
     // building here, or (clicking its own origin tile again) cancels.
     if (moveFrom) {
+      setMenuTile(null);
       if (row === moveFrom.row && col === moveFrom.col) {
         cancelMove();
       } else {
@@ -152,18 +187,15 @@ function CityGridV3() {
       return;
     }
 
-    if (!selectedBuilding && damagedTiles[key]) {
-      proposeRepair(row, col);
+    // Nothing selected from the palette: a click on a tile that has one
+    // or more board actions opens (or, on the same tile, closes) its
+    // action menu instead of firing an action directly.
+    if (!selectedBuilding && tileActions(row, col).length > 0) {
+      setMenuTile((cur) => (cur === key ? null : key));
       return;
     }
-    if (!selectedBuilding && type === "slum" && !slumUpgraded.has(key)) {
-      proposeRehouse(row, col);
-      return;
-    }
-    if (!selectedBuilding && treasureRevealed && !treasureClaimed && treasureTile && row === treasureTile[0] && col === treasureTile[1] && !placed[key]) {
-      proposeClaimTreasure();
-      return;
-    }
+    setMenuTile(null);
+
     // Clicking an already-placed building (with nothing selected from
     // the palette) picks it up to relocate it -- rules.md's new "move a
     // building" mechanic, 10% of its cost, service coverage recomputed
@@ -218,25 +250,12 @@ function CityGridV3() {
   const hoveredTileStat = hoveredKey ? stats.tileStats[hoveredKey] : null;
   const showTooltip = !selectedBuilding && !moveFrom && hoveredTileStat && hoveredTileStat.pop > 0;
 
-  const hoveredIsUnupgradedSlum =
-    !selectedBuilding &&
-    !moveFrom &&
-    hoveredRC &&
-    map.tiles[hoveredRC[0]][hoveredRC[1]].type === "slum" &&
-    !slumUpgraded.has(hoveredKey);
-
-  const hoveredIsUnclaimedTreasure =
-    !selectedBuilding &&
-    !moveFrom &&
-    hoveredRC &&
-    treasureRevealed &&
-    !treasureClaimed &&
-    treasureTile &&
-    hoveredRC[0] === treasureTile[0] &&
-    hoveredRC[1] === treasureTile[1];
-
-  const hoveredDamage =
-    !selectedBuilding && !moveFrom && hoveredKey ? damagedTiles[hoveredKey] || null : null;
+  // The open action menu, resolved from the clicked tile. Cleared
+  // automatically if the tile stops offering any action (e.g. it was
+  // just repaired, or the palette now has a building selected).
+  const menuRC = menuTile ? menuTile.split(",").map(Number) : null;
+  const menuActions = menuRC && !selectedBuilding && !moveFrom ? tileActions(menuRC[0], menuRC[1]) : [];
+  const menuDamage = menuTile ? damagedTiles[menuTile] || null : null;
 
   const selectedDef = selectedBuilding ? buildingsById[selectedBuilding] : null;
   const movingDef = moveFrom ? buildingsById[moveFrom.buildingId] : null;
@@ -365,36 +384,44 @@ function CityGridV3() {
             </>
           )}
 
-          {(hoveredDamage || hoveredIsUnupgradedSlum || hoveredIsUnclaimedTreasure) && (
+          {menuActions.length > 0 && (
             <div
               className="cw3-chip-stack"
               style={{
-                left: `${(hoveredRC[1] / COLS) * 100}%`,
-                top: hoveredRC[0] > 0 ? `${(hoveredRC[0] / ROWS) * 100}%` : `${((hoveredRC[0] + 1) / ROWS) * 100}%`,
-                transform: hoveredRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
+                left: `${(menuRC[1] / COLS) * 100}%`,
+                top: menuRC[0] > 0 ? `${(menuRC[0] / ROWS) * 100}%` : `${((menuRC[0] + 1) / ROWS) * 100}%`,
+                transform: menuRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              {hoveredDamage && (
+              <div className="cw3-chip-stack-head">
+                {colLabel(menuRC[0], menuRC[1])}
+                <button type="button" className="cw3-chip-stack-close" onClick={() => setMenuTile(null)} aria-label="Close">
+                  ✕
+                </button>
+              </div>
+
+              {menuActions.includes("repair") && menuDamage && (
                 <button
                   type="button"
                   className="cw3-rehouse-chip cw3-chip--repair"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    proposeRepair(hoveredRC[0], hoveredRC[1]);
+                  onClick={() => {
+                    proposeRepair(menuRC[0], menuRC[1]);
+                    setMenuTile(null);
                   }}
                 >
                   <Wrench size={"1.8cqw"} weight="duotone" />
-                  Repair flood damage — ₹{fmtCr(hoveredDamage.repairCost)} Cr
+                  Repair flood damage — ₹{fmtCr(menuDamage.repairCost)} Cr
                 </button>
               )}
 
-              {hoveredIsUnupgradedSlum && (
+              {menuActions.includes("rehouse") && (
                 <button
                   type="button"
                   className="cw3-rehouse-chip cw3-chip--rehouse"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    proposeRehouse(hoveredRC[0], hoveredRC[1]);
+                  onClick={() => {
+                    proposeRehouse(menuRC[0], menuRC[1]);
+                    setMenuTile(null);
                   }}
                 >
                   <ArrowFatLinesUp size={"1.8cqw"} weight="duotone" />
@@ -402,17 +429,17 @@ function CityGridV3() {
                 </button>
               )}
 
-              {hoveredIsUnclaimedTreasure && (
+              {menuActions.includes("treasure") && (
                 <button
                   type="button"
                   className="cw3-rehouse-chip cw3-chip--treasure"
-                  onClick={(e) => {
-                    e.stopPropagation();
+                  onClick={() => {
                     proposeClaimTreasure();
+                    setMenuTile(null);
                   }}
                 >
                   Claim treasure — net ₹
-                  {fmtCr(300 - 50 - (placed[hoveredKey] ? Math.round(buildingsById[placed[hoveredKey]].cost * 0.5) : 0))} Cr
+                  {fmtCr(300 - 50 - (placed[menuTile] ? Math.round(buildingsById[placed[menuTile]].cost * 0.5) : 0))} Cr
                 </button>
               )}
             </div>
