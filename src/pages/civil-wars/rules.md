@@ -210,9 +210,11 @@ A Large industry poisons a 7×7 block — 49 tiles, a quarter of the whole map. 
 
 **Income is halved** in any year where more than a third of your population is unserved on three or more services. A neglected city does not produce.
 
-**Selling a building refunds 50%.**
+**There is no selling.** Once a building is placed and its 5-second undo window passes, it is on the board for good — you cannot demolish it for a refund. Spend deliberately.
 
-**Moving a building costs 10% of its price.** Pick up anything you've already placed and drop it on a different empty tile — a ₹100 Cr dam costs ₹10 Cr to relocate. Everything it was serving goes back to unserved the moment it lifts off, and its coverage is recalculated fresh from wherever it lands — same radius, same rules as a brand-new placement (a hydro station still needs a dam next to its new spot; a dam still needs a river tile). There's no limit on how many times you move something, other than paying the fee each time.
+**Undo — 5 seconds, full refund.** Every action (place, rehouse, move, repair) shows an Undo button for 5 seconds. Click it and the action is reversed and every rupee comes back. Let the window pass and it's committed. This is your only way to recover cash from a building — after that, the most you can do is move it.
+
+**Moving a building costs 10% of its price.** Pick up anything you've already placed and drop it on a different empty tile — a ₹100 Cr dam costs ₹10 Cr to relocate. Everything it was serving goes back to unserved the moment it lifts off, and its coverage is recalculated fresh from wherever it lands — same radius, same rules as a brand-new placement (a hydro station still needs a dam next to its new spot; a dam still needs a river tile). There's no limit on how many times you move something, other than paying the fee each time. Moving does **not** give cash back — it only relocates.
 
 ---
 
@@ -418,7 +420,7 @@ Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points
 - **Dam and hydro station before anything else.** Almost nothing works without power, and a hydro station can't exist without a dam next to it.
 - **Clear the mandatory floor before Year 0 ends.** Dam + hydro, full water coverage, a sewage plant, a hospital — ₹300 Cr you were probably spending anyway. Missing it costs more than it saves.
 - **Sewage near the slums, early.** ₹40 Cr avoids −200 across four slums, and it's your only defence against a waterborne outbreak.
-- **Don't build homes you can't serve.** An unserved Large is ₹70 Cr of zero.
+- **Don't build homes you can't serve.** An unserved Large is ₹70 Cr of zero — and there's no selling it back. If you're not sure, use the 5-second undo; once it's committed you can only move it, never cash it out.
 - **Get income running early.** A railway station in Year 0 has paid for itself by Year 5 and unlocks the airport.
 - **Leave land and cash spare.** Immigration drops two new, fully unserved slums near your city — you can't stop it, but you can be ready to reach them.
 - **Parks are ₹10 Cr** and they cancel industry pollution. Buy them.
@@ -432,7 +434,7 @@ Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points
 2. Year 0 is 15 minutes; each later year is 5–6 minutes.
 3. A building can be placed only if you can afford it and its prerequisites are met. The system blocks anything else.
 4. Cost is deducted when the building is placed.
-5. Selling refunds 50%. Moving an already-placed building to a new tile costs 10% instead, and its coverage recalculates fresh from the new spot.
+5. **No selling.** Every action can be undone within 5 seconds for a full refund; after that it is committed. A committed building can only be **moved** (10% of its price, coverage recalculates from the new tile) — never removed for cash.
 6. One building per tile. Dams only on river tiles.
 7. **You cannot go below zero.** No debt.
 8. Income is paid at the start of each year from the buildings then standing.
@@ -467,6 +469,7 @@ Worked example: 380 points of board score, ₹1,200 Cr left over (60 cash points
 - **Low-lying art no longer replaces a slum's own art.** A slum tile flagged low-lying used to render as generic marshy ground, wiping out the slum sprite entirely ("slum overlapping with low-lying area"). It now keeps its own art with the flood tint layered on top.
 - **Fixed a z-index bug** where anything placed on a low-lying tile — building art, service pips, the slum badge — painted *behind* the flood-zone texture instead of on top of it, because the texture layer had no explicit stacking order.
 - **Moving a building added.** Pick up anything already placed and relocate it to a new empty tile for 10% of its price; coverage recalculates from the new position exactly like a fresh placement — see Part F.
+- **Selling removed.** v3's "sell for 50%" is gone — there is no demolish-for-refund action in the game. The only ways to undo a placement are the 5-second full-refund undo window (every action has it) or, once committed, moving the building (10%, no cash back). Removes the "build wrong, sell, rebuild" safety net; makes Year 0 planning matter more.
 - **Twist order fixed.** Years 1–3 were a random permutation of Flood / Outbreak / Immigration in v3. They are now always Flood → Outbreak → Immigration, in that order, every game and every team. A known order is what lets Part G tell players exactly what each year puts at stake. Olympics (Year 4) and Treasure (Year 5) were already fixed.
 - **Practice period added.** Teams join early and get ~10 minutes of free play on a throwaway board; the organiser then wipes every board and the scored game starts from Year 0. Sessions (join codes) survive the wipe — see "Running the event" below.
 

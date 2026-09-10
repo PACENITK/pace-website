@@ -104,14 +104,13 @@ const config = {
   treasureMiningCost: 50,
   treasureDemolishRate: 0.5,
 
-  sellRefundRate: 0.5,
-  // Relocate an already-placed building to a different empty tile
-  // instead of selling + rebuying: costs a fraction of the building's
-  // own list price (e.g. a ₹100 Cr dam costs ₹10 Cr to move) rather
-  // than the 50% round-trip a sell+place would cost. Service coverage
-  // is never "moved" as a number -- it's recomputed fresh from the
-  // building's new position the same way every other stat is, so
-  // moving a hospital closer to an unserved block just works.
+  // There is no sell/demolish action. A placed building can be undone
+  // within a 5s window (full refund, handled in the store, not here) or
+  // relocated for moveCostRate * list price -- but never removed for
+  // cash once committed. Service coverage is never "moved" as a number:
+  // it's recomputed fresh from the building's new position the same way
+  // every other stat is, so moving a hospital closer to an unserved
+  // block just works.
   moveCostRate: 0.1,
 
   incomeHalvedUnservedShare: 1 / 3,
