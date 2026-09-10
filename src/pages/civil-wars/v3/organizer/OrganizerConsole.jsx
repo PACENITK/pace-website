@@ -9,7 +9,7 @@ const POLL_MS = 3000;
 // TWIST_ORDER is not shuffled, Year 4 is always Olympics, Year 5 always
 // Treasure). Kept in sync here so the console can show what's coming
 // without an extra round-trip.
-const YEAR_TWISTS = ["Flood", "Waterborne outbreak", "Immigration", "Olympics", "Treasure reveal"];
+const YEAR_TWISTS = ["Flood", "Waterborne outbreak", "Immigration", "IPL", "Treasure reveal"];
 const twistForYear = (year) => YEAR_TWISTS[year - 1] || null;
 
 // The --game-* / --cw3-* design tokens are defined only inside .cw3-root

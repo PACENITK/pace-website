@@ -203,8 +203,8 @@ function OlympicsOutcome({ result }) {
     <>
       <p className="cw3-outcome-headline">
         {result.qualified
-          ? `Bid qualified! +₹${fmtCr(result.cashBonus)} Cr and +${result.scoreDelta} score.`
-          : `Bid failed. ${result.scoreDelta} score, no cash.`}
+          ? `IPL bid qualified! +₹${fmtCr(result.cashBonus)} Cr and +${result.scoreDelta} score.`
+          : `IPL bid failed. ${result.scoreDelta} score, no cash.`}
       </p>
       <Group title="Venue requirements">
         {reqs.map((r) => (

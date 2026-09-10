@@ -136,12 +136,12 @@ export const TWIST_RULES = {
   },
 
   olympics: {
-    title: "Olympics",
+    title: "IPL",
     year: 4,
-    tagline: "The city bids to host the Olympics. The requirements were announced back in Year 0.",
+    tagline: "The city bids to host an IPL franchise. The requirements were announced back in Year 0.",
     stakes: [
-      { label: "Score", value: "+150 qualified · −50 not qualified." },
-      { label: "Cash", value: "+₹500 Cr qualified · nothing if not." },
+      { label: "Score", value: "+150 if the bid qualifies · −50 if it does not." },
+      { label: "Cash", value: "+₹500 Cr if it qualifies · nothing if not." },
     ],
     sections: [
       {
