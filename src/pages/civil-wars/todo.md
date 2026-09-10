@@ -262,6 +262,27 @@ what each twist puts at stake — which was the other half of this request.
       grid grew"; Part A flood-band description corrected (Zone B is one row on one bank,
       not "the next two out").
 
+## Done this session (rules clarity: no-selling + flood protection)
+
+- [x] **No selling.** rules.md Part F still had v3's "Selling a building refunds 50%" — the
+      game has no sell/demolish-for-cash action. Replaced with: no selling, the 5-second
+      full-refund undo window on every action, and moving (10%, no cash back) as the only
+      post-commit option. Part K rule 5, Part J, Part L "What changed from v3" updated to
+      match. Dead `sellRefundRate` constant removed from `simulation/engine/config.js`.
+- [x] **Flood protection spelled out.** Part H Flood gained four subsections — "Dam
+      protection — how the radius works" (6-column downstream strip, immunity by column not
+      distance, both banks/all rows, no stacking), "Hydro station protection" (only on the
+      dam's column or downstream; upstream-adjacent is unprotected; drainage doesn't help
+      hydro), "Storm drainage" (5×5, halves repair cost only, no immunity, can't save Zone A
+      park/drain/farm), and "Putting it together". Part E Protection table + prose tightened
+      to match and cross-reference Part H.
+- [x] **Flagged: transport buildings take zero flood damage.** `simulation/engine/
+      twists.js`'s `floodCategory()` has no `transport` branch → bus stand / railway / metro
+      / airport are flood-immune. Documented as-is in Part H ("Transport buildings ... are
+      not affected by the flood") and flagged in Part L "Known risks" as possibly a v3→v4
+      migration gap — fix is a one-line `transport` branch in `floodCategory` at the
+      commercial/industry rates if it should flood.
+
 ## Other known gaps (unrelated to the frontend↔backend connection work)
 
 - [ ] `simulation/` was **not** removed — it's the shared rules engine (`simulation/engine/

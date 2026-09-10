@@ -151,12 +151,12 @@ Safety station covers police and fire together.
 
 | Building | Cost | Effect | Radius | Yearly | Requires |
 |---|---|---|---|---|---|
-| Storm drainage | ₹15 Cr | Halves flood repair costs nearby | 2 | −₹0.5 Cr | — |
-| **Dam** | **₹100 Cr** | Protects **6 columns downstream**, full immunity. Enables hydro stations. | 6 columns | −₹3 Cr | River tile only |
+| Storm drainage | ₹15 Cr | Halves the flood repair cost of every building in a 5×5 block (does not help hydro stations) | 2 | −₹0.5 Cr | — |
+| **Dam** | **₹100 Cr** | Full flood immunity for a strip 6 columns wide (its own column + 5 downstream), every row. Enables hydro stations. | 6 columns | −₹3 Cr | River tile only |
 
-**A dam can only be placed on a river tile**, and protects only the 6 columns *downstream* of it — full immunity, not a discount. The river is 16 columns wide, so one dam covers well under half of it. **More than one dam is allowed**, and where you place each one is the real decision.
+**A dam can only be placed on a river tile.** It protects a **6-column-wide strip** — its own column plus the 5 columns downstream (water flows toward higher column numbers) — and inside that strip every tile at every row is fully immune, decided by column alone. Outside it, nothing. The river is 16 columns wide, so one dam covers 6 of 16. **More than one dam is allowed**; overlapping strips don't stack. Full mechanics: **Part H → Flood → Dam protection**.
 
-**A hydro station downstream of its own dam is protected. Built upstream of it, it is not.** Lose an unprotected hydro station and everything that needs power goes down with it, wherever it sits on the board.
+**A hydro station is protected only if it sits on its dam's column or downstream of it.** Built on the upstream side — even though it's still touching the dam — it is not protected. Storm drainage can't help a hydro station either. Lose an unprotected hydro station and everything that needs power goes down with it, wherever it sits on the board.
 
 ## Transport
 
@@ -289,9 +289,39 @@ The river bursts. **Every tile in a flood zone is hit** — and those tiles are 
 | Commercial / industry | Income stops until repaired, 40% | 20% |
 | Industry (extra) | Pollution radius **+1, permanently**, on top of repair | — |
 
-**Protection.** Downstream of a dam → no damage, full stop — for the dam's own protected buildings and for a hydro station downstream of its own dam. Storm drainage within 2 tiles halves whatever repair percentage applies, but it can't stop a Zone A park/drainage/farm from being destroyed outright.
+**Transport buildings (bus stand, railway, metro, airport) are not affected by the flood** — they keep running through it, protected or not.
 
-A dam is ₹100 Cr. Drainage is ₹15 Cr. An unprotected hydro station going down doesn't just cost its own repair — everything it powers stops working until it's fixed.
+### Dam protection — how the radius works
+
+The river runs left-to-right across one row, 16 columns wide. **Water flows toward higher column numbers**, so "downstream" means to the right.
+
+- A dam is placed on a **river tile** — you pick which column.
+- It protects a **strip 6 columns wide**: its own column plus the **5 columns downstream** (to its right).
+- Inside that strip, **every tile at every row is completely immune** — both banks, flood zone or not, next to the dam or twelve rows away. Protection is decided by **column only**, never by distance from the dam.
+- Outside the strip there is **no protection at all** — not even one column past the edge, not even the column immediately upstream of the dam.
+- One dam covers 6 of the river's 16 columns. The other 10 are exposed. **You can build more than one dam** to cover more strips; overlapping strips don't add anything (immunity is all-or-nothing).
+- A dam is never itself damaged by the flood. Cost ₹100 Cr.
+
+### Hydro station protection
+
+A hydro station can only be built **next to a dam** (within 1 tile). Whether the flood spares it depends on *where* next to the dam:
+
+- Built on the dam's own column or **downstream** of it → inside the protection strip → **immune**.
+- Built **upstream** of the dam (the column to its left) → outside the strip → **not protected**, even though it's touching the dam.
+- An unprotected hydro that floods goes offline, and **everything that draws power from it goes offline too** until it's repaired (40% of ₹70 Cr in Zone A, 20% in Zone B).
+- **Storm drainage does not reduce a hydro station's flood repair cost** — it helps every other building, but not hydro. Put hydro downstream of its dam; don't rely on a drain.
+
+### Storm drainage
+
+- ₹15 Cr, radius 2 — it covers the **5×5 block** centred on it (a building on the same tile counts).
+- Any building in that block has its flood **repair cost cut in half**, in both Zone A and Zone B.
+- It does **not** give immunity, and it does **not** save a Zone A park / storm drainage / farm — those are destroyed outright no matter what.
+- A storm drainage tile sitting in Zone A is itself destroyed by the flood (it's in the park/drainage/farm group).
+- Drainage doesn't stack — a tile is either within a drain's radius or it isn't.
+
+### Putting it together
+
+Downstream of a dam is the only real safety. Storm drainage is a cheap way to soften the bill everywhere the dam doesn't reach — except for hydro stations and Zone A parks/farms, which it can't help. An unprotected hydro station going down doesn't just cost its own repair: the whole city loses power until it's fixed.
 
 ## Waterborne outbreak
 
@@ -562,6 +592,8 @@ Three values worth A/B testing in the balance simulation before locking the even
 **22 buildings is a lot for a first-year.** Consider showing only Essentials and Residential in Year 0, unlocking Economy and Transport at Year 1. Same game, half the menu when they are most overwhelmed.
 
 **Optional simplification:** merge the nine services down to six — fold safety into health, food into water, sanitation into environment. Removes three columns from every calculation with very little loss. Worth doing if the practice board shows teams struggling.
+
+**Transport buildings currently take zero flood damage** (the engine's flood-repair table has no transport row — `simulation/engine/twists.js`'s `floodCategory` returns nothing for them). A railway or airport in Zone A survives the flood untouched. This may be deliberate (elevated infrastructure) or a v3→v4 migration gap. If it should flood like commercial, add a `transport` branch to `floodCategory` at the commercial/industry rates and add the row to Part H's table. The player rules currently state the behaviour as-is.
 
 ## Before the event
 
