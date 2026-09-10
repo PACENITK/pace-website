@@ -148,8 +148,12 @@ When a service building has less capacity than the demand around it, it serves t
 | Farm | ₹20 Cr | Food | 6 units | city-wide | −₹0.5 Cr | Water |
 
 There is no power plant. Power comes only from hydro stations, and a hydro station only
-exists next to a dam. **Every "Requires Power" line means "requires hydro coverage
-somewhere on the board."** Safety station covers police and fire together.
+exists next to a dam. **"Requires Power" / "Requires Water" is a yes/no gate, not an
+amount** — it just means a hydro station (or a water building) must already exist somewhere
+on the board. A hospital, school or sewage plant consumes **no** power or water; it only
+needs one to exist. The only things that spend your power and water supply are **homes**
+(1 of each per demand unit) and **industry** (a flat 2 / 4 / 7 per factory). Safety station
+covers police and fire together.
 
 **Read this against the residential table.** A Residential Large needs 5 health units; a
 hospital supplies 3. That block alone needs two hospitals. Dense housing is only cheap

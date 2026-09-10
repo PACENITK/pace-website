@@ -141,7 +141,14 @@ This is calculated in a fixed order, so **the same city always scores the same**
 | Sewage plant | ₹40 Cr | Sanitation | 6 units | 3 | −₹2 Cr | Power, Water |
 | Farm | ₹20 Cr | Food | 6 units | city-wide | −₹0.5 Cr | Water |
 
-There is no power plant. Power comes only from hydro stations, and a hydro station only exists next to a dam — see Protection below. **Every "Requires Power" line in this document means "requires hydro coverage somewhere on the board."**
+There is no power plant. Power comes only from hydro stations, and a hydro station only exists next to a dam — see Protection below.
+
+**"Requires Power" / "Requires Water" is a yes/no gate, not an amount.** It means "there must already be a hydro station (or a water building) somewhere on the board" — nothing more. A hospital does not draw a set number of power units from your hydro station, and it does not eat into your water supply. **Service buildings consume nothing.** The only things that create measurable power and water demand are:
+
+- **Homes** — 1 unit of power and 1 of water per demand unit (a Residential Large = 5 of each), and
+- **Industry** — a flat amount per factory (Small 2 / Medium 4 / Large 7 of each), drawn from the same pool, with homes served first (see "Industries consume services too" below).
+
+So a hydro station's 20-unit supply and a treatment plant's 12-unit supply are spent entirely on homes and factories — never on the hospitals, schools and sewage plants that "require" them.
 
 Safety station covers police and fire together.
 
