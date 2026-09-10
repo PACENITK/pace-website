@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Buildings, UsersThree, BookmarkSimple, ArrowCounterClockwise, Sliders } from "@phosphor-icons/react";
+import { Buildings, UsersThree, BookmarkSimple, ArrowCounterClockwise, Sliders, Question } from "@phosphor-icons/react";
 import useGameStore from "./store/useGameStore.js";
 import { MID_GAME_CHECKPOINT } from "./data/mockGameState.js";
+import { TWIST_RULES } from "./data/twistRules.js";
 import BuildingPalette from "./components/BuildingPalette.jsx";
 import CityGridV3 from "./components/CityGridV3.jsx";
 import CityStatusPanel from "./components/CityStatusPanel.jsx";
@@ -26,6 +27,8 @@ function CivilWarsV3() {
   const year = useGameStore((s) => s.year);
   const resetGame = useGameStore((s) => s.resetGame);
   const loadCheckpoint = useGameStore((s) => s.loadCheckpoint);
+  const lastTwist = useGameStore((s) => s.lastTwist);
+  const openTwistHelp = useGameStore((s) => s.openTwistHelp);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const isSmallViewport = useIsSmallViewport();
@@ -85,6 +88,12 @@ function CivilWarsV3() {
         <div className="flex-1" />
 
         <div className="flex items-center gap-2 px-4">
+          {lastTwist && (
+            <button type="button" className={`${BTN_BASE} ${BTN_SECONDARY}`} onClick={openTwistHelp}>
+              <Question size={14} weight="duotone" />
+              Year {lastTwist.year} rules
+            </button>
+          )}
           <button
             type="button"
             className={`${BTN_BASE} ${BTN_SECONDARY}`}

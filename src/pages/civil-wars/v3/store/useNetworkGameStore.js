@@ -7,6 +7,16 @@ function tileKey(r, c) {
   return `${r},${c}`;
 }
 
+function twistFromServer(data) {
+  if (!data.lastTwistResult || !data.lastTwistYear) return null;
+  return {
+    twist: data.lastTwistResult.twist,
+    year: data.lastTwistYear,
+    result: data.lastTwistResult.result,
+    floorResult: data.lastTwistResult.floorResult,
+  };
+}
+
 function applyServerState(set, data) {
   set({
     cash: data.cash,
@@ -23,6 +33,9 @@ function applyServerState(set, data) {
     treasureRevealed: data.treasureRevealed || false,
     treasureClaimed: data.treasureClaimed || false,
     treasureTile: data.treasureTile || null,
+    // Retained after the reveal modal is dismissed so the header's
+    // "Year N rules" button can reopen the full breakdown + rules.
+    ...(twistFromServer(data) ? { lastTwist: twistFromServer(data) } : {}),
   });
 }
 
@@ -48,6 +61,8 @@ function initialState() {
     treasureClaimed: false,
     treasureTile: null,
     shownTwistYear: 0,
+    lastTwist: null,
+    twistHelpOpen: false,
     selectedBuilding: null,
     moveFrom: null,
     hoveredTile: null,
@@ -83,13 +98,7 @@ const useNetworkGameStore = create((set, get) => ({
       }
       if (data.lastTwistYear && data.lastTwistYear > state.shownTwistYear && data.lastTwistResult) {
         set({
-          activeModal: {
-            type: "twist",
-            twist: data.lastTwistResult.twist,
-            result: data.lastTwistResult.result,
-            floorResult: data.lastTwistResult.floorResult,
-            year: data.lastTwistYear,
-          },
+          activeModal: { type: "twist", ...twistFromServer(data) },
           shownTwistYear: data.lastTwistYear,
         });
       }
@@ -233,6 +242,9 @@ const useNetworkGameStore = create((set, get) => ({
   },
 
   closeModal: () => set({ activeModal: null }),
+
+  openTwistHelp: () => set({ twistHelpOpen: true }),
+  closeTwistHelp: () => set({ twistHelpOpen: false }),
 }));
 
 export default useNetworkGameStore;
