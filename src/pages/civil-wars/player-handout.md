@@ -214,14 +214,17 @@ poisons a 7×7 block — best income in the game, hardest thing to place.
   can't afford.
 - **Income is halved** in any year where more than a third of your population is unserved on
   three or more services. A neglected city does not produce.
-- **There is no selling.** Once a building is placed and its 5-second undo window passes, it
-  is on the board for good.
-- **Undo — 5 seconds, full refund.** Every action (place, rehouse, move, repair) shows an
-  Undo button for 5 seconds. Use it and every rupee comes back. Let the window pass and it's
-  committed.
+- **Every action is confirmed first.** Pick a building and click a tile and a box shows the
+  cost and your balance after it. Nothing is spent until you click **Confirm** — **Cancel**
+  or Escape backs out at no cost.
+- **Undo — 5 seconds, full refund.** Right after an action commits, an Undo button appears
+  for five seconds; click it and every rupee comes back. Let it lapse and it's locked in.
+- **There is no selling.** Once the undo window closes, the building is on the board for
+  good — you cannot demolish it for money.
 - **Moving a building costs 10% of its price.** Pick up anything already placed and drop it
   on an empty tile; its coverage recalculates fresh from the new spot (a dam still needs a
-  river tile, a hydro still needs a dam beside it). Moving gives **no** cash back.
+  river tile, a hydro still needs a dam beside it). After the undo window, moving is the
+  only way to relocate a mistake — and it gives **no** cash back.
 
 Cash is your buffer for whatever each year brings. Hoarding is not a strategy — but neither
 is spending to zero.
@@ -324,7 +327,7 @@ well-served small home. Deliberately small: hoarding is not a strategy.
   more than it saves.
 - **Sewage near the slums, early.** ₹40 Cr avoids −200 in penalties across the four slums.
 - **Don't build homes you can't serve.** An unserved Large is ₹70 Cr of zero — and there's
-  no selling it back. If you're not sure, use the 5-second undo.
+  no selling it back. Check the confirm box, and use the 5-second Undo if you misjudge.
 - **Get income running early.** A railway station in Year 0 has more than paid for itself by
   the end, and unlocks the metro and airport.
 - **Leave land and cash spare.** You'll want room and money to react as the game develops.
@@ -338,10 +341,11 @@ well-served small home. Deliberately small: hoarding is not a strategy.
 2. Year 0 is 15 minutes; each later year is about 6.
 3. A building can be placed only if you can afford it and its prerequisites are met. The
    system blocks anything else.
-4. Cost is deducted when the building is placed.
-5. **No selling.** Every action can be undone within 5 seconds for a full refund; after that
-   it is committed. A committed building can only be **moved** (10% of its price), never
-   removed for cash.
+4. Every action shows a confirm box (cost + balance-after) before it commits; Cancel/Escape
+   backs out at no cost. Cost is deducted only on Confirm, and a 5-second Undo (full refund)
+   follows.
+5. **No selling.** After the undo window a building can only be **moved** (10% of its
+   price), never removed for cash.
 6. One building per tile. Dams only on river tiles.
 7. **You cannot go below zero.** No debt.
 8. Income is paid at the start of each year from the buildings then standing.

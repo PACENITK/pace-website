@@ -9,6 +9,7 @@ const {
   evaluateMove,
   applyMove,
   applyRepair,
+  applyUndo,
   computeScore,
   applyYearTransition,
   twistForYear,
@@ -87,7 +88,7 @@ router.get('/state', requireTeamSession, async (req, res) => {
   res.json(stateForClient(req.umTeam, global));
 });
 
-const ACTION_TYPES = ['place', 'rehouse', 'move', 'repair', 'claim_treasure'];
+const ACTION_TYPES = ['place', 'rehouse', 'move', 'repair', 'undo', 'claim_treasure'];
 
 router.post('/action', requireTeamSession, async (req, res) => {
   const { type } = req.body || {};
@@ -247,6 +248,32 @@ router.post('/action', requireTeamSession, async (req, res) => {
           scoreAfter: score,
         });
         team.markModified('state.damagedTiles');
+        await team.save();
+        return { status: 200, body: stateForClient(team, global) };
+      }
+
+      if (type === 'undo') {
+        const lastLog = await UrbanMayhemActionLog.findOne({ teamId }).sort({ seq: -1 });
+        const result = applyUndo(engine, team.state, lastLog);
+        if (!result.ok) {
+          return { status: 400, body: { error: result.error } };
+        }
+        team.state.lastError = null;
+        team.state.actionSeq += 1;
+        const score = computeScore(engine, team.state);
+        await UrbanMayhemActionLog.create({
+          teamId,
+          seq: team.state.actionSeq,
+          year: team.state.year,
+          action: 'undo',
+          payload: { undidAction: result.undidAction, undidSeq: result.undidSeq },
+          cost: -result.refund, // negative = money came back
+          cashAfter: team.state.cash,
+          scoreAfter: score,
+        });
+        team.markModified('state.placed');
+        team.markModified('state.damagedTiles');
+        team.markModified('state.slumUpgraded');
         await team.save();
         return { status: 200, body: stateForClient(team, global) };
       }

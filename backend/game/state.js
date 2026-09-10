@@ -176,6 +176,59 @@ function applyRepair(teamState, row, col, repairCost) {
   teamState.cash -= repairCost;
 }
 
+// How long after an action the server will still honour an undo. The
+// client only shows the Undo button for 5s; this is the wider bound
+// that also covers request latency and clock skew, and is a backstop
+// against a hand-crafted request trying to reverse something older.
+const UNDO_WINDOW_MS = 15000;
+
+// Reverses `lastLog` (the team's most recent action-log entry) on
+// `teamState`, refunding the cash it cost. The route has already
+// checked that this really is the last thing that happened to the team
+// (seq matches state.actionSeq), that it's an undoable kind, that the
+// year hasn't advanced, and that the board isn't locked -- so this
+// function just does the mechanical reversal. Mirrors useGameStore.js's
+// undoLastAction() branch for branch.
+function applyUndo(engine, teamState, lastLog) {
+  const undoable = ['place', 'rehouse', 'move', 'repair'];
+  if (!lastLog) return { ok: false, error: 'Nothing to undo' };
+  if (lastLog.seq !== teamState.actionSeq) return { ok: false, error: 'That action is no longer the most recent one' };
+  if (!undoable.includes(lastLog.action)) return { ok: false, error: "There's nothing to undo" };
+  if (lastLog.year !== teamState.year) return { ok: false, error: 'The year has advanced -- too late to undo' };
+  if (Date.now() - new Date(lastLog.createdAt).getTime() > UNDO_WINDOW_MS) {
+    return { ok: false, error: 'The undo window has passed' };
+  }
+
+  const p = lastLog.payload || {};
+  const refund = lastLog.cost || 0;
+
+  if (lastLog.action === 'place') {
+    delete teamState.placed[tileKey(p.row, p.col)];
+    teamState.cash += refund;
+  } else if (lastLog.action === 'rehouse') {
+    const key = tileKey(p.row, p.col);
+    teamState.slumUpgraded = teamState.slumUpgraded.filter((k) => k !== key);
+    teamState.cash += refund;
+  } else if (lastLog.action === 'move') {
+    delete teamState.placed[tileKey(p.toRow, p.toCol)];
+    teamState.placed[tileKey(p.fromRow, p.fromCol)] = p.buildingId;
+    teamState.cash += refund;
+  } else if (lastLog.action === 'repair') {
+    const key = tileKey(p.row, p.col);
+    // damagedTiles entries are { repairCost, id, zone }; zone is just the
+    // tile's own flood band, so re-derive it rather than needing it in
+    // the log payload.
+    teamState.damagedTiles[key] = {
+      repairCost: refund,
+      id: p.id,
+      zone: engine.map.tiles[p.row][p.col].floodZone,
+    };
+    teamState.cash += refund;
+  }
+
+  return { ok: true, undidAction: lastLog.action, undidSeq: lastLog.seq, refund };
+}
+
 function applyClaimTreasure(engine, teamState, global) {
   if (teamState.treasureRevealed !== true) {
     return { error: 'Treasure has not been revealed yet' };
@@ -335,6 +388,7 @@ module.exports = {
   evaluateMove,
   applyMove,
   applyRepair,
+  applyUndo,
   computeScore,
   applyYearTransition,
   twistForYear,

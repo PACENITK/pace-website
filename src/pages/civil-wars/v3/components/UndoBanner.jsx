@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import useGameStore from "../store/useGameStore.js";
+import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import { buildingsById } from "../engine.js";
 import { colLabel, fmtCr } from "../format.js";
 
@@ -8,10 +8,12 @@ const UNDO_MS = 5000;
 // The 5s reversal window for the action confirmPendingAction just
 // committed. Owns its own countdown (rather than a timer living inside
 // the store) so it's just a plain effect keyed on `undoable` changing.
+// Reads through the active store context so it works for both the local
+// sandbox (synchronous undo) and the networked game (POST /action undo).
 function UndoBanner() {
-  const undoable = useGameStore((s) => s.undoable);
-  const undoLastAction = useGameStore((s) => s.undoLastAction);
-  const clearUndoable = useGameStore((s) => s.clearUndoable);
+  const undoable = useActiveGameStore((s) => s.undoable);
+  const undoLastAction = useActiveGameStore((s) => s.undoLastAction);
+  const clearUndoable = useActiveGameStore((s) => s.clearUndoable);
   const [remaining, setRemaining] = useState(UNDO_MS);
   const startRef = useRef(0);
 

@@ -9,6 +9,7 @@ import CityGridV3 from "./components/CityGridV3.jsx";
 import CityStatusPanel from "./components/CityStatusPanel.jsx";
 import TwistModal from "./components/TwistModal.jsx";
 import PlacementConfirmModal from "./components/PlacementConfirmModal.jsx";
+import UndoBanner from "./components/UndoBanner.jsx";
 import "./civil-wars-v3.css";
 
 function fmtCountdown(ms) {
@@ -119,6 +120,7 @@ function CivilWarsV3Board() {
 
       <TwistModal />
       <PlacementConfirmModal />
+      <UndoBanner />
     </div>
   );
 }

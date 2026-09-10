@@ -365,6 +365,7 @@ function makeBot({ code, strategy, map, buildings }) {
     strategy,
     stats,
     seen,
+    client,
     async join() {
       const { status, data } = await client.post('/join', { code });
       if (status !== 200) throw new Error(`join ${code} -> ${status} ${data && data.error}`);
@@ -523,6 +524,18 @@ async function main() {
     if (stale.length > 0) {
       note(`${stale.length} non-rehearsal team(s) already in the DB (${stale.map((t) => t.code).join(', ')}) -- they'll be advanced and scored too`);
     }
+  }
+
+  // undo smoke: place then undo on one bot, before real play starts
+  if (bots.length > 0) {
+    const b0 = bots[0];
+    const c0 = (await b0.client.get('/state')).data.cash;
+    await b0.client.post('/action', { type: 'place', row: 0, col: 0, buildingId: 'park' });
+    const c1 = (await b0.client.get('/state')).data.cash;
+    const un = await b0.client.post('/action', { type: 'undo' });
+    const c2 = (await b0.client.get('/state')).data.cash;
+    if (un.status === 200 && c1 === c0 - 10 && c2 === c0) ok('undo: place (₹10) then undo restored the cash');
+    else fail(`undo smoke failed: cash ${c0} -> ${c1} (placed) -> ${c2} (undone), undo status ${un.status}`);
   }
 
   console.log('\nPlaying...\n');

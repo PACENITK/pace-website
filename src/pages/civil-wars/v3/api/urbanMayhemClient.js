@@ -31,6 +31,10 @@ export function repairBuilding(row, col) {
   return api.post("/action", { type: "repair", row, col }).then((r) => r.data);
 }
 
+export function undoLastAction() {
+  return api.post("/action", { type: "undo" }).then((r) => r.data);
+}
+
 export async function claimTreasure() {
   const { data } = await api.post('/action', { type: 'claim_treasure' });
   return data;

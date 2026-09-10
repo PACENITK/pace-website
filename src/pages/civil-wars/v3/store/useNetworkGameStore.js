@@ -1,7 +1,16 @@
 import { create } from "zustand";
-import { map, config } from "../engine.js";
+import { map, config, buildingsById } from "../engine.js";
 import { evaluatePlacement, evaluateMove } from "./evaluatePlacement.js";
-import { joinTeam, fetchState, placeBuilding, rehouseSlum, moveBuilding, repairBuilding, claimTreasure } from "../api/urbanMayhemClient.js";
+import {
+  joinTeam,
+  fetchState,
+  placeBuilding,
+  rehouseSlum,
+  moveBuilding,
+  repairBuilding,
+  undoLastAction as undoLastActionApi,
+  claimTreasure,
+} from "../api/urbanMayhemClient.js";
 
 function tileKey(r, c) {
   return `${r},${c}`;
@@ -68,6 +77,10 @@ function initialState() {
     hoveredTile: null,
     activeModal: null,
     pendingAction: null,
+    // The action confirmPendingAction just committed, reversible for a
+    // few seconds via POST /action {type:'undo'} -- same shape the
+    // sandbox store's `undoable` uses so UndoBanner works with both.
+    undoable: null,
     lastError: null,
   };
 }
@@ -91,6 +104,9 @@ const useNetworkGameStore = create((set, get) => ({
     try {
       const data = await fetchState();
       const practiceJustEnded = state.phase === "practice" && data.phase === "live";
+      // A year change or a lock kills any pending undo -- the server
+      // would reject it anyway.
+      if (state.undoable && (data.year !== state.year || data.locked)) set({ undoable: null });
       applyServerState(set, data);
       if (practiceJustEnded) {
         set({ practiceJustEnded: true });
@@ -218,6 +234,21 @@ const useNetworkGameStore = create((set, get) => ({
     const state = get();
     const { pendingAction } = state;
     if (!pendingAction) return;
+
+    // Work out the refund the undo banner will show, from the state as
+    // it stands *before* the action commits.
+    let undoable = null;
+    if (pendingAction.type === "place") {
+      undoable = { type: "place", row: pendingAction.row, col: pendingAction.col, buildingId: pendingAction.buildingId, refund: buildingsById[pendingAction.buildingId].cost };
+    } else if (pendingAction.type === "rehouse") {
+      undoable = { type: "rehouse", row: pendingAction.row, col: pendingAction.col, refund: config.slumUpgradeCost };
+    } else if (pendingAction.type === "move") {
+      undoable = { type: "move", fromRow: pendingAction.fromRow, fromCol: pendingAction.fromCol, toRow: pendingAction.toRow, toCol: pendingAction.toCol, buildingId: pendingAction.buildingId, refund: pendingAction.fee };
+    } else if (pendingAction.type === "repair") {
+      const entry = state.damagedTiles[tileKey(pendingAction.row, pendingAction.col)];
+      undoable = { type: "repair", row: pendingAction.row, col: pendingAction.col, refund: entry ? entry.repairCost : 0 };
+    }
+
     try {
       let data;
       if (pendingAction.type === "place") {
@@ -235,11 +266,29 @@ const useNetworkGameStore = create((set, get) => ({
         return;
       }
       applyServerState(set, data);
-      set({ selectedBuilding: null, moveFrom: null, pendingAction: null, lastError: null });
+      set({ selectedBuilding: null, moveFrom: null, pendingAction: null, lastError: null, undoable });
     } catch (err) {
       set({ pendingAction: null, moveFrom: null, lastError: err.response?.data?.error || "Action failed" });
     }
   },
+
+  // Reverses the last committed action server-side (POST /action
+  // {type:'undo'}). The server re-checks it's still the most recent
+  // action, same year, board not locked, within the window.
+  undoLastAction: async () => {
+    if (!get().undoable) return;
+    try {
+      const data = await undoLastActionApi();
+      applyServerState(set, data);
+      set({ undoable: null, lastError: null });
+    } catch (err) {
+      // window passed, year advanced, or another device already acted --
+      // nothing to reverse, just drop the banner.
+      set({ undoable: null, lastError: err.response?.data?.error || null });
+    }
+  },
+
+  clearUndoable: () => set({ undoable: null }),
 
   closeModal: () => set({ activeModal: null }),
 

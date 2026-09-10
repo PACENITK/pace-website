@@ -102,7 +102,8 @@ real database (see below), not building it.
       `CityStatusPanel`, `TwistModal`, `PlacementConfirmModal`, and `useCityStats.js` now read
       through this instead of importing `useGameStore` directly — the local sandbox
       (`/civil-wars/v3`) is unaffected since the context's default *is* that same store.
-      `UndoBanner.jsx` still imports the local store directly on purpose (no undo online).
+      `UndoBanner.jsx` now reads through this context too (was local-store-only) — online undo
+      shipped, see the later section.
 - [x] `v3/store/useNetworkGameStore.js` — polls `GET /state` every 2.5s, calls
       `placeBuilding`/`rehouseSlum`/`moveBuilding`/`repairBuilding` on confirm, pops the
       twist-reveal modal when the server's `lastTwistYear` advances past what's already
@@ -308,6 +309,34 @@ what each twist puts at stake — which was the other half of this request.
       transport). Added the Transport row to the essentials tab; removed the now-dead
       `tabFor()`. The API always allowed `bus_stand` (rehearsal bots placed them fine) — this
       was purely the UI.
+
+## Done this session (online undo)
+
+The 5-second post-confirm undo existed only in the offline sandbox. It now works in the
+networked game teams actually play.
+
+- [x] `backend/game/state.js` — `applyUndo(engine, teamState, lastLog)` reverses the team's
+      last action-log entry (place / rehouse / move / repair) and refunds its cost. Guards:
+      must be the most recent action (`seq === state.actionSeq`), an undoable kind, the same
+      year, and within a 15s server window (client only shows the button for 5s).
+- [x] `backend/routes/urbanMayhem.js` — `POST /action {type:"undo"}`: loads the latest
+      `UrbanMayhemActionLog` for the team, calls `applyUndo`, writes an `undo` log entry
+      (`cost: -refund`), serialized in the same per-team queue as every other action; the
+      route's existing `global.locked` check means undo is refused while a year is being
+      advanced.
+- [x] Frontend — `urbanMayhemClient.js` `undoLastAction()`; `useNetworkGameStore` gains
+      `undoable` / `undoLastAction` / `clearUndoable` (sets `undoable` after a successful
+      place/rehouse/move/repair, not claim_treasure; clears it on year change or lock);
+      `UndoBanner.jsx` switched to `useActiveGameStore` so one component serves both stores;
+      `<UndoBanner />` rendered in `CivilWarsV3Online.jsx`.
+- [x] **Verified** against a live server + Mongo, all action types and every rejection path:
+      place/rehouse/move/repair undo restore cash + board exactly (repair re-derives the
+      flood `zone` from the map); undo-after-undo, undo-while-locked, undo-after-year-advance,
+      and undo-after-15s all rejected with the right message. Backend suite 23/23; rehearsal
+      script gained an undo smoke assertion and still PASSES; frontend build clean.
+- [x] rules.md (Part F / J / K / L) and the player handout updated: confirm box **then** a
+      5-second full-refund undo, then no recourse but moving. Runbook §3.2 notes that
+      locking the year cancels any in-progress undo.
 
 ## Production config blockers for the organiser flow
 

@@ -147,7 +147,8 @@ Players see a banner: *"Practice is over — the real game has begun. Your board
 
 Click **Lock year**. This sets `locked = true` globally. Every team's build action now
 returns "Year is ending — building is paused." Use this to freeze the board so a twist
-can't race an in-flight click.
+can't race an in-flight click. Locking also cancels any team's in-progress 5-second undo,
+so give your 2-minute warning before you lock.
 
 The **Advance year** button only becomes clickable once the year is locked.
 
