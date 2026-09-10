@@ -465,14 +465,21 @@ export function revealTreasure(state, treasureTile, config) {
 }
 
 export function claimTreasure(state, treasureTile, config, buildings) {
-  const builtId = state.placed[treasureTile];
+  // treasureTile may arrive as "r,c" (server) or [r, c] (client store);
+  // normalize to the "r,c" string every placed/damaged map is keyed by.
+  const key = Array.isArray(treasureTile) ? treasureTile.join(",") : String(treasureTile);
+  const builtId = state.placed[key];
   let totalCost = config.treasureMiningCost;
   let demolished = null;
   if (builtId) {
     const building = buildings[builtId];
     totalCost += building.cost * config.treasureDemolishRate;
-    demolished = { tile: treasureTile, buildingId: builtId };
-    delete state.placed[treasureTile];
+    demolished = { tile: key, buildingId: builtId };
+    delete state.placed[key];
+    // The building is gone -- so is any outstanding flood-repair
+    // obligation on that tile. Leaving the entry would strand a phantom
+    // "repair" action on the now-empty tile.
+    if (state.damagedTiles) delete state.damagedTiles[key];
   }
   return { cashGain: config.treasureValue, cost: totalCost, demolished };
 }

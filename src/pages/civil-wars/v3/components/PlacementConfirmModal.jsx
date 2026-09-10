@@ -166,28 +166,28 @@ function TreasureDetails({ cash, treasureTile, placed }) {
   const key = `${treasureTile[0]},${treasureTile[1]}`;
   const buildingId = placed[key];
   const def = buildingId ? buildingsById[buildingId] : null;
-  const demoCost = def ? Math.round(def.cost * 0.5) : 0;
-  const miningCharge = 50;
-  const netGain = 300 - demoCost - miningCharge;
+  const demoCost = def ? Math.round(def.cost * config.treasureDemolishRate) : 0;
+  const miningCharge = config.treasureMiningCost;
+  const netGain = config.treasureValue - demoCost - miningCharge;
   const coord = colLabel(treasureTile[0], treasureTile[1]);
 
   return (
     <>
       <div className="cw3-modal-year">Confirm action</div>
-      <h2 className="cw3-modal-title">Claim Treasure</h2>
+      <h2 className="cw3-modal-title">{def ? "Demolish & Claim Treasure" : "Claim Treasure"}</h2>
       <div className="cw3-modal-body">
         <p>
           Tile: <strong>{coord}</strong>
         </p>
         <p>
-          Base value: <strong>₹300 Cr</strong>
+          Base value: <strong>₹{fmtCr(config.treasureValue)} Cr</strong>
         </p>
         <p>
-          Mining charge: <strong>-₹{miningCharge} Cr</strong>
+          Mining charge: <strong>-₹{fmtCr(miningCharge)} Cr</strong>
         </p>
         {def && (
           <p>
-            Demolishing {def.name}: <strong>-₹{fmtCr(demoCost)} Cr</strong>
+            Demolishing {def.name} (services lost): <strong>-₹{fmtCr(demoCost)} Cr</strong>
           </p>
         )}
         <p>

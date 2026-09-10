@@ -13,8 +13,10 @@ function tileKey(r, c) {
 // always Year 5.
 const TWIST_ORDER = ["flood", "pandemic", "immigration"];
 
+// [row, col] -- the board (CityGridV3, PlacementConfirmModal) compares
+// it against numeric tile indices, so it must not be a "r,c" string.
 function randomTreasureTile() {
-  return '3,7';
+  return [3, 7];
 }
 
 // The treasure tile is drawn once here, the same way an organizer would
@@ -436,12 +438,13 @@ const useGameStore = create((set, get) => ({
       return;
     }
 
-    const mutable = { placed: { ...state.placed } };
+    const mutable = { placed: { ...state.placed }, damagedTiles: { ...state.damagedTiles } };
     const result = twists.claimTreasure(mutable, state.treasureTile, config, buildingsById);
 
     set({
       cash: state.cash - result.cost + result.cashGain,
       placed: mutable.placed,
+      damagedTiles: mutable.damagedTiles,
       treasureClaimed: true,
       lastError: null,
     });

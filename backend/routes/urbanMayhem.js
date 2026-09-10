@@ -297,6 +297,7 @@ router.post('/action', requireTeamSession, async (req, res) => {
           scoreAfter: score,
         });
         team.markModified('state.placed');
+        team.markModified('state.damagedTiles');
         await team.save();
         return { status: 200, body: stateForClient(team, global) };
       }

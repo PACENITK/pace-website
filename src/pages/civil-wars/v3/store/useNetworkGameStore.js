@@ -41,7 +41,11 @@ function applyServerState(set, data) {
     practiceEndsAt: data.practiceEndsAt || null,
     treasureRevealed: data.treasureRevealed || false,
     treasureClaimed: data.treasureClaimed || false,
-    treasureTile: data.treasureTile || null,
+    // Server sends "r,c"; the board compares against numeric tile
+    // indices, so parse to [row, col].
+    treasureTile: data.treasureTile
+      ? (Array.isArray(data.treasureTile) ? data.treasureTile : String(data.treasureTile).split(",").map(Number))
+      : null,
     // Retained after the reveal modal is dismissed so the header's
     // "Year N rules" button can reopen the full breakdown + rules.
     ...(twistFromServer(data) ? { lastTwist: twistFromServer(data) } : {}),

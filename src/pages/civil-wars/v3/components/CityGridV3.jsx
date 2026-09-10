@@ -123,10 +123,13 @@ function CityGridV3() {
       !treasureClaimed &&
       treasureTile &&
       row === treasureTile[0] &&
-      col === treasureTile[1] &&
-      !placed[key]
+      col === treasureTile[1]
     ) {
+      // Claim is always offered on the treasure tile -- it demolishes
+      // whatever is built there. If a building sits on it (and isn't
+      // flood-damaged), also offer moving it out first to keep it.
       acts.push("treasure");
+      if (placed[key] && !damagedTiles[key]) acts.push("treasure_move");
     }
     return acts;
   }
@@ -442,8 +445,29 @@ function CityGridV3() {
                     setMenuTile(null);
                   }}
                 >
-                  Claim treasure — net ₹
-                  {fmtCr(300 - 50 - (placed[menuTile] ? Math.round(buildingsById[placed[menuTile]].cost * 0.5) : 0))} Cr
+                  {placed[menuTile] ? "Demolish & claim treasure" : "Claim treasure"} — net ₹
+                  {fmtCr(
+                    config.treasureValue -
+                      config.treasureMiningCost -
+                      (placed[menuTile]
+                        ? Math.round(buildingsById[placed[menuTile]].cost * config.treasureDemolishRate)
+                        : 0)
+                  )}{" "}
+                  Cr
+                </button>
+              )}
+
+              {menuActions.includes("treasure_move") && (
+                <button
+                  type="button"
+                  className="cw3-rehouse-chip cw3-chip--rehouse"
+                  onClick={() => {
+                    beginMove(menuRC[0], menuRC[1]);
+                    setMenuTile(null);
+                  }}
+                >
+                  Move this building out first — ₹
+                  {fmtCr(buildingsById[placed[menuTile]].cost * config.moveCostRate)} Cr, then claim the empty tile
                 </button>
               )}
             </div>
