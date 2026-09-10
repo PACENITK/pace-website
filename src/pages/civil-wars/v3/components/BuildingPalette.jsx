@@ -14,10 +14,18 @@ import { formatBuildingNote, fmtCr } from "../format.js";
 // wide transport and every commercial/industry building, none of
 // which are sensibly affordable or usable before a team has a city to
 // grow from anyway.
+// bus_stand is the one Transport building that belongs in Essentials
+// (it's the prerequisite-chain root for railway/hotel/stadium/industry,
+// and cheap enough to place early); railway/metro/airport are
+// city-scale investments that belong with the rest of Economy. The
+// render below swaps the Transport section's contents per tab
+// (essentialsBusStand vs economyTransport), so Transport must appear in
+// BOTH lists.
 const TAB_CATEGORY_ORDER = {
   essentials: [
     { key: CATEGORY.PROTECTION, label: "Protection" },
     { key: CATEGORY.ESSENTIAL, label: "Essentials" },
+    { key: CATEGORY.TRANSPORT, label: "Transport" },
     { key: CATEGORY.RESIDENTIAL, label: "Residential" },
   ],
   economy: [
@@ -26,16 +34,6 @@ const TAB_CATEGORY_ORDER = {
     { key: CATEGORY.INDUSTRY, label: "Industry" },
   ],
 };
-
-// bus_stand is the one Transport building that belongs in Essentials
-// (every other essential-service building needs it as a prerequisite
-// chain root); railway/metro/airport are city-scale investments that
-// belong with the rest of Economy.
-function tabFor(def) {
-  if (def.category === CATEGORY.TRANSPORT) return def.id === "bus_stand" ? "essentials" : "economy";
-  if (def.category === CATEGORY.ECONOMY || def.category === CATEGORY.INDUSTRY) return "economy";
-  return "essentials";
-}
 
 const buildingsByCategory = Object.values(buildingsById).reduce((acc, def) => {
   (acc[def.category] ||= []).push(def);

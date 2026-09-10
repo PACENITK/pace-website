@@ -294,25 +294,46 @@ what each twist puts at stake — which was the other half of this request.
       after a twist reveal" → "never shown to teams at all", matching the reverted
       per-twist-score-reveal and rules.md Part I).
 
-## Production config blockers for the organiser flow (NOT yet fixed — need your input)
+## Done this session (bot-player rehearsal + bug fixes)
 
-- [ ] **`URBAN_MAYHEM_ADMIN_KEY` is not in `.github/workflows/deploy.yml`'s `.env.production`
-      block.** `middleware/urbanMayhemAuth.js`'s `requireAdminKey` returns HTTP 500 when it's
-      unset, so `/overview`, `/lock-year`, `/advance-year`, `/start-practice`,
-      `/end-practice`, `/reset` are all dead in production — the organiser console cannot
-      work. Fix: add a GitHub Actions secret and a line to the env block.
-- [ ] **`VITE_API_URL` is never set at build time.** `deploy.yml`'s "Build the project" step
-      is a bare `npm run build`; `urbanMayhemClient.js` then falls back to
-      `http://localhost:5000`, which is wrong from a player's browser. Fix: build with
-      `VITE_API_URL=https://<domain>`, or reverse-proxy `/api` to the backend on the same
-      origin and set it to that origin. (Portal auth uses `src/portal/utils/api.js` which
-      may already handle this differently — worth checking they agree.)
+- [x] `backend/scripts/rehearseUrbanMayhem.js` (`npm run rehearse:urban-mayhem`) — spins up
+      N bot players that join with throwaway `RHRS*` codes and play over real HTTP while a
+      conductor fires the twists on a timer; asserts twist order / all-teams-processed /
+      finite scores / Year 5 reached / no 5xx; prints a leaderboard; self-cleans. Verified
+      locally: `--teams 6 --year-seconds 8` → PASSED in 57s. Documented in the runbook §4a.
+- [x] **Bus stand missing from the building palette** (`BuildingPalette.jsx`) — regression
+      from `6683d2d`: `TAB_CATEGORY_ORDER.essentials` had no `TRANSPORT` row, so the
+      `essentialsBusStand` branch was unreachable and `bus_stand` rendered in neither tab.
+      Players couldn't build a bus stand → no railway / hotel / stadium / industry (all need
+      transport). Added the Transport row to the essentials tab; removed the now-dead
+      `tabFor()`. The API always allowed `bus_stand` (rehearsal bots placed them fine) — this
+      was purely the UI.
+
+## Production config blockers for the organiser flow
+
+- [~] **`VITE_API_URL`** — addressed by another session in `5540510`: `.env.production` at
+      repo root now sets `VITE_API_URL=https://pace.nitk.ac.in/api`. **Correct only if nginx
+      strips `/api/` when proxying to `:5000`** — the same var is used by `urbanMayhemClient.js`
+      (`${API_URL}/api/urban-mayhem` → `.../api/api/urban-mayhem`) and portal auth
+      (`${API_URL}` + `/auth/...` → `.../api/auth/...`). Verify on the live site: a `/join`
+      request in devtools + portal login both work. If nginx does NOT strip `/api/`, the
+      value should be `https://pace.nitk.ac.in` (bare origin).
+- [ ] **`URBAN_MAYHEM_ADMIN_KEY` is still not in `deploy.yml`'s `.env.production` block.**
+      `requireAdminKey` returns HTTP 500 without it → the whole organiser console is dead in
+      production. Confirm it's set on the server another way, or add a GitHub secret + one
+      line to the heredoc.
 - [ ] **`MONGO_URI` with host networking** — `deploy.yml` writes `mongodb://mongo:27017`;
       with `network_mode: host` the hostname `mongo` doesn't resolve, needs
-      `mongodb://127.0.0.1:27017/pace`. (Flagged earlier; still open.)
+      `mongodb://127.0.0.1:27017/pace`. (Still open — if the portal's DB writes work in prod,
+      something's compensating.)
 - [ ] No automated "Year 6" / final-score reveal screen for players — the organiser reads
       the leaderboard off `/overview` and announces it verbally. Fine for a live event;
       note it so nobody goes looking for a button.
+- [ ] **Manual browser click-through still not done** for `/civil-wars/v3/play` and
+      `/civil-wars/v3/organizer`. Another session found and fixed three real UI bugs by
+      looking (`17e9476`, `586bf10`, `aa4ccbc`: invisible console buttons, no repair markers)
+      and this session found a fourth (bus stand) — a script can't catch these. Someone
+      should play a full game in a real browser before the event.
 
 ## Other known gaps (unrelated to the frontend↔backend connection work)
 
