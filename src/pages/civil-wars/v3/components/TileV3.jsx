@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Check, ArrowFatLinesUp, Wrench } from "@phosphor-icons/react";
+import { Check, ArrowFatLinesUp, Wrench, UsersThree } from "@phosphor-icons/react";
 import { SERVICES } from "../data/serviceMeta.js";
 import { BUILDING_ICON } from "../data/buildingMeta.js";
 import { TILE_ART, LOWLYING_ART, BUILDING_ART } from "../art.js";
@@ -37,6 +37,7 @@ function TileV3({
   tileStat,
   upgraded,
   damaged,
+  isNewSlum,
   isMoveSource,
   isTreasure,
   isTreasureClaimed,
@@ -50,13 +51,17 @@ function TileV3({
   const BuildingIcon = shownBuildingId ? BUILDING_ICON[shownBuildingId] : null;
   const buildingArt = shownBuildingId ? BUILDING_ART[shownBuildingId] : null;
   const hasDemand = !!tileStat && tileStat.pop > 0;
+  // An immigration slum lives in per-team state, not the shared map, so
+  // the map tile still says "empty" -- render it as a slum anyway so it
+  // isn't an invisible patch of grass players can't build on.
+  const effectiveType = isNewSlum ? "slum" : tile.type;
   const tileArt =
-    tile.lowLying && !KEEP_OWN_ART_WHEN_LOWLYING.has(tile.type) ? LOWLYING_ART : TILE_ART[tile.type];
+    tile.lowLying && !KEEP_OWN_ART_WHEN_LOWLYING.has(effectiveType) ? LOWLYING_ART : TILE_ART[effectiveType];
   const isPreview = !buildingId && !!previewBuildingId;
 
   const classes = [
     "cw3-tile",
-    tileArt ? "" : TILE_CLASS[tile.type] || "",
+    tileArt ? "" : TILE_CLASS[effectiveType] || "",
     tile.lowLying ? "cw3-tile--lowlying" : "",
     tileStat && tileStat.pollution ? "cw3-tile--polluted" : "",
     tileStat && tileStat.sewageNuisance ? "cw3-tile--sewage-nuisance" : "",
@@ -87,6 +92,16 @@ function TileV3({
           style={{ width: "3cqw", height: "3cqw" }}
         >
           <Wrench size={"1.9cqw"} weight="fill" />
+        </span>
+      )}
+
+      {isNewSlum && (
+        <span
+          className="cw3-slum-badge cw3-slum-badge--new"
+          title="New arrivals — immigration slum. Serve them or lose points."
+          style={{ width: "2.6cqw", height: "2.6cqw" }}
+        >
+          <UsersThree size={"1.6cqw"} weight="fill" />
         </span>
       )}
 
@@ -144,6 +159,7 @@ TileV3.propTypes = {
   tileStat: PropTypes.object,
   upgraded: PropTypes.bool,
   damaged: PropTypes.bool,
+  isNewSlum: PropTypes.bool,
   isMoveSource: PropTypes.bool,
   isTreasure: PropTypes.bool,
   isTreasureClaimed: PropTypes.bool,

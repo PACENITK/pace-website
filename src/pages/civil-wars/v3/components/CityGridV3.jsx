@@ -26,9 +26,11 @@ function popInRadius(tileStats, row, col, radius) {
   return sum;
 }
 
-function TileTooltip({ row, col, tileStat, buildingId, upgraded, placed }) {
+function TileTooltip({ row, col, tileStat, buildingId, upgraded, isNewSlum, placed }) {
   const identity = buildingId
     ? buildingsById[buildingId].name
+    : isNewSlum
+    ? "Immigration slum (new arrivals)"
     : tileStat.type === "slum"
     ? upgraded
       ? "Rehoused slum"
@@ -79,6 +81,7 @@ function CityGridV3() {
   const map = useActiveGameStore((s) => s.map);
   const year = useActiveGameStore((s) => s.year);
   const placed = useActiveGameStore((s) => s.placed);
+  const extraSlums = useActiveGameStore((s) => s.extraSlums);
   const slumUpgraded = useActiveGameStore((s) => s.slumUpgraded);
   const selectedBuilding = useActiveGameStore((s) => s.selectedBuilding);
   const moveFrom = useActiveGameStore((s) => s.moveFrom);
@@ -316,6 +319,7 @@ function CityGridV3() {
                     tileStat={stats.tileStats[key]}
                     upgraded={slumUpgraded.has(key)}
                     damaged={!!damagedTiles[key]}
+                    isNewSlum={!!(extraSlums && extraSlums[key])}
                     isMoveSource={!!moveFrom && moveFrom.row === row && moveFrom.col === col}
                     isTreasure={isTreasure}
                     isTreasureClaimed={treasureClaimed}
@@ -452,6 +456,7 @@ function CityGridV3() {
               tileStat={hoveredTileStat}
               buildingId={placed[hoveredKey] || null}
               upgraded={slumUpgraded.has(hoveredKey)}
+              isNewSlum={!!(extraSlums && extraSlums[hoveredKey])}
               placed={placed}
             />
           )}
