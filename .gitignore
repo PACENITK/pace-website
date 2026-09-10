@@ -27,3 +27,7 @@ dist-ssr
 backend/node_modules/
 backend/.env*
 
+
+# local dev env (LAN IP) - not for the repo
+.env
+.env.local
