@@ -283,6 +283,37 @@ what each twist puts at stake — which was the other half of this request.
       migration gap — fix is a one-line `transport` branch in `floodCategory` at the
       commercial/industry rates if it should flood.
 
+## Done this session (organiser runbook)
+
+- [x] `src/pages/civil-wars/organiser-runbook.md` — the full event-day operational guide:
+      setup → practice (trial) → Year 0 → the lock/advance loop for Years 1–5 (fixed twist
+      order) → final scoring off the console leaderboard → troubleshooting → one-page cheat
+      sheet. Complements `rules.md` Part L (design rationale) and `DOCKER_DEPLOY_GUIDE.md`
+      (container ops).
+- [x] `backend/game/state.js` — corrected the stale `computeScore` comment ("only right
+      after a twist reveal" → "never shown to teams at all", matching the reverted
+      per-twist-score-reveal and rules.md Part I).
+
+## Production config blockers for the organiser flow (NOT yet fixed — need your input)
+
+- [ ] **`URBAN_MAYHEM_ADMIN_KEY` is not in `.github/workflows/deploy.yml`'s `.env.production`
+      block.** `middleware/urbanMayhemAuth.js`'s `requireAdminKey` returns HTTP 500 when it's
+      unset, so `/overview`, `/lock-year`, `/advance-year`, `/start-practice`,
+      `/end-practice`, `/reset` are all dead in production — the organiser console cannot
+      work. Fix: add a GitHub Actions secret and a line to the env block.
+- [ ] **`VITE_API_URL` is never set at build time.** `deploy.yml`'s "Build the project" step
+      is a bare `npm run build`; `urbanMayhemClient.js` then falls back to
+      `http://localhost:5000`, which is wrong from a player's browser. Fix: build with
+      `VITE_API_URL=https://<domain>`, or reverse-proxy `/api` to the backend on the same
+      origin and set it to that origin. (Portal auth uses `src/portal/utils/api.js` which
+      may already handle this differently — worth checking they agree.)
+- [ ] **`MONGO_URI` with host networking** — `deploy.yml` writes `mongodb://mongo:27017`;
+      with `network_mode: host` the hostname `mongo` doesn't resolve, needs
+      `mongodb://127.0.0.1:27017/pace`. (Flagged earlier; still open.)
+- [ ] No automated "Year 6" / final-score reveal screen for players — the organiser reads
+      the leaderboard off `/overview` and announces it verbally. Fine for a live event;
+      note it so nobody goes looking for a button.
+
 ## Other known gaps (unrelated to the frontend↔backend connection work)
 
 - [ ] `simulation/` was **not** removed — it's the shared rules engine (`simulation/engine/

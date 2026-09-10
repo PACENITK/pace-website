@@ -202,9 +202,9 @@ function applyClaimTreasure(engine, teamState, global) {
   return result;
 }
 
-// Never shown to teams continuously (Part I: only right after a
-// twist reveal) but this is what the Organizer Console leaderboard and
-// the final reveal both read live.
+// Never shown to teams at all (Part I: no score on a player's screen at
+// any point before the final reveal). This is what the Organizer
+// Console leaderboard and the final reveal both read live.
 function computeScore(engine, teamState) {
   const slumUpgradedSet = new Set(teamState.slumUpgraded);
   const stats = engine.computeCityStats(
