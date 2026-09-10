@@ -19,7 +19,7 @@ jobs:
         id: changes
         run: |
           if git rev-parse "${{ github.event.before }}" >/dev/null 2>&1; then
-            if git diff --quiet "${{ github.event.before }}" "${{ github.sha }}" -- backend/ docker-compose.yml .github/workflows/deploy.yml; then
+            if git diff --quiet "${{ github.event.before }}" "${{ github.sha }}" -- backend/ simulation/ docker-compose.yml .github/workflows/deploy.yml; then
               echo "backend_changed=false" >> "$GITHUB_OUTPUT"
             else
               echo "backend_changed=true" >> "$GITHUB_OUTPUT"

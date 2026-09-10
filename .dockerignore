@@ -1,10 +1,35 @@
-node_modules/
-backend/
+# Build context is the repo root, but the only image built from here is
+# the backend API (+ the shared simulation/ engine). Keep everything
+# else out.
+
+**/node_modules
 .git
 .github
-docs/
-dist/
 *.log
-.env
-.env.*
+**/.env
+**/.env.*
+
+# Frontend — built separately in CI and served by nginx, never in the image
+src/
+public/
+dist/
+index.html
+vite.config.js
+postcss.config.js
+tailwind.config.js
+eslint.config.js
+design_handoff_team_view/
+docs/
 README.md
+DOCKER_DEPLOY_GUIDE.md
+
+# Backend cruft
+backend/tests/
+backend/coverage/
+backend/**/*.test.js
+
+# Simulation: ship the engine + data, drop the dev-only balance harness
+simulation/*.test.js
+simulation/engine/*.test.js
+simulation/results.csv
+simulation/sim-report.md

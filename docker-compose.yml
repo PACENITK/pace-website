@@ -15,8 +15,11 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      # Context is the repo root, not ./backend, because the Urban Mayhem
+      # routes load the shared rules engine from ../../simulation/*. The
+      # Dockerfile copies both backend/ and simulation/ into the image.
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: pace-backend
     restart: unless-stopped
     network_mode: "host"

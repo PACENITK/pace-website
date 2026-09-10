@@ -1,0 +1,6 @@
+{
+  "name": "urban-mayhem-engine",
+  "private": true,
+  "type": "module",
+  "description": "Pure rules engine for Urban Mayhem, shared by the frontend, the backend API, and the balance simulator. No dependencies."
+}
