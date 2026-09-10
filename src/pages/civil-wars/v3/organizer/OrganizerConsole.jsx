@@ -12,6 +12,24 @@ const POLL_MS = 3000;
 const YEAR_TWISTS = ["Flood", "Waterborne outbreak", "Immigration", "Olympics", "Treasure reveal"];
 const twistForYear = (year) => YEAR_TWISTS[year - 1] || null;
 
+// The --game-* / --cw3-* design tokens are defined only inside .cw3-root
+// (the full-screen game shell) in civil-wars-v3.css. This console is a
+// plain scrollable admin page and does NOT mount .cw3-root, so those
+// vars would resolve to nothing here -- which is exactly what made the
+// buttons render as white-on-white. Re-declare the tokens this file
+// uses on our own wrapper elements.
+const TOKENS = {
+  "--game-paper": "#f4f1ea",
+  "--game-paper-2": "#faf8f3",
+  "--game-rule": "#d9d3c6",
+  "--game-slate": "#2b4c6f",
+  "--game-rust": "#a8442a",
+  "--game-ok": "#2e7d32",
+  "--game-bad": "#b3261e",
+  "--game-mute": "#8a8172",
+  "--game-ink": "#201e1d",
+};
+
 function fmt(n) {
   return Math.round(n).toLocaleString("en-IN");
 }
@@ -35,7 +53,10 @@ function useTicking() {
 function AdminKeyForm({ onSubmit, error }) {
   const [key, setKey] = useState("");
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[color:var(--game-paper)]">
+    <div
+      style={TOKENS}
+      className="min-h-screen flex items-center justify-center bg-[color:var(--game-paper)] text-[color:var(--game-ink)]"
+    >
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -161,7 +182,12 @@ function OrganizerConsole() {
   }
 
   if (!adminKey) return <AdminKeyForm onSubmit={saveKey} error={keyError} />;
-  if (!overview) return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
+  if (!overview)
+    return (
+      <div style={TOKENS} className="min-h-screen flex items-center justify-center bg-[color:var(--game-paper)]">
+        Loading…
+      </div>
+    );
 
   const { global, teams } = overview;
   const ranked = [...teams].sort((a, b) => b.score - a.score);
@@ -173,7 +199,7 @@ function OrganizerConsole() {
   const nextTwist = twistForYear(nextYear);
 
   return (
-    <div className="min-h-screen bg-[color:var(--game-paper)] py-8 px-4">
+    <div style={TOKENS} className="min-h-screen bg-[color:var(--game-paper)] text-[color:var(--game-ink)] py-8 px-4">
       <div className="max-w-[960px] mx-auto">
         {/* Status bar */}
         <div className="flex flex-wrap items-center gap-3 mb-5">
