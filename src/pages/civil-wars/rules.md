@@ -40,7 +40,7 @@ A **16 × 12 grid** — 192 tiles.
 
 | Feature | Rule |
 |---|---|
-| **River** | Runs across the map, 16 columns wide. Not buildable. Dams go here and nowhere else. |
+| **River** | Runs straight across one row, spanning all 16 columns. **Flows left → right** — left edge upstream, right edge downstream (this is what "downstream of a dam" means in Part H). Not buildable. Dams go here and nowhere else. |
 | **Flood zones** | Three low-lying rows, marked with a wave icon, in an asymmetric band: **Zone A** (Severe) sits one row on each side of the river; **Zone B** (Moderate) sits two rows out, but only on one side. Buildable. This is where the flood hits, and how hard. |
 
 Roughly **170 buildable tiles**. You will not have money for all of them.
