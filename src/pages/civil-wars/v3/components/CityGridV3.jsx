@@ -365,63 +365,57 @@ function CityGridV3() {
             </>
           )}
 
-          {hoveredIsUnupgradedSlum && (
+          {(hoveredDamage || hoveredIsUnupgradedSlum || hoveredIsUnclaimedTreasure) && (
             <div
-              className="cw3-rehouse-chip"
+              className="cw3-chip-stack"
               style={{
                 left: `${(hoveredRC[1] / COLS) * 100}%`,
                 top: hoveredRC[0] > 0 ? `${(hoveredRC[0] / ROWS) * 100}%` : `${((hoveredRC[0] + 1) / ROWS) * 100}%`,
                 transform: hoveredRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
               }}
             >
-              <ArrowFatLinesUp size={"1.8cqw"} weight="duotone" />
-              Rehouse slum — ₹{config.slumUpgradeCost} Cr
+              {hoveredDamage && (
+                <button
+                  type="button"
+                  className="cw3-rehouse-chip cw3-chip--repair"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    proposeRepair(hoveredRC[0], hoveredRC[1]);
+                  }}
+                >
+                  <Wrench size={"1.8cqw"} weight="duotone" />
+                  Repair flood damage — ₹{fmtCr(hoveredDamage.repairCost)} Cr
+                </button>
+              )}
+
+              {hoveredIsUnupgradedSlum && (
+                <button
+                  type="button"
+                  className="cw3-rehouse-chip cw3-chip--rehouse"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    proposeRehouse(hoveredRC[0], hoveredRC[1]);
+                  }}
+                >
+                  <ArrowFatLinesUp size={"1.8cqw"} weight="duotone" />
+                  Rehouse slum — ₹{config.slumUpgradeCost} Cr
+                </button>
+              )}
+
+              {hoveredIsUnclaimedTreasure && (
+                <button
+                  type="button"
+                  className="cw3-rehouse-chip cw3-chip--treasure"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    proposeClaimTreasure();
+                  }}
+                >
+                  Claim treasure — net ₹
+                  {fmtCr(300 - 50 - (placed[hoveredKey] ? Math.round(buildingsById[placed[hoveredKey]].cost * 0.5) : 0))} Cr
+                </button>
+              )}
             </div>
-          )}
-
-          {hoveredIsUnclaimedTreasure && (
-            <button
-              className="cw3-rehouse-chip"
-              style={{
-                left: `${(hoveredRC[1] / COLS) * 100}%`,
-                top: hoveredRC[0] > 0 ? `${(hoveredRC[0] / ROWS) * 100}%` : `${((hoveredRC[0] + 1) / ROWS) * 100}%`,
-                transform: hoveredRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
-                pointerEvents: "auto",
-                cursor: "pointer",
-                background: "#f3c300",
-                borderColor: "#b69200",
-                color: "#1a1a1a",
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                proposeClaimTreasure();
-              }}
-            >
-              Claim Treasure (Net: ₹{fmtCr(300 - 50 - (placed[hoveredKey] ? Math.round(buildingsById[placed[hoveredKey]].cost * 0.5) : 0))} Cr)
-            </button>
-          )}
-
-          {hoveredDamage && (
-            <button
-              className="cw3-rehouse-chip"
-              style={{
-                left: `${(hoveredRC[1] / COLS) * 100}%`,
-                top: hoveredRC[0] > 0 ? `${(hoveredRC[0] / ROWS) * 100}%` : `${((hoveredRC[0] + 1) / ROWS) * 100}%`,
-                transform: hoveredRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
-                pointerEvents: "auto",
-                cursor: "pointer",
-                background: "#b3261e",
-                borderColor: "#7c1a15",
-                color: "#fff",
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                proposeRepair(hoveredRC[0], hoveredRC[1]);
-              }}
-            >
-              <Wrench size={"1.8cqw"} weight="duotone" />
-              {hoveredDamage.id === "slum" ? "Restore" : "Repair"} — ₹{fmtCr(hoveredDamage.repairCost)} Cr
-            </button>
           )}
 
           {showTooltip && (

@@ -146,10 +146,11 @@ function RepairDetails({ pendingAction, cash, damagedTiles }) {
   return (
     <>
       <div className="cw3-modal-year">Confirm repair</div>
-      <h2 className="cw3-modal-title">{entry && entry.id === "slum" ? "Restore slum" : "Repair building"}</h2>
+      <h2 className="cw3-modal-title">Repair flood damage</h2>
       <div className="cw3-modal-body">
         <p>
-          Tile: <strong>{coord}</strong>
+          {entry && entry.id === "slum" ? "Flood-hit slum" : "Flood-hit building"} at <strong>{coord}</strong> — services
+          come back online once repaired.
         </p>
         <p>
           Cost: <strong>₹{fmtCr(repairCost)} Cr</strong>

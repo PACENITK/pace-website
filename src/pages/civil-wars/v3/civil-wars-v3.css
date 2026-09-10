@@ -487,6 +487,40 @@
   white-space: nowrap;
 }
 
+/* Stacked action chips above a hovered tile (repair / rehouse /
+   treasure) -- one positioned container so the chips never overlap
+   when a tile qualifies for more than one action. */
+.cw3-chip-stack {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4cqw;
+  align-items: flex-start;
+  z-index: 4;
+}
+.cw3-chip-stack .cw3-rehouse-chip {
+  position: static;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+.cw3-chip-stack .cw3-rehouse-chip:hover {
+  filter: brightness(1.1);
+}
+.cw3-chip--repair {
+  background: var(--game-bad);
+  border-color: #7c1a15;
+}
+.cw3-chip--rehouse {
+  background: var(--game-rust);
+  border-color: #7d2f1c;
+}
+.cw3-chip--treasure {
+  background: #f3c300;
+  border-color: #b69200;
+  color: #1a1a1a;
+}
+
 .cw3-tile-tooltip {
   position: absolute;
   z-index: 6;
