@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Check, ArrowFatLinesUp } from "@phosphor-icons/react";
+import { Check, ArrowFatLinesUp, Wrench } from "@phosphor-icons/react";
 import { SERVICES } from "../data/serviceMeta.js";
 import { BUILDING_ICON } from "../data/buildingMeta.js";
 import { TILE_ART, LOWLYING_ART, BUILDING_ART } from "../art.js";
@@ -36,6 +36,7 @@ function TileV3({
   previewBuildingId,
   tileStat,
   upgraded,
+  damaged,
   isMoveSource,
   isTreasure,
   isTreasureClaimed,
@@ -60,6 +61,7 @@ function TileV3({
     tileStat && tileStat.pollution ? "cw3-tile--polluted" : "",
     tileStat && tileStat.sewageNuisance ? "cw3-tile--sewage-nuisance" : "",
     isMoveSource ? "cw3-tile--move-source" : "",
+    damaged ? "cw3-tile--damaged" : "",
     isTreasure && !isTreasureClaimed ? "cw3-tile--treasure" : "",
     isTreasure && isTreasureClaimed ? "cw3-tile--treasure-claimed" : "",
   ]
@@ -78,6 +80,16 @@ function TileV3({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
+      {damaged && (
+        <span
+          className="cw3-damage-badge"
+          title="Damaged by the flood — click to repair"
+          style={{ width: "3cqw", height: "3cqw" }}
+        >
+          <Wrench size={"1.9cqw"} weight="fill" />
+        </span>
+      )}
+
       {tile.type === "slum" && upgraded && (
         <span className="cw3-slum-badge cw3-slum-badge--done" style={{ width: "2.6cqw", height: "2.6cqw" }}>
           <Check size={"1.6cqw"} weight="bold" />
@@ -131,6 +143,7 @@ TileV3.propTypes = {
   previewBuildingId: PropTypes.string,
   tileStat: PropTypes.object,
   upgraded: PropTypes.bool,
+  damaged: PropTypes.bool,
   isMoveSource: PropTypes.bool,
   isTreasure: PropTypes.bool,
   isTreasureClaimed: PropTypes.bool,

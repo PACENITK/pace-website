@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { CursorClick, ArrowsOutCardinal, CheckCircle, Prohibit, ArrowFatLinesUp, Check } from "@phosphor-icons/react";
+import { CursorClick, ArrowsOutCardinal, CheckCircle, Prohibit, ArrowFatLinesUp, Check, Wrench } from "@phosphor-icons/react";
 import TileV3 from "./TileV3.jsx";
 import { useActiveGameStore } from "../store/GameStoreContext.jsx";
 import useCityStats from "../store/useCityStats.js";
@@ -235,6 +235,9 @@ function CityGridV3() {
     hoveredRC[0] === treasureTile[0] &&
     hoveredRC[1] === treasureTile[1];
 
+  const hoveredDamage =
+    !selectedBuilding && !moveFrom && hoveredKey ? damagedTiles[hoveredKey] || null : null;
+
   const selectedDef = selectedBuilding ? buildingsById[selectedBuilding] : null;
   const movingDef = moveFrom ? buildingsById[moveFrom.buildingId] : null;
   const moveFeeCr = movingDef ? movingDef.cost * config.moveCostRate : 0;
@@ -293,6 +296,7 @@ function CityGridV3() {
                     previewBuildingId={hoveredTile === key ? selectedBuilding : null}
                     tileStat={stats.tileStats[key]}
                     upgraded={slumUpgraded.has(key)}
+                    damaged={!!damagedTiles[key]}
                     isMoveSource={!!moveFrom && moveFrom.row === row && moveFrom.col === col}
                     isTreasure={isTreasure}
                     isTreasureClaimed={treasureClaimed}
@@ -394,6 +398,29 @@ function CityGridV3() {
               }}
             >
               Claim Treasure (Net: ₹{fmtCr(300 - 50 - (placed[hoveredKey] ? Math.round(buildingsById[placed[hoveredKey]].cost * 0.5) : 0))} Cr)
+            </button>
+          )}
+
+          {hoveredDamage && (
+            <button
+              className="cw3-rehouse-chip"
+              style={{
+                left: `${(hoveredRC[1] / COLS) * 100}%`,
+                top: hoveredRC[0] > 0 ? `${(hoveredRC[0] / ROWS) * 100}%` : `${((hoveredRC[0] + 1) / ROWS) * 100}%`,
+                transform: hoveredRC[0] > 0 ? "translateY(calc(-100% - 4px))" : "translateY(4px)",
+                pointerEvents: "auto",
+                cursor: "pointer",
+                background: "#b3261e",
+                borderColor: "#7c1a15",
+                color: "#fff",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                proposeRepair(hoveredRC[0], hoveredRC[1]);
+              }}
+            >
+              <Wrench size={"1.8cqw"} weight="duotone" />
+              {hoveredDamage.id === "slum" ? "Restore" : "Repair"} — ₹{fmtCr(hoveredDamage.repairCost)} Cr
             </button>
           )}
 
