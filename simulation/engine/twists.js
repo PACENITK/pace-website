@@ -75,43 +75,93 @@ function isDrainageProtected(row, col, placed, config) {
 // lost, no repair option) since a storm drain's own halving doesn't
 // downgrade that outcome (see config.js's comment on this).
 //
+// Plain-language "why did this tile flood / survive" strings, so the
+// reveal modal can spell out the rule that decided each building's fate
+// instead of players having to reason about zones and dam spans by hand.
+const FLOOD_ZONE_PHRASE = {
+  A: "the severe flood band (Zone A, within one row of the river)",
+  B: "the moderate flood band (Zone B, two rows from the river)",
+};
+const FLOOD_CATEGORY_NOUN = {
+  essentialService: "essential-service building",
+  residential: "home",
+  commercialIndustry: "business",
+  destructible: "park / storm drain / farm",
+  slum: "slum",
+};
+
 // Mutates `state.placed` (destroys), `state.damagedTiles` (adds repair
 // entries) and `state.pollutionSpillTiles` (industry-only) in place;
-// returns a summary for the reveal modal / action log.
+// returns a summary for the reveal modal / action log. Each entry
+// carries a `reason` string (and `spared` lists in-zone tiles the flood
+// left alone and why) so the modal can explain every outcome.
 export function applyFlood(state, map, config) {
   state.damagedTiles = state.damagedTiles || {};
   state.pollutionSpillTiles = state.pollutionSpillTiles || new Set();
 
   const destroyed = [];
   const damaged = [];
+  const spared = [];
 
   // Built buildings in a flood zone.
   for (const [key, id] of Object.entries(state.placed)) {
     const [r, c] = key.split(",").map(Number);
     const zone = map.tiles[r][c].floodZone;
     if (!zone) continue;
-    if (id === "dam") continue; // a dam doesn't damage itself
+    const zonePhrase = FLOOD_ZONE_PHRASE[zone];
+
+    if (id === "dam") {
+      spared.push({ key, id, zone, reason: "A dam is never damaged by the flood it holds back." });
+      continue;
+    }
 
     const isHydro = id === "hydro_station";
     const protectedByDam = isHydro ? isHydroProtected(r, c, state.placed, config) : isDamProtected(c, state.placed, config);
-    if (protectedByDam) continue;
+    if (protectedByDam) {
+      spared.push({
+        key,
+        id,
+        zone,
+        reason: isHydro
+          ? "Sits on or downstream of its own dam, inside the 6-column protection strip — completely immune."
+          : "Inside a dam's 6-column protection strip (the dam's column plus the 5 downstream) — completely immune.",
+      });
+      continue;
+    }
 
     const drainageHalves = !isHydro && config.floodDrainageHalvesRepair && isDrainageProtected(r, c, state.placed, config);
     const category = floodCategory(id);
-    if (!category) continue;
+    if (!category) {
+      spared.push({ key, id, zone, reason: "Transport buildings keep running straight through a flood, protected or not." });
+      continue;
+    }
 
     const rate = config.floodRepair[category][zone];
+    const def = buildingsById[id];
     if (rate === null) {
       // destructible, Zone A -- destroyed outright, drainage can't save it.
       delete state.placed[key];
-      destroyed.push({ key, id });
+      destroyed.push({
+        key,
+        id,
+        zone,
+        reason: `Parks, storm drains and farms in ${zonePhrase} are washed away outright — the build cost is lost and there is no repair.`,
+      });
       continue;
     }
-    const def = buildingsById[id];
     let repairCost = category === "slum" ? rate : Math.round(def.cost * rate);
     if (drainageHalves) repairCost = Math.round(repairCost / 2);
     state.damagedTiles[key] = { repairCost, id, zone };
-    damaged.push({ key, id, zone, repairCost });
+    damaged.push({
+      key,
+      id,
+      zone,
+      repairCost,
+      drainageHalved: drainageHalves,
+      reason:
+        `This ${FLOOD_CATEGORY_NOUN[category]} is in ${zonePhrase} and outside every dam's protection strip, so it flooded and stays offline until repaired.` +
+        (drainageHalves ? " A storm drain in range halved the repair bill." : ""),
+    });
 
     if (def.category === "industry" && zone === "A") {
       state.pollutionSpillTiles.add(key);
@@ -129,16 +179,28 @@ export function applyFlood(state, map, config) {
       if (state.slumUpgraded && state.slumUpgraded.has(key)) continue; // rehoused -> now residential, handled above if ever "placed" (it isn't) -- rehoused slums simply aren't slums anymore, no slum-row damage applies
       const zone = map.tiles[r][c].floodZone;
       if (!zone) continue;
-      if (isDamProtected(c, state.placed, config)) continue;
+      if (isDamProtected(c, state.placed, config)) {
+        spared.push({ key, id: "slum", zone, reason: "This slum is inside a dam's protection strip — completely immune." });
+        continue;
+      }
       const drainageHalves = config.floodDrainageHalvesRepair && isDrainageProtected(r, c, state.placed, config);
       let repairCost = config.floodRepair.slum[zone];
       if (drainageHalves) repairCost = Math.round(repairCost / 2);
       state.damagedTiles[key] = { repairCost, id: "slum", zone };
-      damaged.push({ key, id: "slum", zone, repairCost });
+      damaged.push({
+        key,
+        id: "slum",
+        zone,
+        repairCost,
+        drainageHalved: drainageHalves,
+        reason:
+          `This slum is in ${FLOOD_ZONE_PHRASE[zone]} and outside every dam's protection strip. Its people stay, but it delivers no services until repaired.` +
+          (drainageHalves ? " A storm drain in range halved the repair bill." : ""),
+      });
     }
   }
 
-  return { destroyed, damaged };
+  return { destroyed, damaged, spared };
 }
 
 // v4 Part B: checked once, at the Year 0 -> 1 transition only -- not a
@@ -191,12 +253,22 @@ export function applyOutbreak(state, map, config) {
 
   let infectedSlumPop = 0;
   let infectedNonSlumPop = 0;
+  const infectedTiles = [];
+  const safeTiles = [];
   Object.values(stats.tileStats).forEach((t) => {
     if (t.pop <= 0) return;
+    const homeNoun = t.isSlum ? "slum" : "home";
     const containedBySewage = t.served.sanitation > 0;
     if (!containedBySewage) {
       if (t.isSlum) infectedSlumPop += t.pop;
       else infectedNonSlumPop += t.pop;
+      infectedTiles.push({
+        row: t.row,
+        col: t.col,
+        pop: t.pop,
+        isSlum: t.isSlum,
+        reason: `No sewage plant reaches this ${homeNoun}, so it can't be contained.`,
+      });
       return;
     }
     const waterSuppliers = stats.perService.water.servedBy[t.row][t.col];
@@ -205,7 +277,24 @@ export function applyOutbreak(state, map, config) {
     if (onlyTanks && !anyTankExposed) {
       if (t.isSlum) infectedSlumPop += t.pop;
       else infectedNonSlumPop += t.pop;
+      infectedTiles.push({
+        row: t.row,
+        col: t.col,
+        pop: t.pop,
+        isSlum: t.isSlum,
+        reason: `This ${homeNoun} is fed only by water tanks, and none of those tanks sit within a sewage plant's range. A water-treatment plant would have carried no such risk.`,
+      });
+      return;
     }
+    safeTiles.push({
+      row: t.row,
+      col: t.col,
+      pop: t.pop,
+      isSlum: t.isSlum,
+      reason: onlyTanks
+        ? `Contained — a water tank feeding this ${homeNoun} sits inside a sewage plant's range.`
+        : `Contained — a sewage plant reaches this ${homeNoun}.`,
+    });
   });
 
   const infectedPop = infectedSlumPop + infectedNonSlumPop;
@@ -235,7 +324,22 @@ export function applyOutbreak(state, map, config) {
     incomeMultiplier = config.outbreakShortIncomeMultiplier;
   }
 
-  return { tier, infectedPop, infectedSlumPop, infectedNonSlumPop, required, hospitalsBuilt, shortfall, incomeMultiplier, scoreDelta, cashBonus };
+  return {
+    tier,
+    infectedPop,
+    infectedSlumPop,
+    infectedNonSlumPop,
+    required,
+    hospitalsBuilt,
+    shortfall,
+    incomeMultiplier,
+    scoreDelta,
+    cashBonus,
+    infectedTiles,
+    safeTiles,
+    slumMultiplier: config.outbreakSlumMultiplier,
+    popPerHospital: config.outbreakPopPerHospital,
+  };
 }
 
 // v4 Part F rewrite: immigration spawns 2 new slum tiles (2,500 each)
@@ -277,13 +381,30 @@ export function applyImmigrationSlums(state, map, config) {
   }
   candidates.sort((a, b) => a.minDist - b.minDist);
 
-  const spawned = candidates.slice(0, config.immigrationNewSlumCount).map((c) => c.key);
+  const chosen = candidates.slice(0, config.immigrationNewSlumCount);
+  const spawned = chosen.map((c) => c.key);
   state.extraSlums = state.extraSlums || {};
   spawned.forEach((key) => {
     state.extraSlums[key] = { pop: config.immigrationNewSlumPop, demandUnits: config.immigrationNewSlumDemandUnits };
   });
 
-  return { spawned };
+  return {
+    spawned,
+    spawnedTiles: chosen.map((c) => {
+      const [row, col] = c.key.split(",").map(Number);
+      return {
+        row,
+        col,
+        pop: config.immigrationNewSlumPop,
+        demandUnits: config.immigrationNewSlumDemandUnits,
+        reason: "New arrivals always take the empty land closest to your existing settlements — you don't choose where.",
+      };
+    }),
+    perSlumPop: config.immigrationNewSlumPop,
+    perSlumDemandUnits: config.immigrationNewSlumDemandUnits,
+    reason:
+      "Two new slum tiles appear on the empty land nearest your current settlements. They arrive completely unserved and count toward every service penalty from now until final scoring.",
+  };
 }
 
 export function evaluateOlympics(state, config) {
@@ -293,17 +414,54 @@ export function evaluateOlympics(state, config) {
   });
   const req = config.olympicsRequirements;
   const qualified = counts.stadium >= req.stadium && counts.hotel >= req.hotel && counts.restaurant >= req.restaurant;
+  const LABEL = { stadium: "Stadium", hotel: "Hotel", restaurant: "Restaurant" };
+  const requirements = ["stadium", "hotel", "restaurant"].map((id) => ({
+    id,
+    label: LABEL[id],
+    have: counts[id],
+    need: req[id],
+    met: counts[id] >= req[id],
+    reason:
+      counts[id] >= req[id]
+        ? `${counts[id]} standing, ${req[id]} needed — requirement met.`
+        : `Only ${counts[id]} standing, ${req[id]} needed — ${req[id] - counts[id]} short.`,
+  }));
   return {
     counts,
     qualified,
+    requirements,
     cashBonus: qualified ? config.olympicsQualifiedCash : 0,
     scoreDelta: qualified ? config.olympicsQualifiedScore : config.olympicsFailScore,
+    reason: qualified
+      ? "Every venue requirement was met when the year turned — the bid succeeds."
+      : "At least one venue requirement was short when the year turned — the bid fails.",
   };
 }
 
 export function revealTreasure(state, treasureTile, config) {
   const builtId = state.placed[treasureTile];
-  return { treasureTile, buildingId: builtId || null };
+  const [row, col] = String(treasureTile).split(",").map(Number);
+  const miningCost = config.treasureMiningCost;
+  const built = builtId ? buildingsById[builtId] : null;
+  const demolishCost = built ? Math.round(built.cost * config.treasureDemolishRate) : 0;
+  const moveCost = built ? Math.round(built.cost * (config.moveCostRate ?? 0.1)) : 0;
+  return {
+    treasureTile,
+    tile: { row, col },
+    buildingId: builtId || null,
+    buildingName: built ? built.name : null,
+    treasureValue: config.treasureValue,
+    miningCost,
+    demolishCost,
+    moveCost,
+    // Net cash if the team claims it, per route.
+    netIfEmpty: config.treasureValue - miningCost,
+    netIfDemolish: built ? config.treasureValue - miningCost - demolishCost : null,
+    netIfMoveFirst: built ? config.treasureValue - miningCost - moveCost : null,
+    reason: built
+      ? "Your building is standing on the treasure tile. Claiming it means either demolishing that building (losing its services) or moving it out first, then paying the mining charge."
+      : "The treasure tile is empty. Claim it any time before the year ends for the treasure value minus the mining charge.",
+  };
 }
 
 export function claimTreasure(state, treasureTile, config, buildings) {

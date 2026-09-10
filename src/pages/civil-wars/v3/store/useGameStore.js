@@ -40,6 +40,10 @@ function initialState() {
     treasureRevealed: false,
     treasureClaimed: false,
     twistLog: [],
+    // Retained after the reveal modal is dismissed so the header's
+    // "Year N rules" button can reopen the full breakdown + rules.
+    lastTwist: null,
+    twistHelpOpen: false,
     cumulativeScoreAdjustment: 0,
     selectedBuilding: null,
     // A building picked up off the board (click a placed building, not
@@ -401,10 +405,14 @@ const useGameStore = create((set, get) => ({
         { year: nextYear, twist: twistName, result: twistResult, floorResult, grossIncome, incomeMultiplier },
       ],
       activeModal: { type: "twist", twist: twistName, result: twistResult, floorResult, year: nextYear },
+      lastTwist: { twist: twistName, result: twistResult, floorResult, year: nextYear },
     });
   },
 
   closeModal: () => set({ activeModal: null }),
+
+  openTwistHelp: () => set({ twistHelpOpen: true }),
+  closeTwistHelp: () => set({ twistHelpOpen: false }),
 
   claimTreasure: () => {
     const state = get();

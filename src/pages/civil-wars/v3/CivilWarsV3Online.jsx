@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Buildings, Timer } from "@phosphor-icons/react";
+import { Buildings, Timer, Question } from "@phosphor-icons/react";
+import { TWIST_RULES } from "./data/twistRules.js";
 import useNetworkGameStore from "./store/useNetworkGameStore.js";
 import { GameStoreContext } from "./store/GameStoreContext.jsx";
 import JoinScreen from "./JoinScreen.jsx";
@@ -50,6 +51,8 @@ function CivilWarsV3Board() {
   const practiceEndsAt = useNetworkGameStore((s) => s.practiceEndsAt);
   const practiceJustEnded = useNetworkGameStore((s) => s.practiceJustEnded);
   const dismissPracticeBanner = useNetworkGameStore((s) => s.dismissPracticeBanner);
+  const lastTwist = useNetworkGameStore((s) => s.lastTwist);
+  const openTwistHelp = useNetworkGameStore((s) => s.openTwistHelp);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
 
@@ -80,6 +83,15 @@ function CivilWarsV3Board() {
           <div className="flex items-center px-[18px] text-xs font-semibold text-[#8f1e18]">
             Year is ending — building is paused
           </div>
+        )}
+
+        <div className="flex-1" />
+
+        {lastTwist && (
+          <button type="button" className="cw3-twist-help-btn" onClick={openTwistHelp}>
+            <Question size={15} weight="duotone" />
+            Year {lastTwist.year} rules — {TWIST_RULES[lastTwist.twist]?.title || lastTwist.twist}
+          </button>
         )}
       </header>
 

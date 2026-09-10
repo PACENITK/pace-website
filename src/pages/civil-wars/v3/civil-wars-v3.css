@@ -741,6 +741,288 @@
   cursor: pointer;
 }
 
+/* ---------- Twist reveal / review modal ---------- */
+
+.cw3-modal--twist {
+  max-width: 560px;
+  width: calc(100vw - 40px);
+  max-height: min(88vh, 780px);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.cw3-modal--twist .cw3-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cw3-modal-tagline {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #4a4033;
+}
+
+.cw3-modal--twist .cw3-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 8px;
+}
+
+.cw3-modal--twist .cw3-modal-close {
+  align-self: flex-start;
+  margin-bottom: 24px;
+}
+
+.cw3-modal-part-title,
+.cw3-rules-extra .cw3-rules-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--cw3-accent);
+  margin: 0 0 10px;
+}
+
+.cw3-modal-part {
+  margin-bottom: 8px;
+}
+
+/* --- "what happened to your city" breakdown --- */
+
+.cw3-outcome-headline {
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.cw3-outcome-group {
+  margin: 12px 0;
+}
+
+.cw3-outcome-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5c5548;
+  margin-bottom: 6px;
+}
+
+.cw3-outcome-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cw3-outcome-row {
+  display: flex;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid var(--cw3-hairline);
+  border-left-width: 3px;
+  background: var(--cw3-panel-bg);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.cw3-outcome-row--bad {
+  border-left-color: var(--cw3-red);
+}
+.cw3-outcome-row--warn {
+  border-left-color: #b8860b;
+}
+.cw3-outcome-row--ok {
+  border-left-color: var(--cw3-green);
+}
+.cw3-outcome-row--mute {
+  border-left-color: var(--cw3-hairline);
+}
+
+.cw3-outcome-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #5c5548;
+}
+
+.cw3-outcome-text {
+  min-width: 0;
+}
+
+.cw3-outcome-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.cw3-outcome-coord {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a8172;
+  font-variant-numeric: tabular-nums;
+}
+
+.cw3-outcome-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border: 1px solid var(--cw3-hairline);
+  background: #fff;
+  white-space: nowrap;
+}
+
+.cw3-outcome-reason {
+  color: #4a4033;
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+.cw3-outcome-total {
+  margin: 12px 0 4px;
+  font-size: 13px;
+}
+
+.cw3-outcome-details {
+  margin: 10px 0 4px;
+  font-size: 13px;
+}
+.cw3-outcome-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--cw3-accent);
+  margin-bottom: 8px;
+}
+
+/* --- mandatory-floor block --- */
+
+.cw3-floor-block {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--cw3-hairline);
+  border-left-width: 3px;
+  font-size: 13px;
+}
+.cw3-floor-block p {
+  margin: 0 0 4px;
+}
+.cw3-floor-block p:last-child {
+  margin-bottom: 0;
+}
+.cw3-floor-block--ok {
+  border-left-color: var(--cw3-green);
+  color: #2e5d33;
+}
+.cw3-floor-block--bad {
+  border-left-color: var(--cw3-red);
+  color: #8f1e18;
+}
+
+/* --- the collapsible full rule --- */
+
+.cw3-modal-rules {
+  margin-top: 16px;
+  border-top: 1px solid var(--cw3-hairline);
+  padding-top: 12px;
+}
+.cw3-modal-rules > summary {
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--cw3-accent);
+  list-style: revert;
+}
+.cw3-modal-rules[open] > summary {
+  margin-bottom: 10px;
+}
+
+.cw3-rules-tagline {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4a4033;
+}
+
+.cw3-rules-stakes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.cw3-rules-stake {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.cw3-rules-stake-label {
+  flex-shrink: 0;
+  width: 44px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: #8a8172;
+  padding-top: 2px;
+}
+
+.cw3-rules-section {
+  margin-bottom: 12px;
+}
+
+.cw3-rules-heading {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--cw3-ink);
+}
+
+.cw3-rules-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #4a4033;
+}
+.cw3-rules-list li {
+  margin-bottom: 3px;
+}
+
+.cw3-rules-extra {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--cw3-hairline);
+}
+
+/* --- header "Year N rules" button (online board) --- */
+
+.cw3-twist-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  margin-right: 14px;
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--game-slate, #2b4c6f);
+  background: var(--game-paper-2, #faf8f3);
+  border: 1px solid var(--game-rule, #d9d3c6);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.cw3-twist-help-btn:hover {
+  border-color: var(--game-slate, #2b4c6f);
+}
+
 /* ---------- Organizer console ---------- */
 
 .cw3-organizer {
