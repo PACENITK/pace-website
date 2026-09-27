@@ -15,7 +15,7 @@ import vidya from '../../assets/Team/admincore2/vidya.jpeg';
 import abhijith from '../../assets/Team/admincore2/abhijith.png';
 import anubhav from '../../assets/Team/admincore2/anubhav.jpg';
 import ayushash from '../../assets/Team/admincore2/ayushash.jpeg';
-import gajendra from '../../assets/Team/admincore2/gajendra..jpg';
+import gajendra from '../../assets/Team/admincore2/gajendra.png';
 import omair from '../../assets/Team/admincore2/omair.png';
 import sahitya from '../../assets/Team/admincore2/sahitya.jpeg';
 import saranksh from '../../assets/Team/admincore2/saranksh.jpeg';
@@ -27,6 +27,7 @@ import nirupama from '../../assets/Team/admincore2/nirupama.jpeg';
 import shailesh from '../../assets/Team/admincore2/shailesh.jpeg';
 import shivam from '../../assets/Team/admincore2/shivam.jpeg';
 import vismaya from '../../assets/Team/admincore2/vismaya.jpeg';
+import vikash from '../../assets/Team/admincore2/vikash.jpeg'
 
 const teamData = {
   leadership: [
@@ -151,7 +152,7 @@ const teamData = {
       name: "Anubhav Narayan Rob",
       role: "Marketing head",
       socialLinks: {
-        //linkedin: ,
+        linkedin:"https://www.linkedin.com/in/anubhav-narayan-rob-802229411/" ,
         email: "anubhavnarayanrob.241cv208@nitk.edu.in"
       },
       imageSrc: anubhav
@@ -179,42 +180,51 @@ const teamData = {
 
     {
       name: "Nirupama",
-      role: "",
+      role: "Publicity Coordinator",
       socialLinks: {
-        linkedin: "",
-        email: ""
+        linkedin: "https://www.linkedin.com/in/nirupama-aishwarya-sathuluri-489024352/",
+        email: "aishwaryasathuluri.241cv145@nitk.edu.in"
       },
       imageSrc: nirupama
     },
 
     {
       name: "Shailesh",
-      role: "",
+      role: "Club Affairs Secretary",
       socialLinks: {
-        linkedin: "",
-        email: ""
+        linkedin: "https://www.linkedin.com/in/shaileshchavan1/",
+        email: "chavanshailesh.241cv218@nitk.edu.in"
       },
       imageSrc: shailesh
     },
 
     {
       name: "Shivam",
-      role: "",
+      role: "Publicity Coordinator",
       socialLinks: {
-        linkedin: "",
-        email: ""
+        linkedin: "https://www.linkedin.com/in/shivam0723/",
+        email: "shivam.241cv245@nitk.edu.in"
       },
       imageSrc: shivam
     },
 
     {
       name: "Vismaya",
-      role: "",
+      role: "Club Affairs Secretary",
       socialLinks: {
-        linkedin: "",
-        email: ""
+        linkedin: "https://www.linkedin.com/in/vismaya-kk-00751b320/",
+        email: "vismaya.241cv160@nitk.edu.in"
       },
       imageSrc: vismaya
+    },
+    {
+      name: "Vikash Saini",
+      role: "Web Coordinator",
+      socialLinks: {
+        linkedin: "https://www.linkedin.com/in/vikash-saini-247801307/",
+        email: "vikashsaini.241cv256@nitk.edu.in"
+      },
+      imageSrc: vikash
     },
 
   ],
